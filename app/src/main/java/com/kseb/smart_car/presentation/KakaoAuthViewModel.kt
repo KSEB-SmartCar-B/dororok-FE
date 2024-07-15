@@ -14,7 +14,8 @@ import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
 
 class KakaoAuthViewModel(
-    application: Application
+    application: Application,
+    val allViewModel:AllViewModel
 ) : AndroidViewModel(application) {
     companion object {
         const val TAG = "KakaoAuthViewModel"
@@ -38,6 +39,7 @@ class KakaoAuthViewModel(
                     continuation.resume(false)
                 } else if (token != null) {
                     Log.i(TAG, "카카오계정으로 로그인 성공 ${token.accessToken}")
+                    allViewModel.getAccessToken(token.accessToken)
                     continuation.resume(true)
                 }
             }
@@ -66,8 +68,5 @@ class KakaoAuthViewModel(
                 UserApiClient.instance.loginWithKakaoAccount(context, callback = callback)
             }
         }
-    private fun getAccessToken(){
-
-    }
 
 }

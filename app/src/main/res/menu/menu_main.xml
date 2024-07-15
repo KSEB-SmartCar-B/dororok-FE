@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/menu_map"
+        android:icon="@drawable/ic_map_white"
+        android:title="map" />
+
+    <item
+        android:id="@+id/menu_music"
+        android:icon="@drawable/ic_music_white"
+        android:title="music"/>
+
+    <item
+        android:id="@+id/menu_my"
+        android:icon="@drawable/ic_my_white"
+        android:title="my"/>
+
+</menu>

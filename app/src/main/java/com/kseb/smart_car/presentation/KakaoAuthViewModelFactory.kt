@@ -6,11 +6,12 @@ import androidx.lifecycle.ViewModelProvider
 
 class KakaoAuthViewModelFactory(
     private val application: Application,
+    private val allViewModel: AllViewModel
 ) : ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         if (modelClass.isAssignableFrom(KakaoAuthViewModel::class.java)) {
             @Suppress("UNCHECKED_CAST")
-            return KakaoAuthViewModel(application) as T
+            return KakaoAuthViewModel(application, allViewModel) as T
         }
         throw IllegalArgumentException("Unknown ViewModel class")
     }

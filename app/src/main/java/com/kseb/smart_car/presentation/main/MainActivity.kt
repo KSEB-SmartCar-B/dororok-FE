@@ -4,12 +4,21 @@ import android.Manifest
 import android.app.Activity
 import android.content.Context
 import android.content.pm.PackageManager
+import android.graphics.Color
 import android.location.LocationManager
+import android.os.Build
 import android.os.Bundle
 import android.util.Log
+import android.view.View
+import android.view.WindowManager
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.SearchView
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.core.view.WindowCompat
+import androidx.core.view.WindowInsetsControllerCompat
 import com.kakao.vectormap.KakaoMap
 import com.kakao.vectormap.KakaoMapReadyCallback
 import com.kakao.vectormap.LatLng
@@ -36,11 +45,10 @@ class MainActivity : AppCompatActivity() {
     val PERMISSIONS_REQUEST_CODE = 100
     var REQUIRED_PERMISSIONS = arrayOf<String>(
         Manifest.permission.ACCESS_FINE_LOCATION)
-    private var isFirstLoad=true
+    private val subjectViewModel:SubjectViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
         initBinds()
         setting()
     }
@@ -51,6 +59,53 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun setting() {
+        //상태바 투명하게
+        val window = window
+        window.setFlags(
+            WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS,
+            WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS)
+
+        //시스템 하단바의 높이 만큼 하단네비게이션바를 올림
+        val bnvMain = binding.bnvMain
+        val layoutParams = bnvMain.layoutParams as ConstraintLayout.LayoutParams
+        layoutParams.bottomMargin = getNavigationBarHeight()
+        bnvMain.layoutParams = layoutParams
+
+        //검색창
+        initSearchView()
+        //상단 버튼 만들기
+        val subjectAdapter = SubjectAdapter()
+        binding.rvSubject.adapter=subjectAdapter
+        subjectAdapter.getList(subjectViewModel.makeList())
+
+        //카카오맵 api 통신
+        showMap()
+    }
+
+    private fun getNavigationBarHeight():Int{
+        val resourceId = resources.getIdentifier("navigation_bar_height", "dimen", "android")
+
+        return if (resourceId > 0) resources.getDimensionPixelSize(resourceId)
+        else 0
+    }
+
+    private fun initSearchView() {
+        // init SearchView
+        binding.svSearch.isSubmitButtonEnabled = true
+        binding.svSearch.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+            override fun onQueryTextSubmit(query: String?): Boolean {
+                // @TODO
+                return false
+            }
+
+            override fun onQueryTextChange(newText: String?): Boolean {
+                // @TODO
+                return true
+            }
+        })
+    }
+
+    private fun showMap(){
         val mapView = MapView(this)
         binding.mapView.addView(mapView)
 
@@ -67,13 +122,17 @@ class MainActivity : AppCompatActivity() {
                 // 인증 후 API 가 정상적으로 실행될 때 호출됨
                 Log.d("mainactivity","mapready")
                 val compass=kakaoMap.compass
-                compass!!.setPosition(MapGravity.TOP or MapGravity.LEFT, 50f, 40f)
+                compass!!.setPosition(MapGravity.BOTTOM or MapGravity.LEFT, 50f, 100f)
                 compass.setBackToNorthOnClick(true)
                 compass.show()
 
                 CoroutineScope(Dispatchers.IO).launch {
                     getMyLocation(this@MainActivity, kakaoMap)
                     getPosition()
+                    kakaoMap.moveCamera(CameraUpdateFactory.newCenterPosition(currentPosition!!))
+                }
+
+                binding.btnCurrentLocation.setOnClickListener{
                     kakaoMap.moveCamera(CameraUpdateFactory.newCenterPosition(currentPosition!!))
                 }
 
@@ -93,7 +152,7 @@ class MainActivity : AppCompatActivity() {
 
                         //label 생성
                         val styles=kakaoMap.labelManager!!
-                            .addLabelStyles(LabelStyles.from(LabelStyle.from(R.drawable.pin)))
+                            .addLabelStyles(LabelStyles.from(LabelStyle.from(R.drawable.my_6)))
                         val options=LabelOptions.from(LatLng.from(currentPosition)).setStyles(styles)
                         val layer= kakaoMap.labelManager!!.layer
                         val label = layer!!.addLabel(options)
@@ -120,13 +179,13 @@ class MainActivity : AppCompatActivity() {
 
             override fun getZoomLevel(): Int {
                 // 지도 시작 시 확대/축소 줌 레벨 설정
-                return 15
+                return 16
             }
 
-           /* override fun getMapViewInfo(): MapViewInfo {
-                // 지도 시작 시 App 및 MapType 설정
-                return MapViewInfo.from(MapType.NORMAL.name)
-            }*/
+            /* override fun getMapViewInfo(): MapViewInfo {
+                 // 지도 시작 시 App 및 MapType 설정
+                 return MapViewInfo.from(MapType.NORMAL.name)
+             }*/
 
             override fun getViewName(): String {
                 // KakaoMap 의 고유한 이름을 설정
