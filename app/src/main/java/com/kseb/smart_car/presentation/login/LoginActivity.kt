@@ -16,6 +16,7 @@ import com.kseb.smart_car.extension.SignInState
 import com.kseb.smart_car.presentation.AllViewModel
 import com.kseb.smart_car.presentation.KakaoAuthViewModel
 import com.kseb.smart_car.presentation.KakaoAuthViewModelFactory
+import com.kseb.smart_car.presentation.join.JoinActivity
 import com.kseb.smart_car.presentation.main.MainActivity
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collect
@@ -80,7 +81,6 @@ class LoginActivity : AppCompatActivity() {
                 when (it) {
                     true -> {
                         isSigned()
-                    }
 
                     false -> Log.d("startactivity", "login failed")
                 }
