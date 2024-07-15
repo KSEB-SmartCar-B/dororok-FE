@@ -81,7 +81,7 @@ class LoginActivity : AppCompatActivity() {
                 when (it) {
                     true -> {
                         isSigned()
-
+                    }
                     false -> Log.d("startactivity", "login failed")
                 }
             }
