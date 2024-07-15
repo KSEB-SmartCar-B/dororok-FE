@@ -17,7 +17,9 @@ abstract class BindModule {
     @Singleton
     abstract fun bindAuthRepository(authRepositoryImpl: AuthRepositoryImpl): AuthRepository
 
+
     @Binds
     @Singleton
     abstract fun provideAuthDataSource(authDataSourceImpl: AuthDataSourceImpl): AuthDataSource
+
 }

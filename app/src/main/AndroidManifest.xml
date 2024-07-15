@@ -32,11 +32,13 @@
                     android:scheme="@string/kakao_oauth_host" />
             </intent-filter>
         </activity>
+
         <activity
             android:name=".presentation.login.LoginActivity"
             android:exported="false">
 
         </activity>
+
         <activity android:name=".presentation.main.MainActivity"
             android:exported="true">
             <intent-filter>
