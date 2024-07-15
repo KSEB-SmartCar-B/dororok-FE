@@ -13,6 +13,7 @@ import com.kseb.smart_car.extension.AccessState
 import com.kseb.smart_car.presentation.AllViewModel
 import com.kseb.smart_car.presentation.KakaoAuthViewModel
 import com.kseb.smart_car.presentation.KakaoAuthViewModelFactory
+import com.kseb.smart_car.presentation.join.JoinActivity
 import com.kseb.smart_car.presentation.main.MainActivity
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collect
@@ -51,7 +52,7 @@ class LoginActivity : AppCompatActivity() {
             kakaoAuthViewModel.isLoggedIn.collect{
                 when(it){
                     true -> {
-                        val intent=Intent(this@LoginActivity, MainActivity::class.java)
+                        val intent=Intent(this@LoginActivity, JoinActivity::class.java)
                         startActivity(intent)
                         finish()
                     }
