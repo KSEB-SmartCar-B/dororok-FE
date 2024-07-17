@@ -6,6 +6,8 @@ import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
+import androidx.recyclerview.widget.GridLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.kseb.smart_car.R
 import com.kseb.smart_car.databinding.ActivityJoinBinding
 import com.kseb.smart_car.presentation.main.MainActivity
@@ -20,21 +22,8 @@ class JoinActivity: AppCompatActivity() {
         binding = ActivityJoinBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        replaceFragment(JoinFragment())
-    }
-
-    private fun replaceFragment(fragment: Fragment) {
         supportFragmentManager.beginTransaction()
-            .replace(R.id.fcv_join, fragment)
-            .commit() }
-
-//    private fun clickButton() {
-//        binding.btnJoin.setOnClickListener {
-//            if(true){
-//                val intent = Intent(this, MainActivity::class.java)
-//                startActivity(intent)
-//                finish()
-//            }
-//        }
-//    }
+            .replace(R.id.fcv_join, JoinFragment())
+            .commit()
+    }
 }

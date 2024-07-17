@@ -59,20 +59,19 @@ class LoginActivity : AppCompatActivity() {
             kakaoAuthViewModel.kakaoLogin()
         }
 
-        /* lifecycleScope.launch {
+        lifecycleScope.launch {
              kakaoAuthViewModel.isLoggedIn.collect{
                  when(it){
                      true -> {
-                         val intent=Intent(this@LoginActivity, MainActivity::class.java)
+                         val intent=Intent(this@LoginActivity, JoinActivity::class.java)
                          startActivity(intent)
-                         finish()
                      }
                      false -> {
                          Log.e("Failed","카카오 계정으로 로그인 실패")
                      }
                  }
              }
-         }*/
+         }
     }
 
     private fun isLogin() {

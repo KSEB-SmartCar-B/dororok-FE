@@ -48,10 +48,10 @@
             android:layout_marginEnd="-10dp"
             android:text="남자"
             android:textSize="15sp"
-            android:background="@drawable/join_gender_background"
+            android:background="@drawable/btn_gender"
             app:layout_constraintEnd_toStartOf="@id/btn_female"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/tv_gender" />
+            app:layout_constraintTop_toBottomOf="@id/tv_gender" />
 
         <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/btn_female"
@@ -61,10 +61,10 @@
             android:layout_marginEnd="30dp"
             android:text="여자"
             android:textSize="15sp"
-            android:background="@drawable/join_gender_background"
+            android:background="@drawable/btn_gender"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/btn_male"
-            app:layout_constraintTop_toTopOf="@+id/btn_male" />
+            app:layout_constraintStart_toEndOf="@id/btn_male"
+            app:layout_constraintTop_toTopOf="@id/btn_male" />
 
         <TextView
             android:id="@+id/tv_nick"
@@ -74,21 +74,20 @@
             android:text="닉네임"
             android:textSize="20sp"
             android:textStyle="bold"
-            app:layout_constraintStart_toStartOf="@+id/tv_gender"
-            app:layout_constraintTop_toBottomOf="@+id/btn_male" />
+            app:layout_constraintStart_toStartOf="@id/tv_gender"
+            app:layout_constraintTop_toBottomOf="@id/btn_male" />
 
         <EditText
             android:id="@+id/et_nick"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="15dp"
             android:layout_marginTop="15dp"
             android:ems="15"
             android:hint="닉네임을 입력하세요"
             android:inputType="text"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/tv_nick" />
+            app:layout_constraintTop_toBottomOf="@id/tv_nick" />
 
         <TextView
             android:id="@+id/tv_birth"
@@ -98,8 +97,8 @@
             android:text="생년월일"
             android:textSize="20sp"
             android:textStyle="bold"
-            app:layout_constraintStart_toStartOf="@+id/tv_nick"
-            app:layout_constraintTop_toBottomOf="@+id/et_nick" />
+            app:layout_constraintStart_toStartOf="@id/tv_nick"
+            app:layout_constraintTop_toBottomOf="@id/et_nick" />
 
         <DatePicker
             android:id="@+id/dpSpinner"
@@ -107,9 +106,9 @@
             android:layout_height="wrap_content"
             android:calendarViewShown="false"
             android:datePickerMode="spinner"
-            app:layout_constraintEnd_toEndOf="@+id/et_nick"
-            app:layout_constraintStart_toStartOf="@+id/et_nick"
-            app:layout_constraintTop_toBottomOf="@+id/tv_birth" />
+            app:layout_constraintEnd_toEndOf="@id/et_nick"
+            app:layout_constraintStart_toStartOf="@id/et_nick"
+            app:layout_constraintTop_toBottomOf="@id/tv_birth" />
 
         <TextView
             android:id="@+id/tv_personal"
@@ -119,8 +118,8 @@
             android:text="개인정보수집동의"
             android:textSize="20sp"
             android:textStyle="bold"
-            app:layout_constraintStart_toStartOf="@+id/tv_birth"
-            app:layout_constraintTop_toBottomOf="@+id/dpSpinner" />
+            app:layout_constraintStart_toStartOf="@id/tv_birth"
+            app:layout_constraintTop_toBottomOf="@id/dpSpinner" />
 
         <TextView
             android:id="@+id/tv_position"
@@ -129,22 +128,22 @@
             android:text="위치정보수집동의"
             android:textSize="20sp"
             android:textStyle="bold"
-            app:layout_constraintStart_toStartOf="@+id/tv_personal"
-            app:layout_constraintTop_toBottomOf="@+id/tv_personal" />
+            app:layout_constraintStart_toStartOf="@id/tv_personal"
+            app:layout_constraintTop_toBottomOf="@id/tv_personal" />
 
         <androidx.appcompat.widget.AppCompatButton
-            android:id="@+id/btn_join"
+            android:id="@+id/btn_next"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="70dp"
-            android:layout_marginEnd="60dp"
+            android:layout_marginEnd="40dp"
             android:layout_marginBottom="50dp"
-            android:background="@drawable/join_button_background"
+            android:background="@drawable/btn_join"
             android:text="다음"
             android:textSize="15sp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/tv_position" />
+            app:layout_constraintTop_toBottomOf="@id/tv_position" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
