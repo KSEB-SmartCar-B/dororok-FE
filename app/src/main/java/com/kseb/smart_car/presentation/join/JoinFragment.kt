@@ -6,12 +6,14 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import com.kseb.smart_car.R
 import com.kseb.smart_car.databinding.FragmentJoinBinding
 
-class JoinFragment: Fragment() {
+class JoinFragment : Fragment() {
     private var _binding: FragmentJoinBinding? = null
     private val binding: FragmentJoinBinding
         get() = requireNotNull(_binding) { "null" }
+    private lateinit var user: Join
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -27,11 +29,8 @@ class JoinFragment: Fragment() {
 
         genderButton()
         setDate()
-    }
+        clickButtonNext()
 
-    override fun onDestroyView() {
-        super.onDestroyView()
-        _binding = null
     }
 
     //성별 버튼 선택했을 때 색칠되는 함수
@@ -68,7 +67,7 @@ class JoinFragment: Fragment() {
             today_year,
             today_month,
             today_day
-        ) { _, _, _, _ ->}
+        ) { _, _, _, _ -> }
 
         // 최소 날짜
         calendar.set(1950, Calendar.JANUARY, 1)
@@ -78,4 +77,38 @@ class JoinFragment: Fragment() {
         calendar.set(today_year, today_month, today_day)
         datePicker.maxDate = calendar.timeInMillis
     }
+
+    private fun clickButtonNext() {
+        binding.btnNext.setOnClickListener {
+            setInfo()
+            val transaction = requireActivity().supportFragmentManager.beginTransaction()
+            transaction.replace(R.id.fcv_join, Join2Fragment())
+            transaction.addToBackStack(null)
+            transaction.commit()
+        }
+    }
+
+    private fun setInfo() {
+        binding.btnNext.setOnClickListener {
+            val gender = if (binding.btnMale.isSelected) {
+                "male"
+            } else {
+                "female"
+            }
+
+            val nick = binding.etNick.text.toString()
+
+            val birthYear = binding.dpSpinner.year.toString()
+            val birthMonth = binding.dpSpinner.month.toString()
+            val birthDay = binding.dpSpinner.dayOfMonth.toString()
+
+            user = Join(gender, nick, birthYear, birthMonth, birthDay, mutableListOf())
+        }
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
+    }
+
 }
