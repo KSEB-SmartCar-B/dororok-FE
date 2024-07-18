@@ -13,6 +13,7 @@ import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.kseb.smart_car.R
 import com.kseb.smart_car.databinding.FragmentJoin2Binding
+import com.kseb.smart_car.presentation.main.LocationActivity
 import com.kseb.smart_car.presentation.main.MainActivity
 
 class Join2Fragment: Fragment() {
@@ -45,7 +46,7 @@ class Join2Fragment: Fragment() {
         join2Adapter.getList(viewmodel.makeList())
 
         view.findViewById<View>(R.id.btn_join).setOnClickListener {
-            startActivity(Intent(requireContext(), MainActivity::class.java))
+            startActivity(Intent(requireContext(), LocationActivity::class.java))
             requireActivity().finish()
         }
     }

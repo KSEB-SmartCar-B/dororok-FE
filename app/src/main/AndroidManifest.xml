@@ -3,7 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
-    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
+    <!--<uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>-->
     <uses-permission android:name="android.permission.INTERNET" />
 
     <application
@@ -32,24 +32,37 @@
                     android:scheme="@string/kakao_oauth_host" />
             </intent-filter>
         </activity>
+
         <activity
             android:name=".presentation.login.LoginActivity"
-            android:exported="true">
+            android:exported="false">
 
+
+        </activity>
+
+        <activity
+            android:name=".presentation.join.JoinActivity"
+            android:exported="false">
+        </activity>
+
+        <activity android:name=".presentation.main.LocationActivity"
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
         <activity android:name=".presentation.main.MainActivity"
-            android:exported="false">
+           android:exported="false">
 
         </activity>
-        <activity
-            android:name=".presentation.join.JoinActivity"
-            android:exported="false">
-        </activity>
+
+        <meta-data
+            android:name="com.kakaomobility.knsdk.ApiKey"
+            android:value="@string/kakao_app_key" />
+
     </application>
 
 </manifest>

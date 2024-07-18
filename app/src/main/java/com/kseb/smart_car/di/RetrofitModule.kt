@@ -55,6 +55,8 @@ object RetrofitModule {
         return loggingInterceptor
     }
 
+
+
     @Provides
     @Singleton
     fun provideAuthRetrofit(
