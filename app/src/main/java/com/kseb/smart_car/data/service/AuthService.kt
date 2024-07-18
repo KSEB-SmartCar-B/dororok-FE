@@ -1,9 +1,11 @@
 package com.kseb.smart_car.data.service
 
 import com.kseb.smart_car.data.requestDto.RequestAccessDto
+import com.kseb.smart_car.data.requestDto.RequestSignUpDto
 import com.kseb.smart_car.data.responseDto.ResponseAccessDto
 import com.kseb.smart_car.data.responseDto.ResponseIsSignedDto
 import com.kseb.smart_car.data.responseDto.ResponseSignInDto
+import com.kseb.smart_car.data.responseDto.ResponseSignUpDto
 import retrofit2.http.Body
 import retrofit2.http.POST
 
@@ -21,4 +23,9 @@ interface AuthService {
     suspend fun getSignIn(
         @Body kakaoAccessToken:String
     ): ResponseSignInDto
+
+    @POST("/members/sign-up")
+    suspend fun getSignUp(
+        @Body requestSignUpDto: RequestSignUpDto
+    ):ResponseSignUpDto
 }

@@ -24,13 +24,18 @@ class AllViewModel @Inject constructor(
 ) : ViewModel() {
     private val _signInState = MutableStateFlow<SignInState>(SignInState.Loading)
     val signInState:StateFlow<SignInState> = _signInState.asStateFlow()
+
     private val _accessState = MutableStateFlow<AccessState>(AccessState.Loading)
     val accessState: StateFlow<AccessState> = _accessState.asStateFlow()
+
+    private val _kakaoToken=MutableLiveData<String>()
+    val kakaoToken:MutableLiveData<String> get() = _kakaoToken
 
     private val _accessToken = MutableLiveData<String?>()
     val accessToken: MutableLiveData<String?> get() = _accessToken
 
     fun getAccessToken(token: String) {
+        _kakaoToken.value=token
         viewModelScope.launch {
             authRepository.isSigned(token).onSuccess { response ->
                 if(response.isSigned){

@@ -17,6 +17,7 @@ import com.kseb.smart_car.presentation.AllViewModel
 import com.kseb.smart_car.presentation.KakaoAuthViewModel
 import com.kseb.smart_car.presentation.KakaoAuthViewModelFactory
 import com.kseb.smart_car.presentation.join.JoinActivity
+import com.kseb.smart_car.presentation.main.LocationActivity
 import com.kseb.smart_car.presentation.main.MainActivity
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collect
@@ -51,6 +52,7 @@ class LoginActivity : AppCompatActivity() {
         val factory = KakaoAuthViewModelFactory(application, allViewModel)
         kakaoAuthViewModel = ViewModelProvider(this, factory).get(KakaoAuthViewModel::class.java)
         //prefs = getSharedPreferences("tokenPrefs", Context.MODE_PRIVATE)
+
         isLogin()
     }
 
@@ -59,19 +61,20 @@ class LoginActivity : AppCompatActivity() {
             kakaoAuthViewModel.kakaoLogin()
         }
 
-        lifecycleScope.launch {
+        /* lifecycleScope.launch {
              kakaoAuthViewModel.isLoggedIn.collect{
                  when(it){
                      true -> {
-                         val intent=Intent(this@LoginActivity, JoinActivity::class.java)
+                         val intent=Intent(this@LoginActivity, MainActivity::class.java)
                          startActivity(intent)
+                         finish()
                      }
                      false -> {
                          Log.e("Failed","카카오 계정으로 로그인 실패")
                      }
                  }
              }
-         }
+         }*/
     }
 
     private fun isLogin() {
@@ -102,6 +105,8 @@ class LoginActivity : AppCompatActivity() {
                                 "회원가입!",
                                 Toast.LENGTH_SHORT
                             ).show()
+                            val intent = Intent(this@LoginActivity, JoinActivity::class.java)
+                            startActivity(intent)
                             Log.e("loginactivity", "회원가입 하시오!")
                         }
                     }
@@ -124,7 +129,7 @@ class LoginActivity : AppCompatActivity() {
                 when (accessState) {
                     is AccessState.Success -> {
                         Log.d("loginactivity", "accesstoken:${accessState.accessToken}")
-                        val intent = Intent(this@LoginActivity, MainActivity::class.java).apply {
+                        val intent = Intent(this@LoginActivity, LocationActivity::class.java).apply {
                             putExtra("accessToken", accessState.accessToken)
                             addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK)
                         }
@@ -147,5 +152,4 @@ class LoginActivity : AppCompatActivity() {
     override fun onDestroy() {
         super.onDestroy()
     }
-
 }

@@ -19,6 +19,7 @@ android {
         targetSdk = 34
         versionCode = 1
         versionName = "1.0"
+        multiDexEnabled=true
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
@@ -35,6 +36,12 @@ android {
         )
 
         resValue("string","kakao_oauth_host",gradleLocalProperties(rootDir, providers).getProperty("kakao.oauth.host"))
+        resValue("string","kakao_app_key", gradleLocalProperties(rootDir,providers).getProperty("kakao.native.app.key"))
+
+        ndk {
+            abiFilters.add("armeabi, armeabi-v7a")
+            abiFilters.add("arm64-v8a")
+        }
     }
 
     buildTypes {
@@ -55,7 +62,7 @@ android {
     }
 
     buildFeatures {
-        viewBinding = true
+        viewBinding {enable=true}
         buildConfig = true
         dataBinding = true
     }
@@ -106,7 +113,15 @@ dependencies {
     implementation("com.kakao.sdk:v2-user:2.20.1")
 
     //kakao map
-    implementation ("com.kakao.maps.open:android:2.9.5")
+    //implementation ("com.kakao.maps.open:android:2.9.5")
+
+    //kakaomobility
+    implementation ("com.kakaomobility.knsdk:knsdk_ui:1.9.2")
+
+   /* //google location
+    implementation ("com.google.android.gms:play-services-location:20.0.0")
+    implementation ("com.google.android.gms:play-services-maps:19.0.0")*/
+
 }
 
 kapt {
