@@ -19,19 +19,5 @@ class MyApp : Application(){
         //KakaoMapSdk.init(this, BuildConfig.NATIVE_APP_KEY);
 
         KNSDK.install(this, "$filesDir/knsdk")
-       /* KNSDK.apply {
-            initializeWithAppKey(appKey, VERSION_NAME,
-                null, KNLanguageType.KNLanguageType_KOREAN, aCompletion = {
-                    if (it != null) {
-                        when (it.code) {
-                            KNError_Code_C302 -> {
-                                Log.e("myapp","code c302")
-                            }
-                            else -> {
-                            }
-                        }
-                    } else {
-                    }})
-        }*/
     }
 }

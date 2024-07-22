@@ -9,6 +9,7 @@ import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
+import coil.load
 import com.kseb.smart_car.R
 import com.kseb.smart_car.databinding.ActivityLoginBinding
 import com.kseb.smart_car.extension.AccessState
