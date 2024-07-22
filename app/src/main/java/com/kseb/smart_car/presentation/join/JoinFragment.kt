@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
 import com.kseb.smart_car.R
 import com.kseb.smart_car.databinding.FragmentJoinBinding
 
@@ -13,7 +14,8 @@ class JoinFragment : Fragment() {
     private var _binding: FragmentJoinBinding? = null
     private val binding: FragmentJoinBinding
         get() = requireNotNull(_binding) { "null" }
-    private lateinit var user: Join
+
+    private val viewmodel by viewModels<JoinViewModel>()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -89,21 +91,19 @@ class JoinFragment : Fragment() {
     }
 
     private fun setInfo() {
-        binding.btnNext.setOnClickListener {
-            val gender = if (binding.btnMale.isSelected) {
-                "male"
-            } else {
-                "female"
-            }
-
-            val nick = binding.etNick.text.toString()
-
-            val birthYear = binding.dpSpinner.year.toString()
-            val birthMonth = binding.dpSpinner.month.toString()
-            val birthDay = binding.dpSpinner.dayOfMonth.toString()
-
-            user = Join(gender, nick, birthYear, birthMonth, birthDay, mutableListOf())
+        val gender = if (binding.btnMale.isSelected) {
+            "male"
+        } else {
+            "female"
         }
+
+        val nickname = binding.etNick.text.toString()
+
+        val birthYear = binding.dpSpinner.year.toString()
+        val birthMonth = binding.dpSpinner.month.toString()
+        val birthDay = binding.dpSpinner.dayOfMonth.toString()
+
+        viewmodel.getInfo(gender, nickname, birthYear, birthMonth, birthDay)
     }
 
     override fun onDestroyView() {

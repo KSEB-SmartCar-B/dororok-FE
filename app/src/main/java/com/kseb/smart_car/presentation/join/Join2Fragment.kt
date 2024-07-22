@@ -2,6 +2,7 @@ package com.kseb.smart_car.presentation.join
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.View
@@ -21,10 +22,8 @@ class Join2Fragment: Fragment() {
     private val binding: FragmentJoin2Binding
         get() = requireNotNull(_binding) { "null" }
 
-    private val viewmodel by viewModels<Join2ViewModel>()
-
-    private lateinit var user: Join
-    private var userGenre = mutableListOf<String>()
+    private val viewmodel by viewModels<JoinViewModel>()
+    private val viewmodel2 by viewModels<Join2ViewModel>()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -40,13 +39,23 @@ class Join2Fragment: Fragment() {
 
         binding.rvGenre.layoutManager = GridLayoutManager(requireContext(), 3)
 
-        val join2Adapter = Join2Adapter()
+        viewmodel.buttonText.observe(viewLifecycleOwner) { text ->
+            Toast.makeText(
+                context, "$text", Toast.LENGTH_SHORT
+            ).show()
+        }
+
+        val join2Adapter = Join2Adapter {buttonText -> viewmodel.getGenre(buttonText)}
         binding.rvGenre.adapter = join2Adapter
 
-        join2Adapter.getList(viewmodel.makeList())
+        join2Adapter.getList(viewmodel2.makeList())
 
-        view.findViewById<View>(R.id.btn_join).setOnClickListener {
-            startActivity(Intent(requireContext(), LocationActivity::class.java))
+        clickButtonJoin()
+    }
+
+    private fun clickButtonJoin() {
+        binding.btnJoin.setOnClickListener {
+            startActivity(Intent(requireContext(), MainActivity::class.java))
             requireActivity().finish()
         }
     }
