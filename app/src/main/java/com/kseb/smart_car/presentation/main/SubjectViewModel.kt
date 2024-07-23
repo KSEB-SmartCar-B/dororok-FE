@@ -8,7 +8,7 @@ class SubjectViewModel: ViewModel() {
             "식당",
             "주차장",
             "관광명소",
-            "주정차 금지 구역",
+            "주정차금지구역",
         )
     }
 }

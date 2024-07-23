@@ -39,11 +39,11 @@ class Join2Fragment: Fragment() {
 
         binding.rvGenre.layoutManager = GridLayoutManager(requireContext(), 3)
 
-        viewmodel.buttonText.observe(viewLifecycleOwner) { text ->
-            Toast.makeText(
-                context, "$text", Toast.LENGTH_SHORT
-            ).show()
-        }
+//        viewmodel.buttonText.observe(viewLifecycleOwner) { text ->
+//            Toast.makeText(
+//                context, "$text", Toast.LENGTH_SHORT
+//            ).show()
+//        }
 
         val join2Adapter = Join2Adapter {buttonText -> viewmodel.getGenre(buttonText)}
         binding.rvGenre.adapter = join2Adapter

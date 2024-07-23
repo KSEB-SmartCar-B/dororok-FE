@@ -10,5 +10,9 @@
   
     <color name="bnv_clicked_pink">#F4A6A8 </color>
     <color name="bnv_unclicked_grey">#686D76</color>
-    <color name="bnv_background_yellow">#FFF4E4</color>
+    <color name="bnv_background_yellow">#BBFFF4E4</color>
+
+    <color name="my_background_pink">#AAF9DEDC</color>
+    <color name="my_background_yellow">#AAFFF4E4</color>
+    <color name="my_profile_blue">#FFCFD7E7</color>
 </resources>

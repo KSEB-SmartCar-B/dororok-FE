@@ -2,12 +2,14 @@ package com.kseb.smart_car.presentation.main
 
 import android.os.Bundle
 import android.util.Log
+import android.view.View
 import android.view.WindowManager
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SearchView
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
+import androidx.fragment.app.Fragment
 import com.kakaomobility.knsdk.common.gps.WGS84ToKATEC
 import com.kakaomobility.knsdk.common.util.FloatPoint
 import com.kakaomobility.knsdk.map.knmaprenderer.objects.KNMapCameraUpdate
@@ -15,6 +17,8 @@ import com.kakaomobility.knsdk.map.knmapview.KNMapView
 import com.kakaomobility.knsdk.ui.view.KNNaviView
 import com.kseb.smart_car.R
 import com.kseb.smart_car.databinding.ActivityMainBinding
+import com.kseb.smart_car.presentation.main.music.MusicFragment
+import com.kseb.smart_car.presentation.main.my.MyFragment
 import dagger.hilt.android.AndroidEntryPoint
 
 
@@ -25,10 +29,15 @@ class MainActivity : AppCompatActivity() {
     private lateinit var mapView: KNMapView
     private lateinit var knNaviView: KNNaviView
 
+    //프래그먼트 켜짐 상태 체크하는 변수
+    private var isMyFragmentVisible = false
+    private var isMusicFragmentVisible = false
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         initBinds()
         setting()
+        clickButtonNavigation()
     }
 
     private fun initBinds() {
@@ -106,5 +115,68 @@ class MainActivity : AppCompatActivity() {
 
     private fun positionWithKNMapCameraUpdate(coordinate: FloatPoint): KNMapCameraUpdate {
         return KNMapCameraUpdate.targetTo(coordinate)
+    }
+
+    //마이페이지
+    private fun replaceFragment(fragment: Fragment) {
+        supportFragmentManager.beginTransaction()
+            .replace(R.id.fcv_main, fragment)
+//            .addToBackStack(null)
+            .commit()
+        binding.btnCurrentLocation.visibility = View.INVISIBLE
+    }
+
+    private fun removeAllFragments() {
+        val fragmentManager = supportFragmentManager
+        val fragments = fragmentManager.fragments
+        val transaction = fragmentManager.beginTransaction()
+        for (fragment in fragments) {
+            if (fragment != null) {
+                transaction.remove(fragment)
+            }
+        }
+        transaction.commit()
+    }
+
+    private fun clickButtonNavigation() {
+        binding.bnvMain.setOnItemSelectedListener {
+            when(it.itemId) {
+                R.id.menu_map -> {
+                    removeAllFragments()
+                    binding.btnCurrentLocation.visibility = View.VISIBLE
+                    isMyFragmentVisible = false
+                    isMusicFragmentVisible = false
+                    true
+                }
+
+                R.id.menu_my -> {
+                    if (isMyFragmentVisible) {
+                        removeAllFragments()
+                        isMyFragmentVisible = false
+                    } else {
+                        removeAllFragments()
+                        replaceFragment(MyFragment())
+                        isMyFragmentVisible = true
+                    }
+                    isMusicFragmentVisible = false
+                    true
+                }
+                R.id.menu_music -> {
+                    if (isMusicFragmentVisible) {
+                        removeAllFragments()
+                        isMusicFragmentVisible = false
+                    } else {
+                        removeAllFragments()
+                        replaceFragment(MusicFragment())
+                        isMusicFragmentVisible = true
+                    }
+                    isMyFragmentVisible = false
+                    true
+                }
+                else -> {
+                    false
+                }
+            }
+        }
     }
 }
