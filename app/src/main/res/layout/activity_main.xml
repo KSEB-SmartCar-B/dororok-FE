@@ -92,6 +92,8 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:labelVisibilityMode="selected"
         app:menu="@menu/menu_main"
+        app:itemIconTint="@drawable/bnv_item_color_selector"
+        app:itemTextColor="@drawable/bnv_item_color_selector"
         style="@style/BottomNavigationView"/>
 
     <androidx.fragment.app.FragmentContainerView

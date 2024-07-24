@@ -10,6 +10,7 @@ import androidx.appcompat.widget.SearchView
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentManager
 import com.kakaomobility.knsdk.common.gps.WGS84ToKATEC
 import com.kakaomobility.knsdk.common.util.FloatPoint
 import com.kakaomobility.knsdk.map.knmaprenderer.objects.KNMapCameraUpdate
@@ -29,7 +30,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var mapView: KNMapView
     private lateinit var knNaviView: KNNaviView
 
-    //프래그먼트 켜짐 상태 체크하는 변수
+    //프래그먼트 켜져있는지 체크하는 변수
     private var isMyFragmentVisible = false
     private var isMusicFragmentVisible = false
 
@@ -128,15 +129,25 @@ class MainActivity : AppCompatActivity() {
 
     private fun removeAllFragments() {
         val fragmentManager = supportFragmentManager
-        val fragments = fragmentManager.fragments
-        val transaction = fragmentManager.beginTransaction()
-        for (fragment in fragments) {
-            if (fragment != null) {
-                transaction.remove(fragment)
-            }
+        fragmentManager.popBackStackImmediate(null, FragmentManager.POP_BACK_STACK_INCLUSIVE)
+        val currentFragment = fragmentManager.findFragmentById(R.id.fcv_main)
+        currentFragment?.let {
+            fragmentManager.beginTransaction().remove(it).commitNow()
         }
-        transaction.commit()
     }
+
+//    private fun updateButtonColors(selectedItemId: Int) {
+//        val menu = binding.bnvMain.menu
+//        for (i in 0 until menu.size()) {
+//            val item = menu.getItem(i)
+//            val color = if (item.itemId == selectedItemId) {
+//                ContextCompat.getColor(this, R.color.bnv_clicked_pink)
+//            } else {
+//                ContextCompat.getColor(this, R.color.bnv_unclicked_grey)
+//            }
+//            item.icon?.setTint(color)
+//        }
+//    }
 
     private fun clickButtonNavigation() {
         binding.bnvMain.setOnItemSelectedListener {
@@ -150,11 +161,12 @@ class MainActivity : AppCompatActivity() {
                 }
 
                 R.id.menu_my -> {
+                    removeAllFragments()
                     if (isMyFragmentVisible) {
-                        removeAllFragments()
                         isMyFragmentVisible = false
+//                        binding.bnvMain.selectedItemId = R.id.menu_map
+//                        updateButtonColors(R.id.menu_map)
                     } else {
-                        removeAllFragments()
                         replaceFragment(MyFragment())
                         isMyFragmentVisible = true
                     }
@@ -162,11 +174,12 @@ class MainActivity : AppCompatActivity() {
                     true
                 }
                 R.id.menu_music -> {
+                    removeAllFragments()
                     if (isMusicFragmentVisible) {
-                        removeAllFragments()
                         isMusicFragmentVisible = false
+//                        binding.bnvMain.selectedItemId = R.id.menu_map
+//                        updateButtonColors(R.id.menu_map)
                     } else {
-                        removeAllFragments()
                         replaceFragment(MusicFragment())
                         isMusicFragmentVisible = true
                     }
