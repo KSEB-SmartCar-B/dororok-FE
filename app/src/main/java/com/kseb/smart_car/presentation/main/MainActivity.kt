@@ -166,6 +166,8 @@ class MainActivity : AppCompatActivity() {
                         isMyFragmentVisible = false
 //                        binding.bnvMain.selectedItemId = R.id.menu_map
 //                        updateButtonColors(R.id.menu_map)
+                        // 메뉴 아이템을 직접 선택하여 상태를 업데이트
+                        binding.bnvMain.selectedItemId = R.id.menu_map
                     } else {
                         replaceFragment(MyFragment())
                         isMyFragmentVisible = true

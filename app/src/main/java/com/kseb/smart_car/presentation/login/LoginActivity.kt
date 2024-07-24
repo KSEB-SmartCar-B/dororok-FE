@@ -11,6 +11,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import coil.load
 import com.kseb.smart_car.R
+import com.kseb.smart_car.data.service.SpotifyService.connect
 import com.kseb.smart_car.databinding.ActivityLoginBinding
 import com.kseb.smart_car.extension.AccessState
 import com.kseb.smart_car.extension.SignInState
@@ -101,11 +102,6 @@ class LoginActivity : AppCompatActivity() {
                             collectAccessState()
                         } else {
                             Log.d("loginactivity", "is not signed!")
-                            Toast.makeText(
-                                this@LoginActivity,
-                                "회원가입!",
-                                Toast.LENGTH_SHORT
-                            ).show()
                             val intent = Intent(this@LoginActivity, JoinActivity::class.java)
                             startActivity(intent)
                             Log.e("loginactivity", "회원가입 하시오!")
@@ -130,12 +126,22 @@ class LoginActivity : AppCompatActivity() {
                 when (accessState) {
                     is AccessState.Success -> {
                         Log.d("loginactivity", "accesstoken:${accessState.accessToken}")
-                        val intent = Intent(this@LoginActivity, LocationActivity::class.java).apply {
-                            putExtra("accessToken", accessState.accessToken)
-                            addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK)
+                        connect(this@LoginActivity) {
+                            if(it){
+                                val intent = Intent(this@LoginActivity, LocationActivity::class.java).apply {
+                                    putExtra("accessToken", accessState.accessToken)
+                                    addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK)
+                                }
+                                startActivity(intent)
+                                finish()
+                            }else {
+                                Toast.makeText(
+                                    this@LoginActivity,
+                                    R.string.spotify_error,
+                                    Toast.LENGTH_SHORT
+                                ).show()
+                            }
                         }
-                        startActivity(intent)
-                        finish()
                     }
 
                     is AccessState.Error -> {

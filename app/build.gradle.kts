@@ -94,9 +94,9 @@ dependencies {
     implementation("com.squareup.okhttp3:logging-interceptor")
 
     //viewmodel
-    implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.7.0")
-    implementation("androidx.fragment:fragment-ktx:1.6.2")
-    implementation("androidx.activity:activity-ktx:1.8.2")
+    implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.8.3")
+    implementation("androidx.fragment:fragment-ktx:1.8.1")
+    implementation("androidx.activity:activity-ktx:1.9.0")
 
     // coil
     implementation("io.coil-kt:coil:2.4.0")
@@ -117,11 +117,18 @@ dependencies {
     //implementation ("com.kakao.maps.open:android:2.9.5")
 
     //kakaomobility
-    implementation ("com.kakaomobility.knsdk:knsdk_ui:1.9.2")
+    implementation ("com.kakaomobility.knsdk:knsdk_ui:1.9.4")
 
-   /* //google location
-    implementation ("com.google.android.gms:play-services-location:20.0.0")
-    implementation ("com.google.android.gms:play-services-maps:19.0.0")*/
+    //gson
+    implementation ("com.google.code.gson:gson:2.10.1")
+
+    //spotify
+    implementation(files("../app-remote-lib/spotify-app-remote-release-0.8.0.aar"))
+
+    //coroutine
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.3") // 최신 버전으로 설정
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3") // Android에서 코루틴을 사용하기 위한 라이브러리
+    implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.8.3") // 최신 버전으로 변경 가능
 
 }
 
