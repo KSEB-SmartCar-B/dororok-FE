@@ -72,7 +72,7 @@ class InformationActivity: AppCompatActivity() {
         // 시작 날짜
         datePicker.init(
             birthYear,
-            birthMonth-1,
+            birthMonth,
             birthDay
         ) { _, _, _, _ -> }
 
