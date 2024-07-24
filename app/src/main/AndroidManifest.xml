@@ -59,6 +59,16 @@
 
         </activity>
 
+        <activity android:name=".presentation.main.my.InformationActivity"
+            android:exported="false">
+
+        </activity>
+
+        <activity android:name=".presentation.main.my.GenreActivity"
+            android:exported="false">
+
+        </activity>
+
         <meta-data
             android:name="com.kakaomobility.knsdk.ApiKey"
             android:value="@string/kakao_app_key" />
