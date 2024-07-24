@@ -1,76 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:paddingBottom="10dp"
-    android:background="@color/my_background_yellow">
+    android:background="@color/my_background_yellow"
+    android:padding="15dp">
 
-    <ImageView
-        android:id="@+id/iv_background"
-        android:layout_width="match_parent"
-        android:layout_height="90dp"
-        android:layout_marginTop="15dp"
-        android:layout_marginStart="15dp"
-        android:layout_marginEnd="15dp"
-        android:background="@drawable/my_background"
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rv_situation"
+        android:layout_width="wrap_content"
+        android:layout_height="0dp"
+        android:orientation="vertical"
+        app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintBottom_toBottomOf="parent"
+        tools:listitem="@layout/item_situation" />
 
-    <ImageButton
-        android:id="@+id/ib_situ_ilsang"
-        android:layout_width="80dp"
-        android:layout_height="30dp"
-        android:background="@drawable/btn_music"
-        android:layout_marginStart="30dp"
-        android:layout_marginTop="10dp"
-        app:layout_constraintStart_toStartOf="@id/iv_background"
-        app:layout_constraintTop_toTopOf="@id/iv_background" />
-
-    <ImageButton
-        android:id="@+id/ib_situ_choolgeun"
-        android:layout_width="80dp"
-        android:layout_height="30dp"
-        android:background="@drawable/btn_music"
-        app:layout_constraintStart_toEndOf="@id/ib_situ_ilsang"
-        app:layout_constraintEnd_toStartOf="@id/ib_situ_taegeun"
-        app:layout_constraintTop_toTopOf="@id/ib_situ_ilsang" />
-
-    <ImageButton
-        android:id="@+id/ib_situ_taegeun"
-        android:layout_width="80dp"
-        android:layout_height="30dp"
-        android:background="@drawable/btn_music"
-        android:layout_marginEnd="30dp"
-        app:layout_constraintEnd_toEndOf="@id/iv_background"
-        app:layout_constraintTop_toTopOf="@id/ib_situ_ilsang" />
-
-    <ImageButton
-        android:id="@+id/ib_situ_trip"
-        android:layout_width="80dp"
-        android:layout_height="30dp"
-        android:background="@drawable/btn_music"
-        android:layout_marginStart="30dp"
-        android:layout_marginBottom="10dp"
-        app:layout_constraintStart_toStartOf="@id/iv_background"
-        app:layout_constraintBottom_toBottomOf="@id/iv_background" />
-
-    <ImageButton
-        android:id="@+id/ib_situ_drive"
-        android:layout_width="80dp"
-        android:layout_height="30dp"
-        android:background="@drawable/btn_music"
-        app:layout_constraintStart_toEndOf="@id/ib_situ_trip"
-        app:layout_constraintEnd_toStartOf="@id/ib_situ_pick"
-        app:layout_constraintBottom_toBottomOf="@id/ib_situ_trip" />
-
-    <ImageButton
-        android:id="@+id/ib_situ_pick"
-        android:layout_width="80dp"
-        android:layout_height="30dp"
-        android:background="@drawable/btn_music"
-        android:layout_marginEnd="30dp"
-        app:layout_constraintEnd_toEndOf="@id/iv_background"
-        app:layout_constraintBottom_toBottomOf="@id/ib_situ_trip" />
 </androidx.constraintlayout.widget.ConstraintLayout>
