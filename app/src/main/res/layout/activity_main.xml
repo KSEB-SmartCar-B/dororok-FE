@@ -79,6 +79,14 @@
         app:layout_constraintEnd_toEndOf="parent"
         />
 
+    <androidx.fragment.app.FragmentContainerView
+        android:id="@+id/fcv_main"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toTopOf="@id/bnv_main"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/bnv_main"
         android:layout_width="0dp"
@@ -95,13 +103,5 @@
         app:itemIconTint="@drawable/bnv_item_color_selector"
         app:itemTextColor="@drawable/bnv_item_color_selector"
         style="@style/BottomNavigationView"/>
-
-    <androidx.fragment.app.FragmentContainerView
-        android:id="@+id/fcv_main"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:layout_constraintBottom_toTopOf="@id/bnv_main"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
