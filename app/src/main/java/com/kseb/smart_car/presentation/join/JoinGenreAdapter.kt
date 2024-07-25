@@ -1,27 +1,27 @@
-package com.kseb.smart_car.presentation.main.my
+package com.kseb.smart_car.presentation.join
 
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.kseb.smart_car.R
 import com.kseb.smart_car.databinding.ItemGenreBinding
-import com.kseb.smart_car.presentation.join.Genre
 
-class GenreAdapter(private val onButtonClick: (String) -> Unit): RecyclerView.Adapter<GenreAdapter.GenreViewHolder>() {
+class JoinGenreAdapter(private val onButtonClick: (String) -> Unit): RecyclerView.Adapter<JoinGenreAdapter.Join2ViewHolder>() {
+
     private val genreList = mutableListOf<Genre>()
 
-    inner class GenreViewHolder(
-        private val binding: ItemGenreBinding,
-        private val viewModel: MyViewModel
+    inner class Join2ViewHolder(
+        private val binding: ItemGenreBinding
+
     ) : RecyclerView.ViewHolder(binding.root) {
         fun onBind(genre: Genre, onButtonClick: (String) -> Unit) {
             binding.tvGenre.text = genre.name
 
-            val drawableResId = genre.photo ?: R.drawable.genre_dance
-            binding.ivGenre.setImageResource(drawableResId)
+            val drawable = genre.photo ?: R.drawable.genre_dance
+            binding.ivGenre.setImageResource(drawable)
 
-            setting()
             genreButton(onButtonClick)
         }
 
@@ -42,29 +42,16 @@ class GenreAdapter(private val onButtonClick: (String) -> Unit): RecyclerView.Ad
                 onButtonClick(tvGenre.text.toString())
             }
         }
-
-        private fun setting() {
-            val genre = viewModel.genre
-            val ivGenre = binding.ivGenre
-            val tvGenre = binding.tvGenre
-            val overlay = binding.colorOverlay
-            for (text in genre) {
-                if (tvGenre.text == text) {
-                    ivGenre.isSelected = true
-                    overlay.visibility = View.VISIBLE
-                }
-            }
-        }
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): GenreViewHolder {
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): Join2ViewHolder {
         val binding = ItemGenreBinding.inflate(LayoutInflater.from(parent.context), parent, false)
-        return GenreViewHolder(binding, viewModel = MyViewModel())
+        return Join2ViewHolder(binding)
     }
 
     override fun getItemCount(): Int = genreList.size
 
-    override fun onBindViewHolder(holder: GenreViewHolder, position: Int) {
+    override fun onBindViewHolder(holder: Join2ViewHolder, position: Int) {
         val item = genreList[position]
         holder.onBind(item, onButtonClick)
     }

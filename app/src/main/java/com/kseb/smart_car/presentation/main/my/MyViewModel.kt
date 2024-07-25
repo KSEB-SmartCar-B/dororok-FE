@@ -4,7 +4,7 @@ import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import java.time.LocalDateTime
+import java.time.LocalDate
 
 class MyViewModel: ViewModel() {
     private val _buttonText = MutableLiveData<String>()
@@ -15,7 +15,7 @@ class MyViewModel: ViewModel() {
     var birthYear = "1999"
     var birthMonth = "2"
     var birthDay = "14"
-    var birth: LocalDateTime? = null
+    var birth: LocalDate? = null
     var genre = mutableListOf("댄스", "POP")
 
     fun getInfo(
@@ -27,7 +27,7 @@ class MyViewModel: ViewModel() {
     ) {
         this.gender = gender
         this.nickname = nickname
-        birth = createLocalDateTime(birthYear, birthMonth, birthDay)
+        birth = createLocalDate(birthYear, birthMonth, birthDay)
 
 
         Log.d(
@@ -48,11 +48,11 @@ class MyViewModel: ViewModel() {
         Log.d("MyViewModel", "Genre: ${this.genre}")
     }
 
-    fun createLocalDateTime(birthYear: String, birthMonth: String, birthDay: String): LocalDateTime {
+    fun createLocalDate(birthYear: String, birthMonth: String, birthDay: String): LocalDate {
         val year = birthYear.toInt()
         val month = birthMonth.toInt()+1
         val day = birthDay.toInt()
 
-        return LocalDateTime.of(year, month, day, 0, 0) // 시간을 00:00으로 설정
+        return LocalDate.of(year, month, day) // 시간을 00:00으로 설정
     }
 }

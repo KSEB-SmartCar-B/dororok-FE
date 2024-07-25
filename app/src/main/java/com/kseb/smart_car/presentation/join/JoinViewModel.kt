@@ -4,7 +4,7 @@ import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import java.time.LocalDateTime
+import java.time.LocalDate
 
 class JoinViewModel : ViewModel() {
 
@@ -16,7 +16,7 @@ class JoinViewModel : ViewModel() {
 //    private val birthYear = MutableLiveData<String>()
 //    private val birthMonth = MutableLiveData<String>()
 //    private val birthDay = MutableLiveData<String>()
-    private val birth = MutableLiveData<LocalDateTime>()
+    private val birth = MutableLiveData<LocalDate>()
     private val genre = MutableLiveData<List<String>>()
 
     fun getInfo(
@@ -28,7 +28,7 @@ class JoinViewModel : ViewModel() {
     ) {
         this.gender.value = gender
         this.nickname.value = nickname
-        birth.value = createLocalDateTime(birthYear, birthMonth, birthDay)
+        birth.value = createLocalDate(birthYear, birthMonth, birthDay)
 
         //잘 되는지 확인용
         Log.d(
@@ -49,11 +49,11 @@ class JoinViewModel : ViewModel() {
         Log.d("JoinViewModel", "Genre: ${this.genre.value}")
     }
 
-    fun createLocalDateTime(birthYear: String, birthMonth: String, birthDay: String): LocalDateTime {
+    fun createLocalDate(birthYear: String, birthMonth: String, birthDay: String): LocalDate {
         val year = birthYear.toInt()
         val month = birthMonth.toInt()+1
         val day = birthDay.toInt()
 
-        return LocalDateTime.of(year, month, day, 0, 0) // 시간을 00:00으로 설정
+        return LocalDate.of(year, month, day)
     }
 }

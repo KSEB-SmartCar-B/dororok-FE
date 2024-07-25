@@ -5,13 +5,13 @@ import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.GridLayoutManager
 import com.kseb.smart_car.databinding.ActivityGenreBinding
-import com.kseb.smart_car.presentation.join.Join2ViewModel
+import com.kseb.smart_car.presentation.join.JoinGenreViewModel
 
 class GenreActivity: AppCompatActivity() {
     private lateinit var binding: ActivityGenreBinding
 
-    private val viewmodel by viewModels<MyViewModel>()
-    private val viewmodel2 by viewModels<Join2ViewModel>()
+    private val myviewmodel by viewModels<MyViewModel>()
+    private val joinviewmodel by viewModels<JoinGenreViewModel>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -19,10 +19,10 @@ class GenreActivity: AppCompatActivity() {
         binding = ActivityGenreBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        val genreAdapter = GenreAdapter {buttonText -> viewmodel.getGenre(buttonText)}
+        val genreAdapter = GenreAdapter {buttonText -> myviewmodel.getGenre(buttonText)}
         binding.rvGenre.adapter = genreAdapter
 
-        genreAdapter.getList(viewmodel2.makeList())
+        genreAdapter.getList(joinviewmodel.makeList())
 
         binding.rvGenre.layoutManager = GridLayoutManager(this, 3)
 
