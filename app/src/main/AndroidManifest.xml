@@ -41,7 +41,6 @@
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-
         </activity>
 
         <activity
@@ -52,7 +51,6 @@
 
         <activity android:name=".presentation.main.LocationActivity"
             android:exported="false">
-
         </activity>
 
         <activity android:name=".presentation.main.MainActivity"

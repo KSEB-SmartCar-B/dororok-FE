@@ -95,6 +95,7 @@ class MyViewModel @Inject constructor(
     var birthYear = "1999"
     var birthMonth = "2"
     var birthDay = "14"
+<<<<<<< HEAD
     var birth: LocalDateTime? = null*/
 
 
@@ -107,7 +108,7 @@ class MyViewModel @Inject constructor(
     ) {
         this.gender = gender
         this.nickname = nickname
-        birth = createLocalDateTime(birthYear, birthMonth, birthDay)
+        birth = createLocalDate(birthYear, birthMonth, birthDay)
 
 
         Log.d(
@@ -127,12 +128,4 @@ class MyViewModel @Inject constructor(
         //잘 되는지 확인용
         Log.d("MyViewModel", "Genre: ${this.genre}")
     }*/
-
-    fun createLocalDateTime(birthYear: String, birthMonth: String, birthDay: String): LocalDateTime {
-        val year = birthYear.toInt()
-        val month = birthMonth.toInt()+1
-        val day = birthDay.toInt()
-
-        return LocalDateTime.of(year, month, day, 0, 0) // 시간을 00:00으로 설정
-    }
 }

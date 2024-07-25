@@ -7,6 +7,8 @@
 
     <color name="join_pink">#FFF9DEDC</color>
     <color name="choice_dark">#33000000</color>
+    <color name="choice_black">#88000000</color>
+    <color name="shadow_dark">#BB000000</color>
 
     <color name="bnv_clicked_pink">#F4A6A8 </color>
     <color name="bnv_unclicked_grey">#686D76</color>
@@ -15,4 +17,12 @@
     <color name="my_background_pink">#AAF9DEDC</color>
     <color name="my_background_yellow">#AAFFF4E4</color>
     <color name="my_profile_blue">#FFCFD7E7</color>
+
+<!--    <color name="rainbow_red">#FF0000</color> &lt;!&ndash; 빨강 &ndash;&gt;-->
+<!--    <color name="rainbow_orange">#FF7F00</color> &lt;!&ndash; 주황 &ndash;&gt;-->
+<!--    <color name="rainbow_yellow">#FFFF00</color> &lt;!&ndash; 노랑 &ndash;&gt;-->
+<!--    <color name="rainbow_green">#00FF00</color> &lt;!&ndash; 초록 &ndash;&gt;-->
+<!--    <color name="rainbow_blue">#0000FF</color> &lt;!&ndash; 파랑 &ndash;&gt;-->
+<!--    <color name="rainbow_indigo">#4B0082</color> &lt;!&ndash; 남색 &ndash;&gt;-->
+<!--    <color name="rainbow_purple">#8A2BE2</color> &lt;!&ndash; 보라 &ndash;&gt;-->
 </resources>
