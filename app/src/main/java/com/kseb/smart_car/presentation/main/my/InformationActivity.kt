@@ -4,11 +4,7 @@ import android.icu.util.Calendar
 import android.os.Bundle
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import com.kseb.smart_car.R
 import com.kseb.smart_car.databinding.ActivityInformationBinding
-import com.kseb.smart_car.databinding.ActivityJoinBinding
-import com.kseb.smart_car.presentation.join.JoinFragment
-import com.kseb.smart_car.presentation.join.JoinViewModel
 
 class InformationActivity: AppCompatActivity() {
     private lateinit var binding: ActivityInformationBinding
@@ -62,7 +58,7 @@ class InformationActivity: AppCompatActivity() {
         val calendar = Calendar.getInstance()
 
         var birthYear = viewmodel.birthYear.toInt()
-        var birthMonth = viewmodel.birthMonth.toInt()
+        var birthMonth = viewmodel.birthMonth.toInt()-1
         var birthDay = viewmodel.birthDay.toInt()
 
         var today_year = calendar.get(Calendar.YEAR)

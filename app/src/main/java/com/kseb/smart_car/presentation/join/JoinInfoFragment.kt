@@ -8,11 +8,11 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import com.kseb.smart_car.R
-import com.kseb.smart_car.databinding.FragmentJoinBinding
+import com.kseb.smart_car.databinding.FragmentJoinInfoBinding
 
-class JoinFragment : Fragment() {
-    private var _binding: FragmentJoinBinding? = null
-    private val binding: FragmentJoinBinding
+class JoinInfoFragment : Fragment() {
+    private var _binding: FragmentJoinInfoBinding? = null
+    private val binding: FragmentJoinInfoBinding
         get() = requireNotNull(_binding) { "null" }
 
     private val viewmodel by viewModels<JoinViewModel>()
@@ -22,7 +22,7 @@ class JoinFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        _binding = FragmentJoinBinding.inflate(inflater, container, false)
+        _binding = FragmentJoinInfoBinding.inflate(inflater, container, false)
         return binding.root
     }
 
@@ -84,7 +84,7 @@ class JoinFragment : Fragment() {
         binding.btnNext.setOnClickListener {
             setInfo()
             val transaction = requireActivity().supportFragmentManager.beginTransaction()
-            transaction.replace(R.id.fcv_join, Join2Fragment())
+            transaction.replace(R.id.fcv_join, JoinGenreFragment())
             transaction.addToBackStack(null)
             transaction.commit()
         }

@@ -30,10 +30,6 @@ class MainActivity : AppCompatActivity() {
     private lateinit var mapView: KNMapView
     private lateinit var knNaviView: KNNaviView
 
-    //프래그먼트 켜져있는지 체크하는 변수
-    private var isMyFragmentVisible = false
-    private var isMusicFragmentVisible = false
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         initBinds()
@@ -155,37 +151,15 @@ class MainActivity : AppCompatActivity() {
                 R.id.menu_map -> {
                     removeAllFragments()
                     binding.btnCurrentLocation.visibility = View.VISIBLE
-                    isMyFragmentVisible = false
-                    isMusicFragmentVisible = false
                     true
                 }
 
                 R.id.menu_my -> {
-                    removeAllFragments()
-                    if (isMyFragmentVisible) {
-                        isMyFragmentVisible = false
-//                        binding.bnvMain.selectedItemId = R.id.menu_map
-//                        updateButtonColors(R.id.menu_map)
-                        // 메뉴 아이템을 직접 선택하여 상태를 업데이트
-                        binding.bnvMain.selectedItemId = R.id.menu_map
-                    } else {
-                        replaceFragment(MyFragment())
-                        isMyFragmentVisible = true
-                    }
-                    isMusicFragmentVisible = false
+                    replaceFragment(MyFragment())
                     true
                 }
                 R.id.menu_music -> {
-                    removeAllFragments()
-                    if (isMusicFragmentVisible) {
-                        isMusicFragmentVisible = false
-//                        binding.bnvMain.selectedItemId = R.id.menu_map
-//                        updateButtonColors(R.id.menu_map)
-                    } else {
-                        replaceFragment(MusicFragment())
-                        isMusicFragmentVisible = true
-                    }
-                    isMyFragmentVisible = false
+                    replaceFragment(MusicFragment())
                     true
                 }
                 else -> {
