@@ -107,7 +107,10 @@ class LocationActivity : AppCompatActivity() {
                             .show()*/
 
                         // 위치 정보를 사용하여 다음 Activity로 이동
+                        val token=intent.getStringExtra("accessToken")
+                        Log.d("locationActivity","token:${token}")
                         val intent = Intent(this, MainActivity::class.java)
+                        intent.putExtra("accessToken",token)
                         intent.putExtra("longitude", longitude)
                         intent.putExtra("latitude", latitude)
                         startActivity(intent)

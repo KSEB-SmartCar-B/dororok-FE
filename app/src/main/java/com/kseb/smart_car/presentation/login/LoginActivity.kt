@@ -9,7 +9,6 @@ import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
-import coil.load
 import com.kseb.smart_car.R
 import com.kseb.smart_car.data.service.SpotifyService.connect
 import com.kseb.smart_car.databinding.ActivityLoginBinding
@@ -20,9 +19,7 @@ import com.kseb.smart_car.presentation.KakaoAuthViewModel
 import com.kseb.smart_car.presentation.KakaoAuthViewModelFactory
 import com.kseb.smart_car.presentation.join.JoinActivity
 import com.kseb.smart_car.presentation.main.LocationActivity
-import com.kseb.smart_car.presentation.main.MainActivity
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
@@ -30,6 +27,7 @@ class LoginActivity : AppCompatActivity() {
     private lateinit var binding: ActivityLoginBinding
     private lateinit var kakaoAuthViewModel: KakaoAuthViewModel
     private val allViewModel: AllViewModel by viewModels()
+    private val loginViewModel:LoginViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -97,13 +95,19 @@ class LoginActivity : AppCompatActivity() {
             allViewModel.signInState.collect { signInState ->
                 when (signInState) {
                     is SignInState.Success -> {
+                        val kakaoToken = allViewModel.kakaoToken.value
+                        Log.d("loginactivity","kakaoToken: ${kakaoToken}")
                         if (signInState.isSigned) {
                             Log.d("loginactivity", "signed!")
-                            collectAccessState()
+                            collectAccessState(kakaoToken!!)
                         } else {
                             Log.d("loginactivity", "is not signed!")
+                            // KakaoToken을 가져와서 Intent에 추가
                             val intent = Intent(this@LoginActivity, JoinActivity::class.java)
+                            intent.putExtra("kakaoToken",kakaoToken)
+                            //intent.addFlags(FLAG_ACTIVITY_CLEAR_TOP)
                             startActivity(intent)
+                            allViewModel.setSignInStateLoading()
                             Log.e("loginactivity", "회원가입 하시오!")
                         }
                     }
@@ -120,20 +124,20 @@ class LoginActivity : AppCompatActivity() {
         }
     }
 
-    private fun collectAccessState() {
+    private fun collectAccessState(token: String) {
+        loginViewModel.getAccessToken(token)
         lifecycleScope.launch {
-            allViewModel.accessState.collect { accessState ->
+            loginViewModel.accessState.collect { accessState ->
                 when (accessState) {
                     is AccessState.Success -> {
-                        Log.d("loginactivity", "accesstoken:${accessState.accessToken}")
+                        Log.d("loginactivity", "accessToken:${accessState.accessToken}")
                         connect(this@LoginActivity) {
                             if(it){
                                 val intent = Intent(this@LoginActivity, LocationActivity::class.java).apply {
-                                    putExtra("accessToken", accessState.accessToken)
-                                    addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK)
+                                    putExtra("accessToken", "Bearer ${accessState.accessToken}")
+                                    //addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK)
                                 }
                                 startActivity(intent)
-                                finish()
                             }else {
                                 Toast.makeText(
                                     this@LoginActivity,

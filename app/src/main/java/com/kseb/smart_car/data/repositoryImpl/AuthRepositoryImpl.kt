@@ -1,10 +1,12 @@
 package com.kseb.smart_car.data.repositoryImpl
 
+import android.util.Log
 import com.kseb.smart_car.data.datasource.AuthDataSource
 import com.kseb.smart_car.data.requestDto.RequestAccessDto
 import com.kseb.smart_car.data.requestDto.RequestSignUpDto
 import com.kseb.smart_car.data.responseDto.ResponseAccessDto
 import com.kseb.smart_car.data.responseDto.ResponseIsSignedDto
+import com.kseb.smart_car.data.responseDto.ResponseMyInfoDto
 import com.kseb.smart_car.data.responseDto.ResponseSignInDto
 import com.kseb.smart_car.data.responseDto.ResponseSignUpDto
 import com.kseb.smart_car.domain.repository.AuthRepository
@@ -33,6 +35,14 @@ class AuthRepositoryImpl @Inject constructor(
     override suspend fun getSignUp(info: RequestSignUpDto): Result<ResponseSignUpDto> {
         return runCatching {
             authDataSource.getSignUp(info)
+        }
+    }
+
+    override suspend fun getMyInfo(token: String): Result<ResponseMyInfoDto> {
+        return runCatching {
+            authDataSource.getMyInfo(token)
+        }.onFailure { exception ->
+            Log.e("AuthRepository", "Error in getMyInfo", exception)
         }
     }
 }
