@@ -35,6 +35,12 @@ android {
             gradleLocalProperties(rootDir, providers).getProperty("base.url")
         )
 
+        buildConfigField(
+            "String",
+            "KAKAO_NAVI_URL",
+            gradleLocalProperties(rootDir,providers).getProperty("kakao.navi.url")
+        )
+
         resValue("string","kakao_oauth_host",gradleLocalProperties(rootDir, providers).getProperty("kakao.oauth.host"))
         resValue("string","kakao_app_key", gradleLocalProperties(rootDir,providers).getProperty("kakao.native.app.key"))
 

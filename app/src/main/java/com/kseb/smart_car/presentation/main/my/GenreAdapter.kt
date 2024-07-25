@@ -9,17 +9,23 @@ import com.kseb.smart_car.presentation.join.Join2Adapter
 import com.kseb.smart_car.presentation.join.JoinViewModel
 
 class GenreAdapter(private val onButtonClick: (String) -> Unit): RecyclerView.Adapter<GenreAdapter.GenreViewHolder>() {
-    private val genreList = mutableListOf<String>()
+    private var genreList = mutableListOf<String>()
+    private var selectedGenres = setOf<String>()
 
     inner class GenreViewHolder(
         private val binding: ItemGenreBinding,
-        private val viewModel: MyViewModel
     ) : RecyclerView.ViewHolder(binding.root) {
         fun onBind(genre: String, onButtonClick: (String) -> Unit) {
             binding.btnGenre.text = genre
+            binding.btnGenre.isSelected = selectedGenres.contains(genre)
 
-            setting()
-            genreButton(onButtonClick)
+            binding.btnGenre.setOnClickListener {
+                binding.btnGenre.isSelected = !binding.btnGenre.isSelected
+                onButtonClick(binding.btnGenre.text.toString())
+            }
+
+            //setting()
+            //genreButton(onButtonClick)
         }
 
         private fun genreButton(onButtonClick: (String) -> Unit) {
@@ -31,7 +37,7 @@ class GenreAdapter(private val onButtonClick: (String) -> Unit): RecyclerView.Ad
             }
         }
 
-        private fun setting() {
+       /* private fun setting() {
             val genre = viewModel.genre
             val btnGenre = binding.btnGenre
             for (text in genre) {
@@ -39,12 +45,12 @@ class GenreAdapter(private val onButtonClick: (String) -> Unit): RecyclerView.Ad
                     btnGenre.isSelected = true
                 }
             }
-        }
+        }*/
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): GenreViewHolder {
         val binding = ItemGenreBinding.inflate(LayoutInflater.from(parent.context), parent, false)
-        return GenreViewHolder(binding, viewModel = MyViewModel())
+        return GenreViewHolder(binding)
     }
 
     override fun getItemCount(): Int = genreList.size
@@ -54,8 +60,18 @@ class GenreAdapter(private val onButtonClick: (String) -> Unit): RecyclerView.Ad
         holder.onBind(item, onButtonClick)
     }
 
-    fun getList(list: List<String>) {
-        genreList.addAll(list)
+    fun submitList(newGenreList: List<String>) {
+        genreList = newGenreList.toMutableList()
         notifyDataSetChanged()
     }
+
+    fun setSelectedGenres(newSelectedGenres: Set<String>) {
+        selectedGenres = newSelectedGenres
+        notifyDataSetChanged()
+    }
+
+    /*fun getList(list: List<String>) {
+        genreList.addAll(list)
+        notifyDataSetChanged()
+    }*/
 }

@@ -54,7 +54,7 @@ class PlayFragment: Fragment() {
     }
 
     object SpotifySampleContexts {
-        const val TRACK_URI = "spotify:track:4IWZsfEkaK49itBwCTFDXQ"
+        const val TRACK_URI = "spotify:track:5sdQOyqq2IDhvmx2lHOpwd"
         const val ALBUM_URI = "spotify:album:4m2880jivSbbyEGAKfITCa"
         const val ARTIST_URI = "spotify:artist:3WrFJ7ztbogyGnTHbHJFl2"
         const val PLAYLIST_URI = "spotify:playlist:37i9dQZEVXbMDoHDwVN2tF"
@@ -113,7 +113,9 @@ class PlayFragment: Fragment() {
 
     private fun updateTrackStateButton(playerState: PlayerState) {
         binding.btnCurrentTrackLabel.apply {
+            visibility=View.VISIBLE
             text = String.format(Locale.US, "%s\n%s", playerState.track.name, playerState.track.artist.name)
+            Log.d("playfragment","label: ${text}")
             tag = playerState
         }
     }
@@ -211,8 +213,6 @@ class PlayFragment: Fragment() {
 
         onSubscribedToPlayerStateButtonClicked()
         onSubscribedToPlayerContextButtonClicked()
-
-
     }
 
     private fun onConnecting() {
@@ -352,12 +352,6 @@ class PlayFragment: Fragment() {
             .play(uri)
             .setResultCallback { logMessage(getString(R.string.command_feedback, "play")) }
             .setErrorCallback(errorCallback)
-    }
-
-    fun showCurrentPlayerContext(view: View) {
-        view.tag?.let {
-            showDialog("PlayerContext", gson.toJson(it))
-        }
     }
 
     private fun showCurrentPlayerState(view: View) {
@@ -551,6 +545,7 @@ class PlayFragment: Fragment() {
                 object : Subscription.LifecycleCallback {
                     override fun onStart() {
                         logMessage("Event: start")
+                        Log.d("playfragment","노래 시작!")
                     }
 
                     override fun onStop() {

@@ -39,4 +39,8 @@
     <string name="title_current_track">Current Track</string>
     <string name="title_image_size">Image size</string>
     <string name="title_image_scale_type">Scale type</string>
+
+
+    <!-- my -->
+    <string name="my_welcome">%s님 행복한 하루 되세요!</string>
 </resources>

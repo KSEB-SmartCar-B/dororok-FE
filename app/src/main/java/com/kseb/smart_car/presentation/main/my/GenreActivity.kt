@@ -19,14 +19,14 @@ class GenreActivity: AppCompatActivity() {
         binding = ActivityGenreBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        val genreAdapter = GenreAdapter {buttonText -> viewmodel.getGenre(buttonText)}
+        /*val genreAdapter = GenreAdapter {buttonText -> viewmodel.getGenre(buttonText)}
         binding.rvGenre.adapter = genreAdapter
 
         genreAdapter.getList(viewmodel2.makeList())
 
         binding.rvGenre.layoutManager = GridLayoutManager(this, 3)
 
-        clickButtonOk()
+        clickButtonOk()*/
     }
 
     private fun clickButtonOk() {

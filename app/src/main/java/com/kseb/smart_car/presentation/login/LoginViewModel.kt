@@ -1,13 +1,10 @@
-package com.kseb.smart_car.presentation
+package com.kseb.smart_car.presentation.login
 
 import android.util.Log
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.kseb.smart_car.domain.repository.AuthRepository
 import com.kseb.smart_car.extension.AccessState
-import com.kseb.smart_car.extension.SignInState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -19,40 +16,19 @@ import retrofit2.HttpException
 import javax.inject.Inject
 
 @HiltViewModel
-class AllViewModel @Inject constructor(
+class LoginViewModel @Inject constructor(
     private val authRepository: AuthRepository
-) : ViewModel() {
-    private val _signInState = MutableStateFlow<SignInState>(SignInState.Loading)
-    val signInState:StateFlow<SignInState> = _signInState.asStateFlow()
-
+):ViewModel() {
     private val _accessState = MutableStateFlow<AccessState>(AccessState.Loading)
     val accessState: StateFlow<AccessState> = _accessState.asStateFlow()
 
-    private val _kakaoToken=MutableLiveData<String>()
-    val kakaoToken:MutableLiveData<String> get() = _kakaoToken
-
-    private val _accessToken = MutableLiveData<String?>()
-    val accessToken: MutableLiveData<String?> get() = _accessToken
-
-    fun getAccessToken(token: String) {
-        _kakaoToken.value=token
+    fun getAccessToken(token:String){
         viewModelScope.launch {
-            authRepository.isSigned(token).onSuccess { response ->
-                if(response.isSigned){
-                    _signInState.value=SignInState.Success(true)
-                    /*viewModelScope.launch {
-                        authRepository.getSignIn(token).onSuccess { response ->
-                            Log.d("allviewmodel","signed!")
-                            _accessState.value = AccessState.Success(response.jwtToken.accessToken)
-                            _accessToken.value = response.jwtToken.accessToken
-                        }
-                    }*/
-                } else{
-                    _signInState.value=SignInState.Success(false)
-                   Log.d("allviewmodel","isn't signed")
-                }
+            authRepository.getSignIn(token).onSuccess { response ->
+                Log.d("allviewmodel","signed!")
+                _accessState.value = AccessState.Success(response.accessToken)
             }.onFailure {
-                _signInState.value = SignInState.Error("Error response failure: ${it.message}")
+                _accessState.value = AccessState.Error("Error response failure: ${it.message}")
 
                 Log.e("allviewmodel", "Error:${it.message}")
                 Log.e("allviewmodel", Log.getStackTraceString(it))
@@ -76,7 +52,7 @@ class AllViewModel @Inject constructor(
         }
     }
 
-    fun setSignInStateLoading(){
-        _signInState.value=SignInState.Loading
+    fun setSignInLoading(){
+        _accessState.value=AccessState.Loading
     }
 }

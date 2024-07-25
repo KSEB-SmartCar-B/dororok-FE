@@ -2,6 +2,7 @@ package com.kseb.smart_car.di
 
 import android.content.SharedPreferences
 import com.kseb.smart_car.data.service.AuthService
+import com.kseb.smart_car.data.service.KakaoNaviService
 import com.kseb.smart_car.presentation.HeaderInterceptor
 import dagger.Module
 import dagger.Provides
@@ -17,8 +18,16 @@ import javax.inject.Singleton
 class ServiceModule {
     @Provides
     @Singleton
-    fun provideService(retrofit: Retrofit): AuthService =
+    fun provideService(
+        @BaseUrlRetrofit retrofit: Retrofit
+    ): AuthService =
         retrofit.create(AuthService::class.java)
+
+    @Provides
+    @Singleton
+    fun provideKakaoNaviService(
+        @KakaoNaviRetrofit retrofit: Retrofit
+    ): KakaoNaviService = retrofit.create(KakaoNaviService::class.java)
 
     @Provides
     @Singleton

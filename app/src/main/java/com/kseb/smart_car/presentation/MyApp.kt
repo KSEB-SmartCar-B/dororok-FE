@@ -13,11 +13,14 @@ import dagger.hilt.android.HiltAndroidApp
 
 @HiltAndroidApp
 class MyApp : Application(){
+    companion object {
+        lateinit var instance: MyApp
+            private set
+    }
     override fun onCreate() {
         super.onCreate()
         KakaoSdk.init(this, BuildConfig.NATIVE_APP_KEY)
         //KakaoMapSdk.init(this, BuildConfig.NATIVE_APP_KEY);
-
         KNSDK.install(this, "$filesDir/knsdk")
     }
 }

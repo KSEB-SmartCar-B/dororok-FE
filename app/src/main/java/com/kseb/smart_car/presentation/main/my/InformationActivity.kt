@@ -4,11 +4,11 @@ import android.icu.util.Calendar
 import android.os.Bundle
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import com.kseb.smart_car.R
+import com.kseb.smart_car.data.responseDto.ResponseMyInfoDto
 import com.kseb.smart_car.databinding.ActivityInformationBinding
-import com.kseb.smart_car.databinding.ActivityJoinBinding
-import com.kseb.smart_car.presentation.join.JoinFragment
-import com.kseb.smart_car.presentation.join.JoinViewModel
+import kotlinx.serialization.decodeFromString
+import kotlinx.serialization.json.Json
+import java.time.LocalDate
 
 class InformationActivity: AppCompatActivity() {
     private lateinit var binding: ActivityInformationBinding
@@ -27,16 +27,21 @@ class InformationActivity: AppCompatActivity() {
     }
 
     private fun setting() {
-        val gender = viewmodel.gender
-        val nickname = viewmodel.nickname
+        val jsonString=intent.getStringExtra("info")
+        val infoDto=jsonString?.let{
+            Json.decodeFromString<ResponseMyInfoDto>(it) }
 
-        if (gender=="남자") {
+        val gender = infoDto!!.gender
+        val nickname = infoDto!!.nickname
+        val birthday=infoDto!!.birthday
+
+        if (gender== "MALE") {
             binding.btnMale.isSelected = true
         } else binding.btnFemale.isSelected = true
 
         binding.etNick.setText(nickname)
 
-        setDate()
+        setDate(birthday)
     }
 
     //성별 버튼 선택했을 때 색칠되는 함수
@@ -57,13 +62,13 @@ class InformationActivity: AppCompatActivity() {
     }
 
     //생년월일 선택할 때 날짜범위 및 시작날짜 설정하는 함수
-    private fun setDate() {
+    private fun setDate(birthday: LocalDate) {
         val datePicker = binding.dpSpinner
         val calendar = Calendar.getInstance()
 
-        var birthYear = viewmodel.birthYear.toInt()
-        var birthMonth = viewmodel.birthMonth.toInt()
-        var birthDay = viewmodel.birthDay.toInt()
+        var birthYear = birthday.year
+        var birthMonth = birthday.month.value
+        var birthDay = birthday.dayOfMonth
 
         var today_year = calendar.get(Calendar.YEAR)
         var today_month = calendar.get(Calendar.MONTH)
@@ -87,18 +92,20 @@ class InformationActivity: AppCompatActivity() {
 
     private fun setInfo() {
         val gender = if (binding.btnMale.isSelected) {
-            "male"
+            "MALE"
         } else {
-            "female"
+            "FEMALE"
         }
 
         val nickname = binding.etNick.text.toString()
 
-        val birthYear = binding.dpSpinner.year.toString()
-        val birthMonth = binding.dpSpinner.month.toString()
-        val birthDay = binding.dpSpinner.dayOfMonth.toString()
+        val birthYear = binding.dpSpinner.year
+        val birthMonth = binding.dpSpinner.month
+        val birthDay = binding.dpSpinner.dayOfMonth
 
-        viewmodel.getInfo(gender, nickname, birthYear, birthMonth, birthDay)
+        val birth=LocalDate.of(birthYear,birthMonth,birthDay)
+
+        viewmodel.updateInfo()
     }
 
     private fun clickButtonOk() {

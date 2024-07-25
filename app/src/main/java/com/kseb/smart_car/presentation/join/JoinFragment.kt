@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import com.kseb.smart_car.R
 import com.kseb.smart_car.databinding.FragmentJoinBinding
@@ -15,7 +16,7 @@ class JoinFragment : Fragment() {
     private val binding: FragmentJoinBinding
         get() = requireNotNull(_binding) { "null" }
 
-    private val viewmodel by viewModels<JoinViewModel>()
+    private val viewmodel:JoinViewModel by activityViewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater,
