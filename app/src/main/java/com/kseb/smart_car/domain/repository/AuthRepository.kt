@@ -4,6 +4,7 @@ import com.kseb.smart_car.data.requestDto.RequestSignUpDto
 import com.kseb.smart_car.data.requestDto.RequestUpdateGenreDto
 import com.kseb.smart_car.data.requestDto.RequestUpdateInfoDto
 import com.kseb.smart_car.data.responseDto.ResponseAccessDto
+import com.kseb.smart_car.data.responseDto.ResponseAllGenreDto
 import com.kseb.smart_car.data.responseDto.ResponseIsSignedDto
 import com.kseb.smart_car.data.responseDto.ResponseMyGenreDto
 import com.kseb.smart_car.data.responseDto.ResponseMyInfoDto
@@ -28,6 +29,8 @@ interface AuthRepository {
     suspend fun getSignUp(
         info:RequestSignUpDto
     ):Result<ResponseSignUpDto>
+
+    suspend fun getGenreList():Result<ResponseAllGenreDto>
 
     suspend fun getMyInfo(
         token:String

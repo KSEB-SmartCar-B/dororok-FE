@@ -4,8 +4,10 @@ import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.kseb.smart_car.data.requestDto.RequestUpdateInfoDto
 import com.kseb.smart_car.domain.repository.AuthRepository
 import com.kseb.smart_car.extension.GenreState
+import com.kseb.smart_car.extension.UpdateGenreState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -26,6 +28,9 @@ class GenreViewModel @Inject constructor(
     //통신 성공했는지 보는 거
     private val _genreState = MutableStateFlow<GenreState>(GenreState.Loading)
     val genreState: StateFlow<GenreState> = _genreState.asStateFlow()
+
+    private val _updateGenreState = MutableStateFlow<UpdateGenreState>(UpdateGenreState.Loading)
+    val updateGenreState:StateFlow<UpdateGenreState> = _updateGenreState.asStateFlow()
 
     fun getMyGenre(token:String) {
         viewModelScope.launch {
@@ -67,6 +72,12 @@ class GenreViewModel @Inject constructor(
         //잘 되는지 확인용
         Log.d("genreViewModel", "Genre: ${this.genre.value}")
     }
+
+   /* fun updateGenre(token:String){
+        viewModelScope.launch {
+            authRepository.updateGenre(token, genre)
+        }
+    }*/
 
 //    fun updateGenre(token: String) {
 //        viewModelScope.launch {

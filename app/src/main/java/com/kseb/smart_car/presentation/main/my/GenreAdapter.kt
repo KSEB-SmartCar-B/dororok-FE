@@ -5,7 +5,9 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
+import coil.load
 import com.kseb.smart_car.R
+import com.kseb.smart_car.data.responseDto.ResponseAllGenreDto
 import com.kseb.smart_car.data.responseDto.ResponseMyGenreDto
 import com.kseb.smart_car.databinding.ItemGenreBinding
 import com.kseb.smart_car.presentation.join.Genre
@@ -14,15 +16,15 @@ import com.kseb.smart_car.presentation.join.Genre
 import com.kseb.smart_car.presentation.join.JoinViewModel*/
 
 class GenreAdapter(private val onButtonClick: (String) -> Unit): RecyclerView.Adapter<GenreAdapter.GenreViewHolder>() {
-    private val genreList = mutableListOf<Genre>()
+    private val genreList = mutableListOf<ResponseAllGenreDto.GenreDto>()
     private val myGenreList = mutableListOf<ResponseMyGenreDto.Name>()
 
     inner class GenreViewHolder(
         private val binding: ItemGenreBinding
     ) : RecyclerView.ViewHolder(binding.root) {
-        fun onBind(genre: Genre, onButtonClick: (String) -> Unit) {
+        fun onBind(genre: ResponseAllGenreDto.GenreDto, onButtonClick: (String) -> Unit) {
             binding.tvGenre.text = genre.name
-            binding.ivGenre.setImageResource(genre.photo?: R.drawable.genre_dance)
+            binding.ivGenre.load(genre.imageUrl)
             Log.d("GenreAdapter", "바인딩 성공")
 
             setting()
@@ -72,7 +74,7 @@ class GenreAdapter(private val onButtonClick: (String) -> Unit): RecyclerView.Ad
         holder.onBind(item, onButtonClick)
     }
 
-    fun getList(list: List<Genre>) {
+    fun getList(list: List<ResponseAllGenreDto.GenreDto>) {
         genreList.addAll(list)
         notifyDataSetChanged()
         Log.d("GenreAdapter", "getList 성공")

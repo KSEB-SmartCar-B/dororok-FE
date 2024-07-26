@@ -21,13 +21,16 @@ import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import kotlin.math.sign
 import com.kseb.smart_car.databinding.FragmentJoinGenreBinding
+import com.kseb.smart_car.extension.AllGenreState
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class JoinGenreFragment: Fragment() {
     private var _binding: FragmentJoinGenreBinding? = null
     private val binding: FragmentJoinGenreBinding
         get() = requireNotNull(_binding) { "null" }
     private val joinviewmodel: JoinViewModel by activityViewModels<JoinViewModel>()
-    private val joingenreviewmodel by viewModels<JoinGenreViewModel>()
+    private val joinGenreViewModel by viewModels<JoinGenreViewModel>()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -51,8 +54,21 @@ class JoinGenreFragment: Fragment() {
 
         val joinGenreAdapter = JoinGenreAdapter { buttonText -> joinviewmodel.getGenre(buttonText)}
         binding.rvGenre.adapter = joinGenreAdapter
+        joinGenreViewModel.getGenreList()
 
-        joinGenreAdapter.getList(joingenreviewmodel.makeList())
+        lifecycleScope.launch {
+            joinGenreViewModel.genreListState.collect{allGenreState ->
+                when(allGenreState){
+                    is AllGenreState.Success->{
+                        joinGenreAdapter.getList(allGenreState.genreDto.names)
+                    }
+                    is AllGenreState.Loading->{}
+                    is AllGenreState.Error->{
+                        Log.e("joinGenreFragment","allGenreState is error!")
+                    }
+                }
+            }
+        }
 
         clickButtonJoin()
     }
