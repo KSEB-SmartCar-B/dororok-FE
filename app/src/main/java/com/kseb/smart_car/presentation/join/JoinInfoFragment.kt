@@ -16,7 +16,7 @@ class JoinInfoFragment : Fragment() {
     private val binding: FragmentJoinInfoBinding
         get() = requireNotNull(_binding) { "null" }
 
-    private val viewmodel:JoinViewModel by activityViewModels()
+    private val joinViewModel:JoinViewModel by activityViewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -104,7 +104,7 @@ class JoinInfoFragment : Fragment() {
         val birthMonth = binding.dpSpinner.month.toString()
         val birthDay = binding.dpSpinner.dayOfMonth.toString()
 
-        viewmodel.getInfo(gender, nickname, birthYear, birthMonth, birthDay)
+        joinViewModel.getInfo(gender, nickname, birthYear, birthMonth, birthDay)
     }
 
     override fun onDestroyView() {

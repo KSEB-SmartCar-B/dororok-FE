@@ -7,6 +7,7 @@ import com.kseb.smart_car.data.requestDto.RequestSignUpDto
 import com.kseb.smart_car.data.requestDto.RequestUpdateGenreDto
 import com.kseb.smart_car.data.requestDto.RequestUpdateInfoDto
 import com.kseb.smart_car.data.responseDto.ResponseAccessDto
+import com.kseb.smart_car.data.responseDto.ResponseAllGenreDto
 import com.kseb.smart_car.data.responseDto.ResponseIsSignedDto
 import com.kseb.smart_car.data.responseDto.ResponseMyGenreDto
 import com.kseb.smart_car.data.responseDto.ResponseMyInfoDto
@@ -40,6 +41,12 @@ class AuthRepositoryImpl @Inject constructor(
     override suspend fun getSignUp(info: RequestSignUpDto): Result<ResponseSignUpDto> {
         return runCatching {
             authDataSource.getSignUp(info)
+        }
+    }
+
+    override suspend fun getGenreList(): Result<ResponseAllGenreDto> {
+        return runCatching {
+            authDataSource.getAllGenreList()
         }
     }
 

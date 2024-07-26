@@ -7,6 +7,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.GridLayoutManager
 import com.kseb.smart_car.databinding.ActivityGenreBinding
+import com.kseb.smart_car.extension.AllGenreState
 import com.kseb.smart_car.extension.GenreState
 import com.kseb.smart_car.presentation.join.JoinGenreViewModel
 import dagger.hilt.android.AndroidEntryPoint
@@ -35,13 +36,27 @@ class GenreActivity: AppCompatActivity() {
                         val genreAdapter = GenreAdapter {buttonText -> genreViewModel.getGenre(buttonText)}
                         binding.rvGenre.adapter = genreAdapter
 
-                        genreAdapter.getList(joinGenreViewModel.makeList())
+                        joinGenreViewModel.getGenreList()
+                        lifecycleScope.launch {
+                            joinGenreViewModel.genreListState.collect{allGenreState ->
+                                when(allGenreState){
+                                    is AllGenreState.Success -> {
+                                        genreAdapter.getList(allGenreState.genreDto.names)
 
-                        genreAdapter.getMyList(genreState.genreDto.favoriteGenres)
+                                        genreAdapter.getMyList(genreState.genreDto.favoriteGenres)
 
-                        binding.rvGenre.layoutManager = GridLayoutManager(this@GenreActivity, 3)
+                                        binding.rvGenre.layoutManager = GridLayoutManager(this@GenreActivity, 3)
 
-                        clickButtonOk()
+                                        clickButtonOk()
+                                    }
+                                    is AllGenreState.Loading->{}
+                                    is AllGenreState.Error -> {
+                                        Log.e("genreActivity","장르 불러오기 실패")
+                                    }
+                                }
+                            }
+                        }
+
                     }
                     is GenreState.Loading ->{}
                     is GenreState.Error -> {

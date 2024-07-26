@@ -5,22 +5,22 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
+import coil.load
 import com.kseb.smart_car.R
+import com.kseb.smart_car.data.responseDto.ResponseAllGenreDto
 import com.kseb.smart_car.databinding.ItemGenreBinding
 
 class JoinGenreAdapter(private val onButtonClick: (String) -> Unit): RecyclerView.Adapter<JoinGenreAdapter.Join2ViewHolder>() {
 
-    private val genreList = mutableListOf<Genre>()
+    private val genreList = mutableListOf<ResponseAllGenreDto.GenreDto>()
 
     inner class Join2ViewHolder(
         private val binding: ItemGenreBinding
 
     ) : RecyclerView.ViewHolder(binding.root) {
-        fun onBind(genre: Genre, onButtonClick: (String) -> Unit) {
+        fun onBind(genre: ResponseAllGenreDto.GenreDto, onButtonClick: (String) -> Unit) {
             binding.tvGenre.text = genre.name
-
-            val drawable = genre.photo ?: R.drawable.genre_dance
-            binding.ivGenre.setImageResource(drawable)
+            binding.ivGenre.load(genre.imageUrl)
 
             genreButton(onButtonClick)
         }
@@ -56,7 +56,7 @@ class JoinGenreAdapter(private val onButtonClick: (String) -> Unit): RecyclerVie
         holder.onBind(item, onButtonClick)
     }
 
-    fun getList(list: List<Genre>) {
+    fun getList(list: List<ResponseAllGenreDto.GenreDto>) {
         genreList.addAll(list)
         notifyDataSetChanged()
     }
