@@ -14,6 +14,7 @@ import androidx.lifecycle.lifecycleScope
 import coil.load
 import com.kseb.smart_car.R
 import com.kseb.smart_car.databinding.FragmentMyBinding
+import com.kseb.smart_car.extension.GenreState
 import com.kseb.smart_car.extension.InfoState
 import com.kseb.smart_car.presentation.main.MainViewModel
 import dagger.hilt.android.AndroidEntryPoint
@@ -47,6 +48,7 @@ class MyFragment: Fragment() {
 
     private fun setting(){
         mainViewModel.accessToken.observe(viewLifecycleOwner){token ->
+            myViewModel.token = token
             myViewModel.getInfo(token)
             Log.d("myfragment","token:${token}")
         }
@@ -71,15 +73,14 @@ class MyFragment: Fragment() {
     private fun clickButtonInformation() {
         binding.ibInformation.setOnClickListener {
             if(myViewModel.getMyInfo()!=null){
-                startActivity(Intent(requireContext(), InformationActivity::class.java).putExtra("info",myViewModel.getMyInfo()))
+                startActivity(Intent(requireContext(), InformationActivity::class.java).putExtra("info", myViewModel.getMyInfo()))
             }
-
         }
     }
 
     private fun clickButtonGenre() {
         binding.ibGenre.setOnClickListener {
-            startActivity(Intent(requireContext(), GenreActivity::class.java))
+            startActivity(Intent(requireContext(), GenreActivity::class.java).putExtra("token", myViewModel.token))
         }
     }
 

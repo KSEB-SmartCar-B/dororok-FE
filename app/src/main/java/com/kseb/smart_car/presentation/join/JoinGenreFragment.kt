@@ -26,7 +26,7 @@ class JoinGenreFragment: Fragment() {
     private var _binding: FragmentJoinGenreBinding? = null
     private val binding: FragmentJoinGenreBinding
         get() = requireNotNull(_binding) { "null" }
-    private val joinviewmodel by viewModels<JoinViewModel>()
+    private val joinviewmodel: JoinViewModel by activityViewModels<JoinViewModel>()
     private val joingenreviewmodel by viewModels<JoinGenreViewModel>()
 
     override fun onCreateView(

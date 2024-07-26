@@ -42,6 +42,7 @@ class LocationActivity : AppCompatActivity() {
         knNaviView = binding.naviView
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
 
+        checkLocation()
         initializeKNSDK()
     }
 
