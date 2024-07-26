@@ -8,7 +8,9 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.kseb.smart_car.data.responseDto.ResponseMyInfoDto
 import com.kseb.smart_car.domain.repository.AuthRepository
+import com.kseb.smart_car.extension.GenreState
 import com.kseb.smart_car.extension.InfoState
+import com.kseb.smart_car.presentation.join.Genre
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -31,14 +33,13 @@ class MyViewModel @Inject constructor(
 
     private var info: ResponseMyInfoDto? = null
 
-    private val _genre = MutableStateFlow(mutableListOf<String>())
-    val genre: StateFlow<List<String>> = _genre.asStateFlow()
-
     private val _selectedGenres = MutableStateFlow<Set<String>>(emptySet())
     val selectedGenres: StateFlow<Set<String>> = _selectedGenres.asStateFlow()
 
     private val _buttonText = MutableLiveData<String>()
     val buttonText: LiveData<String> = _buttonText
+
+    var token: String? = null
 
     fun getInfo(token:String){
         Log.d("myviewmodel","getinfo start\ntoken:${token}")

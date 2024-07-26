@@ -14,7 +14,6 @@ class InformationActivity: AppCompatActivity() {
     private lateinit var binding: ActivityInformationBinding
     private val viewmodel by viewModels<MyViewModel>()
 
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -67,7 +66,7 @@ class InformationActivity: AppCompatActivity() {
         val calendar = Calendar.getInstance()
 
         var birthYear = birthday.year
-        var birthMonth = birthday.month.value
+        var birthMonth = birthday.month.value-1
         var birthDay = birthday.dayOfMonth
 
         var today_year = calendar.get(Calendar.YEAR)
