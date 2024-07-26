@@ -40,16 +40,17 @@ class MyFragment: Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
         setting()
-        clickButtonInformation()
-        clickButtonGenre()
     }
 
     private fun setting(){
         mainViewModel.accessToken.observe(viewLifecycleOwner){token ->
-            myViewModel.token = token
-            myViewModel.getInfo(token)
+            myViewModel.setAccessToken(token)
+            myViewModel.accessToken.observe(viewLifecycleOwner){token ->
+                myViewModel.getInfo(token)
+                clickButtonGenre(token)
+                clickButtonInformation(token)
+            }
             Log.d("myfragment","token:${token}")
         }
 
@@ -60,6 +61,7 @@ class MyFragment: Fragment() {
                         binding.tvWelcome.text=getString(R.string.my_welcome, infoState.infoDto.nickname)
                         binding.ivProfile.load(infoState.infoDto.profile)
                         Log.d("myfragment","nickname: ${infoState.infoDto.nickname}")
+                        myViewModel.setInfoStateLoading()
                     }
                     is InfoState.Loading ->{}
                     is InfoState.Error -> {
@@ -70,18 +72,22 @@ class MyFragment: Fragment() {
         }
     }
 
-    private fun clickButtonInformation() {
+    private fun clickButtonInformation(accessToken:String) {
         binding.ibInformation.setOnClickListener {
-            if(myViewModel.getMyInfo()!=null){
-                startActivity(Intent(requireContext(), InformationActivity::class.java).putExtra("info", myViewModel.getMyInfo()))
-            }
+            Log.d("myFragment","accesstoken: $accessToken")
+                startActivity(Intent(requireContext(), InformationActivity::class.java).putExtra("info",myViewModel.getMyInfo()).putExtra("accessToken",accessToken))
         }
     }
 
-    private fun clickButtonGenre() {
+    private fun clickButtonGenre(accessToken:String) {
         binding.ibGenre.setOnClickListener {
-            startActivity(Intent(requireContext(), GenreActivity::class.java).putExtra("token", myViewModel.token))
+            startActivity(Intent(requireContext(), GenreActivity::class.java).putExtra("token", accessToken))
         }
+    }
+
+    // 이 메서드를 호출하여 데이터를 새로고침할 수 있습니다.
+    fun refreshData() {
+        setting()
     }
 
     override fun onDestroyView() {

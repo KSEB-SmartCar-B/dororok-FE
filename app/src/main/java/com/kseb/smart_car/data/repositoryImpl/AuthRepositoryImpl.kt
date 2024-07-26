@@ -5,6 +5,7 @@ import com.kseb.smart_car.data.datasource.AuthDataSource
 import com.kseb.smart_car.data.requestDto.RequestAccessDto
 import com.kseb.smart_car.data.requestDto.RequestSignUpDto
 import com.kseb.smart_car.data.requestDto.RequestUpdateGenreDto
+import com.kseb.smart_car.data.requestDto.RequestUpdateInfoDto
 import com.kseb.smart_car.data.responseDto.ResponseAccessDto
 import com.kseb.smart_car.data.responseDto.ResponseIsSignedDto
 import com.kseb.smart_car.data.responseDto.ResponseMyGenreDto
@@ -12,6 +13,7 @@ import com.kseb.smart_car.data.responseDto.ResponseMyInfoDto
 import com.kseb.smart_car.data.responseDto.ResponseSignInDto
 import com.kseb.smart_car.data.responseDto.ResponseSignUpDto
 import com.kseb.smart_car.data.responseDto.ResponseUpdateGenreDto
+import com.kseb.smart_car.data.responseDto.ResponseUpdateInfoDto
 import com.kseb.smart_car.domain.repository.AuthRepository
 import javax.inject.Inject
 
@@ -44,14 +46,21 @@ class AuthRepositoryImpl @Inject constructor(
     override suspend fun getMyInfo(token: String): Result<ResponseMyInfoDto> {
         return runCatching {
             authDataSource.getMyInfo(token)
-        }.onFailure { exception ->
-            Log.e("AuthRepository", "Error in getMyInfo", exception)
         }
     }
 
     override suspend fun getMyGenre(token: String): Result<ResponseMyGenreDto> {
         return runCatching {
             authDataSource.getMyGenre(token)
+        }
+    }
+
+    override suspend fun updateInfo(
+        token: String,
+        info: RequestUpdateInfoDto
+    ): Result<ResponseUpdateInfoDto> {
+        return runCatching {
+            authDataSource.updateInfo(token,info)
         }
     }
 

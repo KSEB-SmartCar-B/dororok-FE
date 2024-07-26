@@ -42,11 +42,6 @@ class JoinViewModel @Inject constructor(
     private val birth = MutableLiveData<LocalDate?>()
     private val genre = MutableLiveData<List<String>>()
 
-    enum class genderClass{
-        FEMALE,
-        MALE
-    }
-
     fun setKakaoToken(token:String){
         kakaoToken=token
     }
