@@ -39,6 +39,7 @@ class LocationActivity : AppCompatActivity() {
         binding = ActivityLocationBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        Log.d("locationActivity","로케이션액티비티")
         knNaviView = binding.naviView
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
 
@@ -62,6 +63,7 @@ class LocationActivity : AppCompatActivity() {
                     }
                 } else {
                     // 인증 완료
+                    Log.d("locationactivity","인증완료")
                     checkLocation()
                 }
             })

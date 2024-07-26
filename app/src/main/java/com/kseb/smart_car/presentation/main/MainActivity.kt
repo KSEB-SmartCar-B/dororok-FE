@@ -1,9 +1,18 @@
 package com.kseb.smart_car.presentation.main
 
+import android.app.Activity
+import android.content.BroadcastReceiver
+import android.content.Context
+import android.content.Intent
+import android.content.IntentFilter
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.util.Log
 import android.view.View
 import android.view.WindowManager
+import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SearchView
@@ -11,6 +20,7 @@ import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
+import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.kakaomobility.knsdk.KNCarFuel
 import com.kakaomobility.knsdk.KNCarType
 import com.kakaomobility.knsdk.KNCarUsage
@@ -57,11 +67,11 @@ import kotlin.properties.Delegates
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity(), KNGuidance_GuideStateDelegate,
     KNGuidance_LocationGuideDelegate, KNGuidance_RouteGuideDelegate,
-    KNGuidance_SafetyGuideDelegate, KNGuidance_VoiceGuideDelegate, KNGuidance_CitsGuideDelegate,
-    KNNaviView_GuideStateDelegate {
+    KNGuidance_SafetyGuideDelegate, KNGuidance_VoiceGuideDelegate, KNGuidance_CitsGuideDelegate {
     private lateinit var binding: ActivityMainBinding
     private val subjectViewModel: SubjectViewModel by viewModels()
     private val mainViewModel:MainViewModel by viewModels()
+    private lateinit var updateReceiver: BroadcastReceiver
 
     private lateinit var mapView: KNMapView
     private lateinit var knNaviView: KNNaviView
@@ -120,6 +130,24 @@ class MainActivity : AppCompatActivity(), KNGuidance_GuideStateDelegate,
             getDirections()
         }
 
+        // BroadcastReceiver 초기화 및 등록
+        updateReceiver = object : BroadcastReceiver() {
+            override fun onReceive(context: Context?, intent: Intent?) {
+                val action = intent?.action
+                if (action == "com.example.UPDATE_INFO") {
+                    Handler(Looper.getMainLooper()).post {
+                        supportFragmentManager.beginTransaction()
+                            .replace(R.id.fcv_main, MyFragment())
+                            .commitAllowingStateLoss()
+                    }
+                }
+            }
+        }
+
+
+        LocalBroadcastManager.getInstance(this).registerReceiver(
+            updateReceiver, IntentFilter("com.example.UPDATE_INFO")
+        )
     }
 
     private fun getNavigationBarHeight(): Int {
@@ -186,10 +214,10 @@ class MainActivity : AppCompatActivity(), KNGuidance_GuideStateDelegate,
                     KNCarFuel.KNCarFuel_Gasoline,  // 유고 정보 반영 여부
                     true,                 // 하이패스 장착 여부
                     KNCarUsage.KNCarUsage_Default,     // 차량의 용도 (예: PERSONAL, COMMERCIAL 등)
-                    1800,                 // 차량의 전폭 (단위: mm)
-                    1400,                 // 차량의 전고 (단위: mm)
-                    4500,                 // 차량의 전장 (단위: mm)
-                    1500                  // 차량의 중량 (단위: kg)
+                    -1,                 // 차량의 전폭 (단위: mm)
+                    -1,                 // 차량의 전고 (단위: mm)
+                    -1,                 // 차량의 전장 (단위: mm)
+                    -1                  // 차량의 중량 (단위: kg)
                 )
 
                 // 경로에 설정 적용
@@ -211,10 +239,10 @@ class MainActivity : AppCompatActivity(), KNGuidance_GuideStateDelegate,
                         )
                     } else {
                         // 경로 요청 성공
+                        Log.d("mainActivity","경로 요청 성공!")
                         val naviView = KNSDK.sharedGuidance()
                         naviView?.apply {
                             // 각 가이던스 델리게이트 등록
-                            knNaviView.guideStateDelegate = this@MainActivity
                             guideStateDelegate = this@MainActivity
                             locationGuideDelegate = this@MainActivity
                             routeGuideDelegate = this@MainActivity
@@ -410,11 +438,9 @@ class MainActivity : AppCompatActivity(), KNGuidance_GuideStateDelegate,
         knNaviView.didUpdateCitsGuide(aGuidance, aCitsGuide)
     }
 
-    override fun naviViewGuideEnded() {
-        TODO("Not yet implemented")
-    }
-
-    override fun naviViewGuideState(state: KNGuideState) {
-        TODO("Not yet implemented")
+    override fun onDestroy() {
+        super.onDestroy()
+        // BroadcastReceiver 해제
+        LocalBroadcastManager.getInstance(this).unregisterReceiver(updateReceiver)
     }
 }

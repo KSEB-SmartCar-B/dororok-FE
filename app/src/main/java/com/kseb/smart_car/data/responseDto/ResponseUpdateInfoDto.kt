@@ -4,7 +4,7 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class ResponseUpdateGenreDto (
-    @SerialName ("result")
-    val result: String
+data class ResponseUpdateInfoDto (
+    @SerialName("result")
+    val result:String
 )

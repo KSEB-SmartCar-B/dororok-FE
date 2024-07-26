@@ -1,11 +1,11 @@
 package com.kseb.smart_car.presentation.main.my
 
-import android.icu.text.IDNA.Info
 import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.kseb.smart_car.data.requestDto.RequestUpdateInfoDto
 import com.kseb.smart_car.data.responseDto.ResponseMyInfoDto
 import com.kseb.smart_car.domain.repository.AuthRepository
 import com.kseb.smart_car.extension.GenreState
@@ -21,17 +21,20 @@ import kotlinx.serialization.json.Json
 import okhttp3.ResponseBody
 import org.json.JSONObject
 import retrofit2.HttpException
-import java.time.LocalDateTime
 import javax.inject.Inject
 
 @HiltViewModel
 class MyViewModel @Inject constructor(
     private val authRepository: AuthRepository
 ): ViewModel() {
-    private val _infoState = MutableStateFlow<InfoState>(InfoState.Loading)
-    val infoState:StateFlow<InfoState> = _infoState.asStateFlow()
+
+    private val _accessToken=MutableLiveData<String>()
+    val accessToken:LiveData<String> = _accessToken
 
     private var info: ResponseMyInfoDto? = null
+
+    private val _infoState = MutableStateFlow<InfoState>(InfoState.Loading)
+    val infoState:StateFlow<InfoState> = _infoState.asStateFlow()
 
     private val _selectedGenres = MutableStateFlow<Set<String>>(emptySet())
     val selectedGenres: StateFlow<Set<String>> = _selectedGenres.asStateFlow()
@@ -39,7 +42,9 @@ class MyViewModel @Inject constructor(
     private val _buttonText = MutableLiveData<String>()
     val buttonText: LiveData<String> = _buttonText
 
-    var token: String? = null
+    fun setAccessToken(token:String){
+        _accessToken.value=token
+    }
 
     fun getInfo(token:String){
         Log.d("myviewmodel","getinfo start\ntoken:${token}")
@@ -77,6 +82,8 @@ class MyViewModel @Inject constructor(
         Json.encodeToString(it)
     }
 
+    fun setInfoStateLoading(){_infoState.value=InfoState.Loading}
+
     fun updateGenre(newGenre: String) {
         val updatedGenres = _selectedGenres.value.toMutableSet()
         if (updatedGenres.contains(newGenre)) {
@@ -85,10 +92,6 @@ class MyViewModel @Inject constructor(
             updatedGenres.add(newGenre)
         }
         _selectedGenres.value = updatedGenres
-    }
-
-    fun updateInfo(){
-
     }
     //var genre = mutableListOf("댄스", "POP")
     /*var gender = "여자"

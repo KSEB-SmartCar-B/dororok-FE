@@ -3,6 +3,7 @@ package com.kseb.smart_car.data.service
 import com.kseb.smart_car.data.requestDto.RequestAccessDto
 import com.kseb.smart_car.data.requestDto.RequestSignUpDto
 import com.kseb.smart_car.data.requestDto.RequestUpdateGenreDto
+import com.kseb.smart_car.data.requestDto.RequestUpdateInfoDto
 import com.kseb.smart_car.data.responseDto.ResponseAccessDto
 import com.kseb.smart_car.data.responseDto.ResponseIsSignedDto
 import com.kseb.smart_car.data.responseDto.ResponseMyGenreDto
@@ -10,7 +11,7 @@ import com.kseb.smart_car.data.responseDto.ResponseMyInfoDto
 import com.kseb.smart_car.data.responseDto.ResponseSignInDto
 import com.kseb.smart_car.data.responseDto.ResponseSignUpDto
 import com.kseb.smart_car.data.responseDto.ResponseUpdateGenreDto
-import dagger.hilt.internal.GeneratedEntryPoint
+import com.kseb.smart_car.data.responseDto.ResponseUpdateInfoDto
 import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.Header
@@ -48,6 +49,12 @@ interface AuthService {
     suspend fun getMyGenre(
         @Header("Authorization") token:String,
     ):ResponseMyGenreDto
+
+    @PATCH("members/info")
+    suspend fun updateMyInfo(
+        @Header("Authorization") token:String,
+        @Body requestUpdateInfoDto: RequestUpdateInfoDto
+    ):ResponseUpdateInfoDto
 
     @PATCH("members/favorite-genre")
     suspend fun updateGenre(
