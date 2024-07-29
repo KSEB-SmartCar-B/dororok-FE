@@ -2,6 +2,7 @@ package com.kseb.smart_car.presentation.main
 
 import android.Manifest
 import android.content.Intent
+import android.content.Intent.FLAG_ACTIVITY_CLEAR_TOP
 import android.content.pm.PackageManager
 import android.os.Bundle
 import android.util.Log
@@ -9,6 +10,7 @@ import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.core.view.ContentInfoCompat.Flags
 import androidx.lifecycle.lifecycleScope
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
@@ -47,7 +49,7 @@ class LocationActivity : AppCompatActivity() {
         initializeKNSDK()
     }
 
-    private fun initializeKNSDK() {
+    fun initializeKNSDK() {
         KNSDK.initializeWithAppKey(
             appKey, BuildConfig.VERSION_NAME,
             null, KNLanguageType.KNLanguageType_KOREAN, aCompletion = {
@@ -116,6 +118,7 @@ class LocationActivity : AppCompatActivity() {
                         intent.putExtra("accessToken",token)
                         intent.putExtra("longitude", longitude)
                         intent.putExtra("latitude", latitude)
+                        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK)
                         startActivity(intent)
                         finish()
                     }

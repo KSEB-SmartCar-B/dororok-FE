@@ -11,15 +11,20 @@ import android.os.Looper
 import android.util.Log
 import android.view.View
 import android.view.WindowManager
+import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SearchView
+import androidx.compose.runtime.collectAsState
 import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.constraintlayout.widget.ConstraintSet
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
+import androidx.lifecycle.lifecycleScope
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.kakaomobility.knsdk.KNCarFuel
 import com.kakaomobility.knsdk.KNCarType
@@ -56,28 +61,63 @@ import com.kakaomobility.knsdk.trip.kntrip.knroute.KNRoute
 import com.kakaomobility.knsdk.ui.view.KNNaviView
 import com.kakaomobility.knsdk.ui.view.KNNaviView_GuideStateDelegate
 import com.kseb.smart_car.R
+import com.kseb.smart_car.data.service.SpotifyService.connect
 import com.kseb.smart_car.databinding.ActivityMainBinding
+import com.kseb.smart_car.extension.AddressState
 import com.kseb.smart_car.presentation.MyApp
+import com.kseb.smart_car.presentation.main.MainActivity.SpotifySampleContexts.TRACK_URI
 import com.kseb.smart_car.presentation.main.music.MusicFragment
+import com.kseb.smart_car.presentation.main.music.PlayFragment
+import com.kseb.smart_car.presentation.main.music.PlayFragment.AuthParams.CLIENT_ID
+import com.kseb.smart_car.presentation.main.music.PlayFragment.AuthParams.REDIRECT_URI
+import com.kseb.smart_car.presentation.main.music.PlayFragment.Companion.TAG
+import com.kseb.smart_car.presentation.main.music.SituationAdapter
+import com.kseb.smart_car.presentation.main.music.SituationViewModel
 import com.kseb.smart_car.presentation.main.my.MyFragment
+import com.spotify.android.appremote.api.ConnectionParams
+import com.spotify.android.appremote.api.Connector
+import com.spotify.android.appremote.api.SpotifyAppRemote
+import com.spotify.android.appremote.api.error.SpotifyDisconnectedException
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.launch
+import kotlin.coroutines.Continuation
+import kotlin.coroutines.resume
+import kotlin.coroutines.resumeWithException
+import kotlin.coroutines.suspendCoroutine
 import kotlin.properties.Delegates
 
 
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity(), KNGuidance_GuideStateDelegate,
     KNGuidance_LocationGuideDelegate, KNGuidance_RouteGuideDelegate,
-    KNGuidance_SafetyGuideDelegate, KNGuidance_VoiceGuideDelegate, KNGuidance_CitsGuideDelegate {
+    KNGuidance_SafetyGuideDelegate, KNGuidance_VoiceGuideDelegate,
+    KNGuidance_CitsGuideDelegate, KNNaviView_GuideStateDelegate {
     private lateinit var binding: ActivityMainBinding
     private val subjectViewModel: SubjectViewModel by viewModels()
     private val mainViewModel:MainViewModel by viewModels()
+    private val situationViewModel:SituationViewModel by viewModels()
+    private var spotifyAppRemote: SpotifyAppRemote? = null
+    private val errorCallback = { throwable: Throwable -> logError(throwable) }
+
     private lateinit var updateReceiver: BroadcastReceiver
 
     private lateinit var mapView: KNMapView
     private lateinit var knNaviView: KNNaviView
+    private val naviView = KNSDK.sharedGuidance()
 
     private var currentLongitude by Delegates.notNull<Double>()
     private var currentLatitude by Delegates.notNull<Double>()
+
+    private var isPlay=false
+
+    object AuthParams {
+        const val CLIENT_ID = "d8e2d4268f28445eac8333a5292c8e9f"
+        const val REDIRECT_URI = "https://com.kseb.smart_car/callback"
+    }
+
+    object SpotifySampleContexts {
+        const val TRACK_URI = "spotify:track:5sdQOyqq2IDhvmx2lHOpwd"
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -92,14 +132,15 @@ class MainActivity : AppCompatActivity(), KNGuidance_GuideStateDelegate,
     }
 
     private fun setting() {
+        mainViewModel.setAccessToken(intent.getStringExtra("accessToken")!!)
         mapView = binding.naviView.mapComponent.mapView
+
         //상태바 투명하게
         val window = window
         window.setFlags(
             WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS,
             WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS
         )
-
         window.navigationBarColor = ContextCompat.getColor(this, R.color.system_bnv_grey)
 
         //시스템 하단바의 높이 만큼 하단네비게이션바를 올림
@@ -111,14 +152,16 @@ class MainActivity : AppCompatActivity(), KNGuidance_GuideStateDelegate,
         currentLongitude = intent.getDoubleExtra("longitude", 0.0)
         currentLatitude = intent.getDoubleExtra("latitude", 0.0)
 
-        mainViewModel.setAccessToken(intent.getStringExtra("accessToken")!!)
         //검색창
         initSearchView()
 
         //상단 버튼 만들기
         val subjectAdapter = SubjectAdapter()
-        binding.rvSubject.adapter = subjectAdapter
+
+       // binding.rvSubject.adapter = subjectAdapter
         subjectAdapter.getList(subjectViewModel.makeList())
+
+       // binding.btnMusic.visibility=View.INVISIBLE
 
         knNaviView = binding.naviView
         //현재 위치 버튼 클릭 시
@@ -127,8 +170,40 @@ class MainActivity : AppCompatActivity(), KNGuidance_GuideStateDelegate,
         }
 
         binding.btnSearch.setOnClickListener {
+            with(binding){
+                svSearch.visibility=View.INVISIBLE
+                bnvMain.visibility=View.INVISIBLE
+                btnSearch.visibility=View.INVISIBLE
+                btnCurrentLocation.visibility=View.INVISIBLE
+                btnMusic.visibility=View.VISIBLE
+            }
+
+
+            val constraintLayout = binding.root as ConstraintLayout
+            val constraintSet = ConstraintSet()
+            constraintSet.clone(constraintLayout)
+
+            // `naviView`의 bottom을 parent의 bottom에 맞추고 margin을 설정합니다.
+            constraintSet.connect(
+                binding.naviView.id,
+                ConstraintSet.BOTTOM,
+                ConstraintSet.PARENT_ID,
+                ConstraintSet.BOTTOM
+            )
+
+            // bottomMargin 설정
+            constraintSet.setMargin(
+                binding.naviView.id,
+                ConstraintSet.BOTTOM,
+                getNavigationBarHeight()
+            )
+
+            constraintSet.applyTo(constraintLayout)
+
             getDirections()
         }
+
+        clickMusicButton()
 
         // BroadcastReceiver 초기화 및 등록
         updateReceiver = object : BroadcastReceiver() {
@@ -161,13 +236,29 @@ class MainActivity : AppCompatActivity(), KNGuidance_GuideStateDelegate,
         // init SearchView
         binding.svSearch.isSubmitButtonEnabled = true
         binding.svSearch.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
-            override fun onQueryTextSubmit(query: String?): Boolean {
-
+            override fun onQueryTextSubmit(query: String): Boolean {
                 return false
             }
 
             override fun onQueryTextChange(newText: String?): Boolean {
                 // @TODO
+                if(newText!=null){
+                    mainViewModel.getAddress(newText)
+                    lifecycleScope.launch {
+                        mainViewModel.addressState.collect{ addressState->
+                            when(addressState){
+                                is AddressState.Success->{
+                                    Log.d("mainActivity", "주소 가져오기 성공!")
+                                    Log.d("mainActivity", "${addressState.addressDto.documents[0].placeName}")
+                                }
+                                is AddressState.Loading->{}
+                                is AddressState.Error->{
+                                    Log.e("mainActivity","주소 가져오기 에러!")
+                                }
+                            }
+                        }
+                    }
+                }
                 return true
             }
         })
@@ -191,7 +282,7 @@ class MainActivity : AppCompatActivity(), KNGuidance_GuideStateDelegate,
         //위도 : 37.28682370552076
         //경도 : 126.57606547684927
         val currentKatec = WGS84ToKATEC(currentLongitude, currentLatitude)
-        val goalKatec = WGS84ToKATEC(126.99985062, 37.26609306)
+        val goalKatec = WGS84ToKATEC(127.0506751840799, 37.28991021417339)
         Log.d(
             "mainactivity",
             "long:${currentKatec.x}, lati:${currentKatec.y}\n goal:${goalKatec.x} - ${goalKatec.y}"
@@ -240,7 +331,6 @@ class MainActivity : AppCompatActivity(), KNGuidance_GuideStateDelegate,
                     } else {
                         // 경로 요청 성공
                         Log.d("mainActivity","경로 요청 성공!")
-                        val naviView = KNSDK.sharedGuidance()
                         naviView?.apply {
                             // 각 가이던스 델리게이트 등록
                             guideStateDelegate = this@MainActivity
@@ -279,6 +369,133 @@ class MainActivity : AppCompatActivity(), KNGuidance_GuideStateDelegate,
 //            item.icon?.setTint(color)
 //        }
 //    }
+
+    private fun clickMusicButton(){
+        binding.btnMusic.setOnClickListener{
+            if (binding.rvSituation.visibility == View.GONE) {
+                binding.rvSituation.visibility = View.VISIBLE
+            } else {
+                binding.rvSituation.visibility = View.GONE
+            }
+
+                if(isPlay){
+                   isPlay=false
+                    Log.d("mainActivity","isPlay true")
+                    onPlayPauseButtonClicked()
+                }else{
+                    val situationAdapter=SituationAdapter{situation -> onItemClicked(situation)}
+                    binding.rvSituation.adapter=situationAdapter
+                    situationAdapter.getList(situationViewModel.makeList())
+                    Log.d("mainActivity","isPlay false")
+                }
+        }
+    }
+
+    private fun onItemClicked(situation: String) {
+        SpotifyAppRemote.disconnect(spotifyAppRemote)
+        binding.rvSituation.visibility=View.INVISIBLE
+        Log.d("mainactivity","음악 클릭!")
+        lifecycleScope.launch {
+            try {
+                spotifyAppRemote = connectToAppRemote()
+                playUri(TRACK_URI) // onItemClicked에서 연결 후 재생 시도
+            } catch (error: Throwable) {
+                logError(error)
+            }
+        }
+    }
+
+    private suspend fun connectToAppRemote(): SpotifyAppRemote? =
+        suspendCoroutine { cont: Continuation<SpotifyAppRemote> ->
+            SpotifyAppRemote.connect(
+                this.application,
+                ConnectionParams.Builder(CLIENT_ID)
+                    .setRedirectUri(REDIRECT_URI)
+                    .showAuthView(true)
+                    .build(),
+                object : Connector.ConnectionListener {
+                    override fun onConnected(spotifyAppRemote: SpotifyAppRemote) {
+                        Log.d("connec","onConnected 실행!")
+                        cont.resume(spotifyAppRemote)
+                    }
+
+                    override fun onFailure(error: Throwable) {
+                        Log.e("mainActivity","connect fail!",error)
+                        cont.resumeWithException(error)
+                    }
+                })
+        }
+
+    private fun playUri(uri: String) {
+        Log.d("mainactivity", "playuri실행!")
+        try {
+            assertAppRemoteConnected()
+                .playerApi
+                .play(uri)
+                .setResultCallback { logMessage(getString(R.string.command_feedback, "play")) }
+                .setErrorCallback { error -> logError(error) }
+            onPlayPauseButtonClicked()
+        } catch (e: SpotifyDisconnectedException) {
+            logError(e)
+            //reconnectAndPlay(uri) // 재연결 후 재생 시도
+        }
+    }
+
+    private fun assertAppRemoteConnected(): SpotifyAppRemote {
+        Log.d("mainActivity", "assertAppRemoteConnected 실행!")
+        return spotifyAppRemote?.takeIf { it.isConnected } ?: run {
+            Log.e(TAG, getString(R.string.err_spotify_disconnected))
+            throw SpotifyDisconnectedException()
+        }
+    }
+
+    private fun reconnectAndPlay(uri: String) {
+        lifecycleScope.launch {
+            try {
+                spotifyAppRemote = connectToAppRemote()
+                playUri(uri) // 재연결 후 재생 시도
+                onPlayPauseButtonClicked()
+            } catch (error: Throwable) {
+                logError(error)
+            }
+        }
+    }
+
+    private fun onPlayPauseButtonClicked() {
+        assertAppRemoteConnected().let {
+            it.playerApi
+                .playerState
+                .setResultCallback { playerState ->
+                    if (playerState.isPaused) {
+                        it.playerApi
+                            .resume()
+                            .setResultCallback { logMessage(getString(R.string.command_feedback, "play")) }
+                            .setErrorCallback(errorCallback)
+                        isPlay=true
+                    } else {
+                        it.playerApi
+                            .pause()
+                            .setResultCallback { logMessage(getString(R.string.command_feedback, "pause")) }
+                            .setErrorCallback(errorCallback)
+                        isPlay=false
+                    }
+                }
+        }
+    }
+
+    private fun logError(throwable: Throwable) {
+        Toast.makeText(this, R.string.err_generic_toast, Toast.LENGTH_SHORT).show()
+        Log.e(TAG, "", throwable)
+    }
+
+    private fun logMessage(msg: String, duration: Int = Toast.LENGTH_SHORT) {
+        Toast.makeText(this, msg, duration).show()
+        Log.d(TAG, msg)
+    }
+
+    private fun showDialog(title: String, message: String) {
+        AlertDialog.Builder(this).setTitle(title).setMessage(message).create().show()
+    }
 
     private fun clickButtonNavigation() {
         binding.bnvMain.setOnItemSelectedListener {
@@ -442,5 +659,16 @@ class MainActivity : AppCompatActivity(), KNGuidance_GuideStateDelegate,
         super.onDestroy()
         // BroadcastReceiver 해제
         LocalBroadcastManager.getInstance(this).unregisterReceiver(updateReceiver)
+    }
+
+    override fun naviViewGuideEnded() {
+        knNaviView.guideCancel()
+        knNaviView.guidance.stop()
+        naviView!!.stop()
+        Log.d("mainactivity","안내 종료 버튼 클릭")
+    }
+
+    override fun naviViewGuideState(state: KNGuideState) {
+        TODO("Not yet implemented")
     }
 }

@@ -386,7 +386,6 @@ class PlayFragment: Fragment() {
                     }
                 }
         }
-
     }
 
     private fun onSkipNextButtonClicked(notUsed: View) {

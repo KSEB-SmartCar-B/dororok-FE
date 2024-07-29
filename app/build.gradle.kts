@@ -31,6 +31,12 @@ android {
 
         buildConfigField(
             "String",
+            "KAKAO_REST_API",
+            gradleLocalProperties(rootDir, providers).getProperty("kakao.rest.api.key")
+        )
+
+        buildConfigField(
+            "String",
             "BASE_URL",
             gradleLocalProperties(rootDir, providers).getProperty("base.url")
         )
@@ -41,8 +47,15 @@ android {
             gradleLocalProperties(rootDir,providers).getProperty("kakao.navi.url")
         )
 
+        buildConfigField(
+            "String",
+            "KAKAO_MAP_URL",
+            gradleLocalProperties(rootDir,providers).getProperty("kakao.map.url")
+        )
+
         resValue("string","kakao_oauth_host",gradleLocalProperties(rootDir, providers).getProperty("kakao.oauth.host"))
         resValue("string","kakao_app_key", gradleLocalProperties(rootDir,providers).getProperty("kakao.native.app.key"))
+        resValue("string","kakao_rest_api_key", gradleLocalProperties(rootDir,providers).getProperty("kakao.rest.api.key"))
 
         ndk {
             abiFilters.add("armeabi, armeabi-v7a")
