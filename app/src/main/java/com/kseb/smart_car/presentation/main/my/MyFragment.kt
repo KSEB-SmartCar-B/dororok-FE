@@ -12,6 +12,7 @@ import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import coil.load
+import coil.transform.CircleCropTransformation
 import com.kseb.smart_car.R
 import com.kseb.smart_car.databinding.FragmentMyBinding
 import com.kseb.smart_car.extension.GenreState
@@ -59,7 +60,12 @@ class MyFragment: Fragment() {
                 when(infoState){
                     is InfoState.Success -> {
                         binding.tvWelcome.text=getString(R.string.my_welcome, infoState.infoDto.nickname)
-                        binding.ivProfile.load(infoState.infoDto.profile)
+                        binding.ivProfile.load(infoState.infoDto.profile) {
+                            crossfade(true)
+                            placeholder(R.drawable.ic_basicprofile_foreground)
+                            transformations(CircleCropTransformation()) // 이미지 원형으로
+                            size(200, 200) // 이미지 크기 조정(이라는데 화질이 바뀌는 것 같음. 고고익선)
+                        }
                         Log.d("myfragment","nickname: ${infoState.infoDto.nickname}")
                         myViewModel.setInfoStateLoading()
                     }
