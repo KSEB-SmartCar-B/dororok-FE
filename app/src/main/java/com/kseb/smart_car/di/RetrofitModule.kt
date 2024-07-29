@@ -73,13 +73,13 @@ object RetrofitModule {
 
     @Provides
     @Singleton
-    @KakaoNaviRetrofit
-    fun provideKakaoNaviRetrofit(
+    @KakaoMapRetrofit
+    fun provideKakaoMapRetrofit(
         jsonConverter: Factory,
         client: OkHttpClient,
     ):Retrofit{
         return Retrofit.Builder()
-            .baseUrl(BuildConfig.KAKAO_NAVI_URL)
+            .baseUrl(BuildConfig.KAKAO_MAP_URL)
             .addConverterFactory(jsonConverter)
             .client(client)
             .build()
@@ -103,4 +103,4 @@ annotation class BaseUrlRetrofit
 
 @Qualifier
 @Retention(RetentionPolicy.RUNTIME)
-annotation class KakaoNaviRetrofit
+annotation class KakaoMapRetrofit
