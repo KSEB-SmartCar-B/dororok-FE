@@ -5,12 +5,20 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.kseb.smart_car.databinding.ItemSearchBinding
 
-class SearchAdapter(): RecyclerView.Adapter<SearchAdapter.SearchViewHolder>() {
+class SearchAdapter() : RecyclerView.Adapter<SearchAdapter.SearchViewHolder>() {
     private val searchList: MutableList<String> = mutableListOf()
 
     inner class SearchViewHolder(
-        private val binding: ItemSearchBinding
-    ): RecyclerView.ViewHolder(binding.root) {
+        private val binding: ItemSearchBinding,
+        private val adapter: SearchAdapter
+    ) : RecyclerView.ViewHolder(binding.root) {
+
+        init {
+            // Delete 버튼 클릭 리스너 설정
+            binding.tvDelete.setOnClickListener {
+                adapter.removeItem(adapterPosition)
+            }
+        }
 
         fun onBind(item: String) {
             binding.tvSearch.text = searchList[position]
@@ -19,7 +27,7 @@ class SearchAdapter(): RecyclerView.Adapter<SearchAdapter.SearchViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): SearchViewHolder {
         val binding = ItemSearchBinding.inflate(LayoutInflater.from(parent.context), parent, false)
-        return SearchViewHolder(binding)
+        return SearchViewHolder(binding, this)
     }
 
     override fun getItemCount(): Int = searchList.size
@@ -35,5 +43,12 @@ class SearchAdapter(): RecyclerView.Adapter<SearchAdapter.SearchViewHolder>() {
             searchList.add(0, text)
         } else searchList.add(0, text)
         notifyDataSetChanged()
+    }
+
+    fun removeItem(position: Int) {
+        if (position >= 0 && position < searchList.size) {
+            searchList.removeAt(position)
+            notifyItemRemoved(position)
+        }
     }
 }

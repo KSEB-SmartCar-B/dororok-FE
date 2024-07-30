@@ -13,7 +13,7 @@
         android:focusable="true"
         android:padding="5dp"
         android:layout_marginTop="35dp"
-        android:layout_marginStart="10dp"
+        android:layout_marginStart="5dp"
         android:background="@drawable/sv_search_white"
         app:iconifiedByDefault="false"
         app:layout_constraintTop_toTopOf="parent"
@@ -23,9 +23,10 @@
 
     <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/btn_search"
-        android:layout_width="40dp"
+        android:layout_width="50dp"
         android:layout_height="40dp"
         android:background="@drawable/btn_search"
+        android:layout_marginEnd="10dp"
         android:text="@string/main_btn_search"
         android:textColor="@color/white"
         app:layout_constraintTop_toTopOf="@id/sv_search"
