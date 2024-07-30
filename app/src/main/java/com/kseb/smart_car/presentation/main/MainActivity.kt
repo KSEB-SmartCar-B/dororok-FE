@@ -1,10 +1,13 @@
 package com.kseb.smart_car.presentation.main
 
+import android.Manifest
 import android.app.Activity
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
+import android.content.pm.PackageManager
+import android.location.LocationManager
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -12,103 +15,92 @@ import android.util.Log
 import android.view.View
 import android.view.WindowManager
 import android.widget.Toast
-import androidx.activity.result.ActivityResultLauncher
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SearchView
-import androidx.compose.runtime.collectAsState
 import androidx.constraintlayout.widget.ConstraintLayout
-import androidx.constraintlayout.widget.ConstraintSet
+import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.lifecycleScope
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
-import com.kakaomobility.knsdk.KNCarFuel
-import com.kakaomobility.knsdk.KNCarType
-import com.kakaomobility.knsdk.KNCarUsage
-import com.kakaomobility.knsdk.KNRouteAvoidOption
-import com.kakaomobility.knsdk.KNRoutePriority
+import com.google.android.gms.location.FusedLocationProviderClient
+import com.google.android.gms.location.LocationServices
+import com.kakao.sdk.common.KakaoSdk.appKey
+import com.kakao.vectormap.KakaoMap
+import com.kakao.vectormap.KakaoMapReadyCallback
+import com.kakao.vectormap.LatLng
+import com.kakao.vectormap.MapGravity
+import com.kakao.vectormap.MapLifeCycleCallback
+import com.kakao.vectormap.MapView
+import com.kakao.vectormap.camera.CameraUpdateFactory
+import com.kakao.vectormap.label.LabelOptions
+import com.kakao.vectormap.label.LabelStyle
+import com.kakao.vectormap.label.LabelStyles
+import com.kakaomobility.knsdk.KNLanguageType
 import com.kakaomobility.knsdk.KNSDK
-import com.kakaomobility.knsdk.common.gps.WGS84ToKATEC
-import com.kakaomobility.knsdk.common.objects.KNError
-import com.kakaomobility.knsdk.common.objects.KNPOI
+import com.kakaomobility.knsdk.common.gps.KATECToWGS84
+import com.kakaomobility.knsdk.common.objects.KNError_Code_C302
 import com.kakaomobility.knsdk.common.util.FloatPoint
-import com.kakaomobility.knsdk.guidance.knguidance.KNGuidance
-import com.kakaomobility.knsdk.guidance.knguidance.KNGuidance_CitsGuideDelegate
-import com.kakaomobility.knsdk.guidance.knguidance.KNGuidance_GuideStateDelegate
-import com.kakaomobility.knsdk.guidance.knguidance.KNGuidance_LocationGuideDelegate
-import com.kakaomobility.knsdk.guidance.knguidance.KNGuidance_RouteGuideDelegate
-import com.kakaomobility.knsdk.guidance.knguidance.KNGuidance_SafetyGuideDelegate
-import com.kakaomobility.knsdk.guidance.knguidance.KNGuidance_VoiceGuideDelegate
-import com.kakaomobility.knsdk.guidance.knguidance.KNGuideRouteChangeReason
-import com.kakaomobility.knsdk.guidance.knguidance.KNGuideState
-import com.kakaomobility.knsdk.guidance.knguidance.citsguide.KNGuide_Cits
-import com.kakaomobility.knsdk.guidance.knguidance.common.KNLocation
-import com.kakaomobility.knsdk.guidance.knguidance.locationguide.KNGuide_Location
-import com.kakaomobility.knsdk.guidance.knguidance.routeguide.KNGuide_Route
-import com.kakaomobility.knsdk.guidance.knguidance.routeguide.objects.KNMultiRouteInfo
-import com.kakaomobility.knsdk.guidance.knguidance.safetyguide.KNGuide_Safety
-import com.kakaomobility.knsdk.guidance.knguidance.safetyguide.objects.KNSafety
-import com.kakaomobility.knsdk.guidance.knguidance.voiceguide.KNGuide_Voice
 import com.kakaomobility.knsdk.map.knmaprenderer.objects.KNMapCameraUpdate
-import com.kakaomobility.knsdk.map.knmapview.KNMapView
-import com.kakaomobility.knsdk.trip.knrouteconfiguration.KNRouteConfiguration
-import com.kakaomobility.knsdk.trip.kntrip.KNTrip
-import com.kakaomobility.knsdk.trip.kntrip.knroute.KNRoute
 import com.kakaomobility.knsdk.ui.view.KNNaviView
-import com.kakaomobility.knsdk.ui.view.KNNaviView_GuideStateDelegate
+import com.kseb.smart_car.BuildConfig
 import com.kseb.smart_car.R
-import com.kseb.smart_car.data.service.SpotifyService.connect
 import com.kseb.smart_car.databinding.ActivityMainBinding
 import com.kseb.smart_car.extension.AddressState
-import com.kseb.smart_car.presentation.MyApp
 import com.kseb.smart_car.presentation.main.MainActivity.SpotifySampleContexts.TRACK_URI
 import com.kseb.smart_car.presentation.main.music.MusicFragment
-import com.kseb.smart_car.presentation.main.music.PlayFragment
 import com.kseb.smart_car.presentation.main.music.PlayFragment.AuthParams.CLIENT_ID
 import com.kseb.smart_car.presentation.main.music.PlayFragment.AuthParams.REDIRECT_URI
 import com.kseb.smart_car.presentation.main.music.PlayFragment.Companion.TAG
 import com.kseb.smart_car.presentation.main.music.SituationAdapter
 import com.kseb.smart_car.presentation.main.music.SituationViewModel
 import com.kseb.smart_car.presentation.main.my.MyFragment
+import com.kseb.smart_car.presentation.main.navi.NaviActivity
 import com.spotify.android.appremote.api.ConnectionParams
 import com.spotify.android.appremote.api.Connector
 import com.spotify.android.appremote.api.SpotifyAppRemote
 import com.spotify.android.appremote.api.error.SpotifyDisconnectedException
 import com.kseb.smart_car.presentation.main.search.SearchActivity
-import com.kseb.smart_car.presentation.main.search.SearchFragment
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlin.coroutines.Continuation
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 import kotlin.coroutines.suspendCoroutine
+import kotlin.math.roundToInt
 import kotlin.properties.Delegates
 
 
 @AndroidEntryPoint
-class MainActivity : AppCompatActivity(), KNGuidance_GuideStateDelegate,
-    KNGuidance_LocationGuideDelegate, KNGuidance_RouteGuideDelegate,
-    KNGuidance_SafetyGuideDelegate, KNGuidance_VoiceGuideDelegate,
-    KNGuidance_CitsGuideDelegate, KNNaviView_GuideStateDelegate {
+class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
+
     private val subjectViewModel: SubjectViewModel by viewModels()
     private val mainViewModel: MainViewModel by viewModels()
     private val situationViewModel: SituationViewModel by viewModels()
+
     private var spotifyAppRemote: SpotifyAppRemote? = null
     private val errorCallback = { throwable: Throwable -> logError(throwable) }
 
     private lateinit var updateReceiver: BroadcastReceiver
 
-    private lateinit var mapView: KNMapView
+    private lateinit var kakaoMapView: MapView
     private lateinit var knNaviView: KNNaviView
-    private val naviView = KNSDK.sharedGuidance()
+    private lateinit var fusedLocationClient: FusedLocationProviderClient
+    private val REQUEST_CODE_LOCATION_PERMISSION = 123
 
     private var currentLongitude by Delegates.notNull<Double>()
     private var currentLatitude by Delegates.notNull<Double>()
+    private var currentPosition: LatLng? = null
+    val PERMISSIONS_REQUEST_CODE = 100
+    var REQUIRED_PERMISSIONS = arrayOf<String>(
+        android.Manifest.permission.ACCESS_FINE_LOCATION
+    )
 
     private var isPlay = false
 
@@ -135,80 +127,33 @@ class MainActivity : AppCompatActivity(), KNGuidance_GuideStateDelegate,
     }
 
     private fun setting() {
+        setWindowTransparent()
+
+        //accessToken 받아옴
         mainViewModel.setAccessToken(intent.getStringExtra("accessToken")!!)
-        mapView = binding.naviView.mapComponent.mapView
 
-        //상태바 투명하게
-        val window = window
-        window.setFlags(
-            WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS,
-            WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS
-        )
-        window.navigationBarColor = ContextCompat.getColor(this, R.color.system_bnv_grey)
-
-        //시스템 하단바의 높이 만큼 하단네비게이션바를 올림
-        val bnvMain = binding.bnvMain
-        val layoutParams = bnvMain.layoutParams as ConstraintLayout.LayoutParams
-        layoutParams.bottomMargin = getNavigationBarHeight()
-        bnvMain.layoutParams = layoutParams
-
-        currentLongitude = intent.getDoubleExtra("longitude", 0.0)
-        currentLatitude = intent.getDoubleExtra("latitude", 0.0)
+        //맵 초기화
+        kakaoMapView = MapView(this)
+        binding.mapView.addView(kakaoMapView)
+        setKakaoMap()
 
         //검색창
         initSearchView()
 
         //상단 버튼 만들기
         val subjectAdapter = SubjectAdapter()
-
         // binding.rvSubject.adapter = subjectAdapter
         subjectAdapter.getList(subjectViewModel.makeList())
-
         // binding.btnMusic.visibility=View.INVISIBLE
 
-        knNaviView = binding.naviView
-        //현재 위치 버튼 클릭 시
-        binding.btnCurrentLocation.setOnClickListener {
-            showCurrentLocation()
-        }
-
         binding.btnSearch.setOnClickListener {
-            with(binding) {
-                svSearch.visibility = View.INVISIBLE
-                bnvMain.visibility = View.INVISIBLE
-                btnSearch.visibility = View.INVISIBLE
-                btnCurrentLocation.visibility = View.INVISIBLE
-                btnMusic.visibility = View.VISIBLE
-            }
-
-
-            val constraintLayout = binding.root as ConstraintLayout
-            val constraintSet = ConstraintSet()
-            constraintSet.clone(constraintLayout)
-
-            // `naviView`의 bottom을 parent의 bottom에 맞추고 margin을 설정합니다.
-            constraintSet.connect(
-                binding.naviView.id,
-                ConstraintSet.BOTTOM,
-                ConstraintSet.PARENT_ID,
-                ConstraintSet.BOTTOM
-            )
-
-            // bottomMargin 설정
-            constraintSet.setMargin(
-                binding.naviView.id,
-                ConstraintSet.BOTTOM,
-                getNavigationBarHeight()
-            )
-
-            constraintSet.applyTo(constraintLayout)
-
-            getDirections()
+            //내비 초기화
+            setKakaoNavi()
         }
 
         clickMusicButton()
 
-        // BroadcastReceiver 초기화 및 등록
+        // BroadcastReceiver 초기화 및 등록 (마이페이지에서 정보 수정 시 사용)
         updateReceiver = object : BroadcastReceiver() {
             override fun onReceive(context: Context?, intent: Intent?) {
                 val action = intent?.action
@@ -222,10 +167,25 @@ class MainActivity : AppCompatActivity(), KNGuidance_GuideStateDelegate,
             }
         }
 
-
         LocalBroadcastManager.getInstance(this).registerReceiver(
             updateReceiver, IntentFilter("com.example.UPDATE_INFO")
         )
+    }
+
+    private fun setWindowTransparent() {
+        //상태바 투명하게
+        val window = window
+        window.setFlags(
+            WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS,
+            WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS
+        )
+        window.navigationBarColor = ContextCompat.getColor(this, R.color.system_bnv_grey)
+
+        //시스템 하단바의 높이 만큼 하단네비게이션바를 올림
+        val bnvMain = binding.bnvMain
+        val layoutParams = bnvMain.layoutParams as ConstraintLayout.LayoutParams
+        layoutParams.bottomMargin = getNavigationBarHeight()
+        bnvMain.layoutParams = layoutParams
     }
 
     private fun getNavigationBarHeight(): Int {
@@ -233,6 +193,220 @@ class MainActivity : AppCompatActivity(), KNGuidance_GuideStateDelegate,
 
         return if (resourceId > 0) resources.getDimensionPixelSize(resourceId)
         else 0
+    }
+
+    private fun setKakaoMap() {
+        kakaoMapView.start(object : MapLifeCycleCallback() {
+            override fun onMapDestroy() {
+                // 지도 API 가 정상적으로 종료될 때 호출됨
+            }
+
+            override fun onMapError(error: Exception) {
+                // 인증 실패 및 지도 사용 중 에러가 발생할 때 호출됨
+            }
+        }, object : KakaoMapReadyCallback() {
+            override fun onMapReady(kakaoMap: KakaoMap) {
+                // 인증 후 API 가 정상적으로 실행될 때 호출됨
+                Log.d("mainactivity", "mapready")
+                val compass = kakaoMap.compass
+                compass!!.setPosition(MapGravity.TOP or MapGravity.LEFT, 100f, 150f)
+                compass.setBackToNorthOnClick(true)
+                compass.show()
+
+                CoroutineScope(Dispatchers.IO).launch {
+                    getMyLocation(this@MainActivity, kakaoMap)
+                    getPosition()
+                    kakaoMap.moveCamera(CameraUpdateFactory.newCenterPosition(currentPosition!!))
+                }
+
+                binding.btnCurrentLocation.setOnClickListener {
+                    kakaoMap.moveCamera(CameraUpdateFactory.newCenterPosition(currentPosition!!))
+                }
+            }
+
+            private fun getMyLocation(context: Context, kakaoMap: KakaoMap) {
+                val permissionCheck = ContextCompat.checkSelfPermission(
+                    context,
+                    android.Manifest.permission.ACCESS_FINE_LOCATION
+                )
+                if (permissionCheck == PackageManager.PERMISSION_GRANTED) {
+                    Log.d("mainactivity", "permission_granted")
+                    val lm = context.getSystemService(Context.LOCATION_SERVICE) as LocationManager
+                    try {
+                        val userCurLocation =
+                            lm.getLastKnownLocation(LocationManager.NETWORK_PROVIDER)
+                        val uLatitude = userCurLocation!!.latitude
+                        val uLogitude = userCurLocation.longitude
+                        Log.d("mainactivity", "latitude: ${uLatitude}, logitude: ${uLogitude}")
+                        currentPosition = LatLng.from(uLatitude, uLogitude)
+
+                        //label 생성
+                        val styles = kakaoMap.labelManager!!
+                            .addLabelStyles(LabelStyles.from(LabelStyle.from(R.drawable.pin)))
+                        val options =
+                            LabelOptions.from(LatLng.from(currentPosition)).setStyles(styles)
+                        val layer = kakaoMap.labelManager!!.layer
+                        val label = layer!!.addLabel(options)
+
+
+                        //trackingManager 설정
+                        /*val trackingManager = kakaoMap.trackingManager
+                        trackingManager!!.startTracking(label)*/
+                    } catch (e: java.lang.NullPointerException) {
+                        Log.e("LOCATION_ERROR", e.toString())
+                    }
+                } else {
+                    Log.d("mainactivity", "Permission denied")
+                    // 위치 정보 권한 요청
+                    ActivityCompat.requestPermissions(
+                        context as Activity,
+                        REQUIRED_PERMISSIONS,
+                        PERMISSIONS_REQUEST_CODE
+                    )
+                }
+            }
+
+            override fun getPosition(): LatLng {
+                // 지도 시작 시 위치 좌표를 설정
+                Log.d("mainactivity", "현재위치: ${currentPosition}")
+                return currentPosition ?: LatLng.from(37.406960, 127.115587)
+            }
+
+            override fun getZoomLevel(): Int {
+                // 지도 시작 시 확대/축소 줌 레벨 설정
+                return 15
+            }
+
+            /* override fun getMapViewInfo(): MapViewInfo {
+                 // 지도 시작 시 App 및 MapType 설정
+                 return MapViewInfo.from(MapType.NORMAL.name)
+             }*/
+
+            override fun getViewName(): String {
+                // KakaoMap 의 고유한 이름을 설정
+                return "MyFirstMap"
+            }
+
+            override fun isVisible(): Boolean {
+                // 지도 시작 시 visible 여부를 설정
+                return true
+            }
+
+            override fun getTag(): String {
+                // KakaoMap 의 tag 을 설정
+                return "FirstMapTag"
+            }
+        })
+    }
+
+    private fun setKakaoNavi() {
+        knNaviView = KNNaviView(this)
+        fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
+        checkLocation()
+    }
+
+    private fun initializeKNSDK(longitude: Double, latitude: Double) {
+        KNSDK.initializeWithAppKey(
+            appKey, BuildConfig.VERSION_NAME,
+            null, KNLanguageType.KNLanguageType_KOREAN, aCompletion = {
+                if (it != null) {
+                    when (it.code) {
+                        KNError_Code_C302 -> {
+                            Log.e("error", "error code c302")
+                        }
+
+                        else -> {
+                            Log.e("error", "unknown error")
+                        }
+                    }
+                } else {
+                    // 인증 완료
+                    Log.d("mainActivity", "인증완료")
+                    Log.d("mainActivity", "initialize -> 현재좌표: ${longitude}, ${latitude}")
+                    val intent = Intent(this, NaviActivity::class.java)
+                    intent.putExtra("currentLongitude", longitude)
+                    intent.putExtra("currentLatitude", latitude)
+                    startActivity(intent)
+                }
+            })
+    }
+
+    private fun checkLocation() {
+        // 위치 권한이 이미 허용되어 있는지 확인
+        if (isLocationPermissionGranted()) {
+            // 위치 기능 사용 가능
+            if (ActivityCompat.checkSelfPermission(
+                    this,
+                    Manifest.permission.ACCESS_FINE_LOCATION
+                ) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
+                    this,
+                    Manifest.permission.ACCESS_COARSE_LOCATION
+                ) != PackageManager.PERMISSION_GRANTED
+            ) {
+                // 권한이 없는 경우 처리
+                requestLocationPermission()
+                return
+            }
+
+            // 위치 요청
+            fusedLocationClient.lastLocation.addOnSuccessListener { location ->
+                if (location != null) {
+                    // 위치 정보를 가져온 후 처리
+                    currentLongitude = location.longitude
+                    currentLatitude = location.latitude
+                    Log.d("mainActivity", "long:${currentLongitude}, lati:${currentLatitude}")
+                    initializeKNSDK(currentLongitude, currentLatitude)
+                    // KNNaviView에 위치 정보 전달
+                    /* knNaviView.mapComponent.mapView.getMapToCenter().let { pos ->
+                         val point = KATECToWGS84(
+                             pos.x.roundToInt().toDouble(),
+                             pos.y.roundToInt().toDouble()
+                         )*/
+                    /*// 위치 정보를 보여주는 다이얼로그
+                    AlertDialog.Builder(this)
+                        .setTitle("현재 위치")
+                        .setMessage("longitude: ${point.x}\nlatitude: ${point.y}")
+                        .setCancelable(true)
+                        .setNegativeButton("close") { dialog, _ -> dialog.dismiss() }
+                        .create()
+                        .show()*/
+
+
+                    // 위치 정보를 사용하여 다음 Activity로 이동
+                    /*val token=intent.getStringExtra("accessToken")
+                    Log.d("locationActivity","token:${token}")
+                    val intent = Intent(this, NaviActivity::class.java)
+                    intent.putExtra("accessToken",token)
+                    intent.putExtra("longitude", currentLongitude)
+                    intent.putExtra("latitude", currentLatitude)
+                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK)
+                    startActivity(intent)
+                    finish()*/
+                    //}
+                } else {
+                    Log.e("mainActivity", "Location is null")
+                }
+            }
+        } else {
+            // 위치 권한 요청
+            requestLocationPermission()
+        }
+    }
+
+    private fun isLocationPermissionGranted(): Boolean {
+        return ContextCompat.checkSelfPermission(
+            this,
+            Manifest.permission.ACCESS_FINE_LOCATION
+        ) == PackageManager.PERMISSION_GRANTED
+    }
+
+    private fun requestLocationPermission() {
+        ActivityCompat.requestPermissions(
+            this,
+            arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
+            REQUEST_CODE_LOCATION_PERMISSION
+        )
+        checkLocation()
     }
 
     private fun initSearchView() {
@@ -270,98 +444,39 @@ class MainActivity : AppCompatActivity(), KNGuidance_GuideStateDelegate,
         })
     }
 
+
     // 카메라를 현재 위치로 이동
-    private fun showCurrentLocation() {
+    /*private fun showCurrentLocation() {
+        mapView = binding.naviView.mapComponent.mapView
+        if (currentLongitude == null || currentLatitude == null) {
+            Log.e("mainactivity", "현재 위치가 유효하지 않습니다.")
+            return
+        }
 
-        Log.d("mainactivity", "wgs84-long:${currentLongitude}, lati:${currentLatitude}")
-        val coordinate = WGS84ToKATEC(currentLongitude, currentLatitude)
-        mapView.moveCamera(positionWithKNMapCameraUpdate(coordinate.toFloatPoint()), false)
-        Log.d("mainactivity", "float long:${coordinate.x}}, latitu:${coordinate.y}")
+        Log.d(
+            "mainactivity",
+            "WGS84 - Longitude: $currentLongitude, Latitude: $currentLatitude"
+        )
 
-    }
+        try {
+            val coordinate = WGS84ToKATEC(currentLongitude, currentLatitude)
+            mapView.moveCamera(positionWithKNMapCameraUpdate(coordinate.toFloatPoint()), true)
+            Log.d(
+                "mainactivity",
+                "Converted - Longitude: ${coordinate.x}, Latitude: ${coordinate.y}"
+            )
+        } catch (e: ClassNotFoundException) {
+            Log.e("mainactivity", "ClassNotFoundException: ${e.message}")
+        } catch (e: NoClassDefFoundError) {
+            Log.e("mainactivity", "NoClassDefFoundError: ${e.message}")
+        }
+    }*/
+
 
     private fun positionWithKNMapCameraUpdate(coordinate: FloatPoint): KNMapCameraUpdate {
         return KNMapCameraUpdate.targetTo(coordinate)
     }
 
-    private fun getDirections() {
-        //위도 : 37.28682370552076
-        //경도 : 126.57606547684927
-        val currentKatec = WGS84ToKATEC(currentLongitude, currentLatitude)
-        val goalKatec = WGS84ToKATEC(127.0506751840799, 37.28991021417339)
-        Log.d(
-            "mainactivity",
-            "long:${currentKatec.x}, lati:${currentKatec.y}\n goal:${goalKatec.x} - ${goalKatec.y}"
-        )
-
-        val start = KNPOI("current", currentKatec.x.toInt(), currentKatec.y.toInt())
-        val goal = KNPOI("sea", goalKatec.x.toInt(), goalKatec.y.toInt())
-        // 경로 생성
-        KNSDK.makeTripWithStart(start, goal, null) { knError, knTrip ->
-            if (knError != null) {
-                // 오류 처리
-                println("경로 생성 실패: ${knError.msg}")
-                // 여기에서 사용자에게 오류를 알리거나 로그를 남기는 작업을 수행합니다.
-            } else if (knTrip != null) {
-                // 성공 처리
-                println("경로 생성 성공: 시작점 - ${knTrip.start}, 도착점 - ${knTrip.goal}")
-                // 차량 정보 및 기타 설정 반영
-                val routeConfig = KNRouteConfiguration(
-                    KNCarType.KNCarType_1,      // 차량의 종류 (예: SEDAN, SUV 등)
-                    KNCarFuel.KNCarFuel_Gasoline,  // 유고 정보 반영 여부
-                    true,                 // 하이패스 장착 여부
-                    KNCarUsage.KNCarUsage_Default,     // 차량의 용도 (예: PERSONAL, COMMERCIAL 등)
-                    -1,                 // 차량의 전폭 (단위: mm)
-                    -1,                 // 차량의 전고 (단위: mm)
-                    -1,                 // 차량의 전장 (단위: mm)
-                    -1                  // 차량의 중량 (단위: kg)
-                )
-
-                // 경로에 설정 적용
-                knTrip.setRouteConfig(routeConfig)
-
-                // 경로 옵션 설정
-                val curRoutePriority = KNRoutePriority.KNRoutePriority_Recommand
-                val curAvoidOptions = 0
-
-                Log.d("mainactivity", "우선순위: ${curRoutePriority}, 회피옵션: ${curAvoidOptions}")
-
-                // 경로 요청
-                knTrip.routeWithPriority(curRoutePriority, curAvoidOptions) { error, _ ->
-                    if (error != null) {
-                        // 경로 요청 실패
-                        Log.e(
-                            "mainactivity",
-                            "경로 요청 실패: code - ${error.code}, msg - ${error.msg} \n ${error.tagMsg} === ${error.extra}"
-                        )
-                    } else {
-                        // 경로 요청 성공
-                        Log.d("mainActivity", "경로 요청 성공!")
-                        naviView?.apply {
-                            // 각 가이던스 델리게이트 등록
-                            guideStateDelegate = this@MainActivity
-                            locationGuideDelegate = this@MainActivity
-                            routeGuideDelegate = this@MainActivity
-                            safetyGuideDelegate = this@MainActivity
-                            voiceGuideDelegate = this@MainActivity
-                            citsGuideDelegate = this@MainActivity
-
-                            knNaviView.initWithGuidance(
-                                this,
-                                knTrip,
-                                curRoutePriority,
-                                curAvoidOptions
-                            )
-                        }
-                    }
-                }
-
-            } else {
-                // 예상치 못한 상태 처리
-                println("예상치 못한 오류 발생")
-            }
-        }
-    }
 
 //    private fun updateButtonColors(selectedItemId: Int) {
 //        val menu = binding.bnvMain.menu
@@ -389,7 +504,8 @@ class MainActivity : AppCompatActivity(), KNGuidance_GuideStateDelegate,
                 Log.d("mainActivity", "isPlay true")
                 onPlayPauseButtonClicked()
             } else {
-                val situationAdapter = SituationAdapter { situation -> onItemClicked(situation) }
+                val situationAdapter =
+                    SituationAdapter(this, { situation -> onItemClicked(situation) }, "main")
                 binding.rvSituation.adapter = situationAdapter
                 situationAdapter.getList(situationViewModel.makeList())
                 Log.d("mainActivity", "isPlay false")
@@ -471,7 +587,7 @@ class MainActivity : AppCompatActivity(), KNGuidance_GuideStateDelegate,
         }
     }
 
-    private fun reconnectAndPlay(uri: String) {
+    /*private fun reconnectAndPlay(uri: String) {
         lifecycleScope.launch {
             try {
                 spotifyAppRemote = connectToAppRemote()
@@ -481,7 +597,7 @@ class MainActivity : AppCompatActivity(), KNGuidance_GuideStateDelegate,
                 logError(error)
             }
         }
-    }
+    }*/
 
     private fun onPlayPauseButtonClicked() {
         assertAppRemoteConnected().let {
@@ -585,151 +701,5 @@ class MainActivity : AppCompatActivity(), KNGuidance_GuideStateDelegate,
         currentFragment?.let {
             fragmentManager.beginTransaction().remove(it).commitNow()
         }
-    }
-
-    // 길 안내 시작 시 호출
-    override fun guidanceGuideStarted(aGuidance: KNGuidance) {
-        knNaviView.guidanceGuideStarted(aGuidance)
-    }
-
-    // 경로 변경 시 호출. 교통 변화 또는 경로 이탈로 인한 재탐색 및 사용자 재탐색 시 전달
-    override fun guidanceCheckingRouteChange(aGuidance: KNGuidance) {
-        knNaviView.guidanceCheckingRouteChange(aGuidance)
-    }
-
-    // 수신 받은 새 경로가 기존의 안내된 경로와 동일할 경우 호출
-    override fun guidanceRouteUnchanged(aGuidance: KNGuidance) {
-        knNaviView.guidanceRouteUnchanged(aGuidance)
-    }
-
-    // 경로에 오류가 발생 시 호출
-    override fun guidanceRouteUnchangedWithError(
-        aGuidnace: KNGuidance,
-        aError: KNError
-    ) {
-        knNaviView.guidanceRouteUnchangedWithError(aGuidnace, aError)
-    }
-
-    // 경로에서 이탈한 뒤 새로운 경로를 요청할 때 호출
-    override fun guidanceOutOfRoute(aGuidance: KNGuidance) {
-        knNaviView.guidanceOutOfRoute(aGuidance)
-    }
-
-    // 수신 받은 새 경로가 기존의 안내된 경로와 다를 경우 호출. 여러 개의 경로가 있을 경우 첫 번째 경로를 주행 경로로 사용하고 나머지는 대안 경로로 설정됨
-    override fun guidanceRouteChanged(
-        aGuidance: KNGuidance,
-        aFromRoute: KNRoute,
-        aFromLocation: KNLocation,
-        aToRoute: KNRoute,
-        aToLocation: KNLocation,
-        aChangeReason: KNGuideRouteChangeReason
-    ) {
-        knNaviView.guidanceRouteChanged(aGuidance)
-    }
-
-    // 길 안내 종료 시 호출
-    override fun guidanceGuideEnded(aGuidance: KNGuidance) {
-        knNaviView.guidanceGuideEnded(aGuidance)
-    }
-
-    // 주행 중 기타 요인들로 인해 경로가 변경되었을 때 호출
-    override fun guidanceDidUpdateRoutes(
-        aGuidance: KNGuidance,
-        aRoutes: List<KNRoute>,
-        aMultiRouteInfo: KNMultiRouteInfo?
-    ) {
-        knNaviView.guidanceDidUpdateRoutes(aGuidance, aRoutes, aMultiRouteInfo)
-    }
-
-    // KNGuidance_LocationGuideDelegate
-
-    // 위치 정보가 변경될 경우 호출. `locationGuide`의 항목이 1개 이상 변경 시 전달됨.
-    override fun guidanceDidUpdateLocation(
-        aGuidance: KNGuidance,
-        aLocationGuide: KNGuide_Location
-    ) {
-        knNaviView.guidanceDidUpdateLocation(aGuidance, aLocationGuide)
-    }
-
-    // KNGuidance_RouteGuideDelegate
-
-    // 경로 안내 정보 업데이트 시 호출. `routeGuide`의 항목이 1개 이상 변경 시 전달됨.
-    override fun guidanceDidUpdateRouteGuide(
-        aGuidance: KNGuidance,
-        aRouteGuide: KNGuide_Route
-    ) {
-        knNaviView.guidanceDidUpdateRouteGuide(aGuidance, aRouteGuide)
-    }
-
-    // KNGuidance_SafetyGuideDelegate
-
-    // 안전 운행 정보 업데이트 시 호출. `safetyGuide`의 항목이 1개 이상 변경 시 전달됨.
-    override fun guidanceDidUpdateSafetyGuide(
-        aGuidance: KNGuidance,
-        aSafetyGuide: KNGuide_Safety?
-    ) {
-        knNaviView.guidanceDidUpdateSafetyGuide(aGuidance, aSafetyGuide)
-    }
-
-    // 주변의 안전 운행 정보 업데이트 시 호출
-    override fun guidanceDidUpdateAroundSafeties(
-        aGuidance: KNGuidance,
-        aSafeties: List<KNSafety>?
-    ) {
-        knNaviView.guidanceDidUpdateAroundSafeties(aGuidance, aSafeties)
-    }
-
-    // KNGuidance_VoiceGuideDelegate
-
-    // 음성 안내 사용 여부
-    override fun shouldPlayVoiceGuide(
-        aGuidance: KNGuidance,
-        aVoiceGuide: KNGuide_Voice,
-        aNewData: MutableList<ByteArray>
-    ): Boolean {
-        return knNaviView.shouldPlayVoiceGuide(aGuidance, aVoiceGuide, aNewData)
-    }
-
-    // 음성 안내 시작
-    override fun willPlayVoiceGuide(
-        aGuidance: KNGuidance,
-        aVoiceGuide: KNGuide_Voice
-    ) {
-        knNaviView.willPlayVoiceGuide(aGuidance, aVoiceGuide)
-    }
-
-    // 음성 안내 종료
-    override fun didFinishPlayVoiceGuide(
-        aGuidance: KNGuidance,
-        aVoiceGuide: KNGuide_Voice
-    ) {
-        knNaviView.didFinishPlayVoiceGuide(aGuidance, aVoiceGuide)
-    }
-
-    // KNGuidance_CitsGuideDelegate
-
-    // CITS 정보 변경 시 호출
-    override fun didUpdateCitsGuide(
-        aGuidance: KNGuidance,
-        aCitsGuide: KNGuide_Cits
-    ) {
-        knNaviView.didUpdateCitsGuide(aGuidance, aCitsGuide)
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        // BroadcastReceiver 해제
-        LocalBroadcastManager.getInstance(this).unregisterReceiver(updateReceiver)
-    }
-
-    override fun naviViewGuideEnded() {
-        knNaviView.guideCancel()
-        knNaviView.guidance.stop()
-        naviView!!.stop()
-        Log.d("mainactivity", "안내 종료 버튼 클릭")
-    }
-
-    override fun naviViewGuideState(state: KNGuideState) {
-        TODO("Not yet implemented")
     }
 }
