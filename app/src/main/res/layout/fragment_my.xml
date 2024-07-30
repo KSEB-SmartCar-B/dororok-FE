@@ -48,7 +48,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="15dp"
         android:text="행복한 하루되세요 !"
-        android:textSize="20sp"
+        android:textSize="18sp"
         android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="@+id/iv_background"
         app:layout_constraintStart_toEndOf="@id/iv_profile"
@@ -128,7 +128,7 @@
         android:layout_height="wrap_content"
         android:layout_marginBottom="15dp"
         android:text="음악정보수정"
-        app:layout_constraintBottom_toBottomOf="@+id/iv_background2"
+        app:layout_constraintBottom_toBottomOf="@id/iv_background2"
         app:layout_constraintEnd_toStartOf="@id/divider"
         app:layout_constraintStart_toStartOf="@id/iv_background2"
         app:layout_constraintTop_toBottomOf="@id/iv_genre_background" />
@@ -137,23 +137,86 @@
         android:id="@+id/divider"
         android:layout_width="2dp"
         android:layout_height="150dp"
-        android:layout_marginStart="140dp"
+        android:layout_marginStart="120dp"
         android:background="?android:attr/listDivider"
         app:layout_constraintBottom_toBottomOf="@id/iv_background2"
         app:layout_constraintStart_toStartOf="@id/iv_background2"
         app:layout_constraintTop_toTopOf="@id/iv_background2" />
 
     <TextView
-        android:id="@+id/textView"
+        android:id="@+id/tv_place"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="15dp"
         android:layout_marginStart="15dp"
         android:text="어디로 떠나볼까요?"
-        android:textSize="18sp"
+        android:textSize="15sp"
         android:textStyle="bold"
-        app:layout_constraintStart_toEndOf="@+id/divider"
-        app:layout_constraintTop_toTopOf="@+id/iv_background2" />
+        app:layout_constraintStart_toEndOf="@id/divider"
+        app:layout_constraintTop_toTopOf="@id/iv_background2" />
+
+    <ImageView
+        android:id="@+id/iv_photo1"
+        android:layout_width="90dp"
+        android:layout_height="90dp"
+        android:background="@drawable/btn_gender"
+        android:layout_marginTop="10dp"
+        android:layout_marginStart="15dp"
+        app:layout_constraintStart_toEndOf="@id/divider"
+        app:layout_constraintEnd_toStartOf="@id/iv_photo2"
+        app:layout_constraintTop_toBottomOf="@id/tv_place" />
+
+    <ImageView
+        android:id="@+id/iv_photo2"
+        android:layout_width="90dp"
+        android:layout_height="90dp"
+        android:layout_marginStart="7dp"
+        android:layout_marginEnd="15dp"
+        android:background="@drawable/btn_gender"
+        app:layout_constraintEnd_toEndOf="@+id/iv_background2"
+        app:layout_constraintStart_toEndOf="@id/iv_photo1"
+        app:layout_constraintTop_toTopOf="@id/iv_photo1" />
+
+    <ImageView
+        android:id="@+id/iv_place1"
+        android:layout_width="90dp"
+        android:layout_height="45dp"
+        android:background="@drawable/btn_gender"
+        android:layout_marginTop="7dp"
+        app:layout_constraintStart_toStartOf="@id/iv_photo1"
+        app:layout_constraintTop_toBottomOf="@id/iv_photo1" />
+
+    <TextView
+        android:id="@+id/tv_place1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="장소1"
+        android:textStyle="bold"
+        app:layout_constraintTop_toTopOf="@id/iv_place1"
+        app:layout_constraintBottom_toBottomOf="@id/iv_place1"
+        app:layout_constraintStart_toStartOf="@id/iv_place1"
+        app:layout_constraintEnd_toEndOf="@id/iv_place1" />
+
+    <ImageView
+        android:id="@+id/iv_place2"
+        android:layout_width="90dp"
+        android:layout_height="45dp"
+        android:background="@drawable/btn_gender"
+        android:layout_marginTop="7dp"
+        app:layout_constraintStart_toStartOf="@id/iv_photo2"
+        app:layout_constraintTop_toBottomOf="@id/iv_photo2"/>
+
+    <TextView
+        android:id="@+id/tv_place2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="장소2"
+        android:textStyle="bold"
+        app:layout_constraintTop_toTopOf="@id/iv_place2"
+        app:layout_constraintBottom_toBottomOf="@id/iv_place2"
+        app:layout_constraintStart_toStartOf="@id/iv_place2"
+        app:layout_constraintEnd_toEndOf="@id/iv_place2" />
+
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -29,10 +29,4 @@ class JoinActivity: AppCompatActivity() {
             .replace(R.id.fcv_join, JoinInfoFragment())
             .commit()
     }
-
-    override fun onBackPressed() {
-        super.onBackPressed() // Call the default implementation to finish the activity
-        // Optionally, you can add custom behavior here if needed
-        finish()
-    }
 }
