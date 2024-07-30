@@ -32,7 +32,7 @@ class MusicFragment: Fragment() {
 
         binding.rvSituation.layoutManager = GridLayoutManager(requireContext(), 3)
 
-        val situationAdapter = SituationAdapter { situation -> onItemClicked(situation) }
+        val situationAdapter = SituationAdapter (requireContext(), { situation -> onItemClicked(situation) },"music")
         binding.rvSituation.adapter = situationAdapter
         situationAdapter.getList(viewmodel.makeList())
     }

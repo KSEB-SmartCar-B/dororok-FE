@@ -1,5 +1,6 @@
 package com.kseb.smart_car.presentation.join
 
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -21,6 +22,7 @@ class JoinGenreAdapter(private val onButtonClick: (String) -> Unit): RecyclerVie
         fun onBind(genre: ResponseAllGenreDto.GenreDto, onButtonClick: (String) -> Unit) {
             binding.tvGenre.text = genre.name
             binding.ivGenre.load(genre.imageUrl)
+            Log.d("genreAdapter","url: ${genre.imageUrl}")
 
             genreButton(onButtonClick)
         }

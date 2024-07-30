@@ -19,6 +19,7 @@ import com.kseb.smart_car.presentation.KakaoAuthViewModel
 import com.kseb.smart_car.presentation.KakaoAuthViewModelFactory
 import com.kseb.smart_car.presentation.join.JoinActivity
 import com.kseb.smart_car.presentation.main.LocationActivity
+import com.kseb.smart_car.presentation.main.MainActivity
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 
@@ -133,7 +134,7 @@ class LoginActivity : AppCompatActivity() {
                         Log.d("loginactivity", "accessToken:${accessState.accessToken}")
                         connect(this@LoginActivity) {
                             if(it){
-                                val intent = Intent(this@LoginActivity, LocationActivity::class.java).apply {
+                                val intent = Intent(this@LoginActivity, MainActivity::class.java).apply {
                                     putExtra("accessToken", "Bearer ${accessState.accessToken}")
                                     //addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK)
                                 }

@@ -2,6 +2,7 @@ package com.kseb.smart_car.presentation.join
 
 import android.icu.util.Calendar
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -106,6 +107,32 @@ class JoinInfoFragment : Fragment() {
 
         joinViewModel.getInfo(gender, nickname, birthYear, birthMonth, birthDay)
     }
+
+    override fun onStart() {
+        super.onStart()
+        Log.d("JoinInfoFragment", "onStart")
+    }
+
+    override fun onResume() {
+        super.onResume()
+        Log.d("JoinInfoFragment", "onResume")
+    }
+
+    override fun onPause() {
+        super.onPause()
+        Log.d("JoinInfoFragment", "onPause")
+    }
+
+    override fun onStop() {
+        super.onStop()
+        Log.d("JoinInfoFragment", "onStop")
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        Log.d("JoinInfoFragment", "onDestroy")
+    }
+
 
     override fun onDestroyView() {
         super.onDestroyView()

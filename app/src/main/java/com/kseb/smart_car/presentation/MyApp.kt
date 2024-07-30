@@ -4,6 +4,7 @@ import android.app.Application
 import android.util.Log
 import com.kakao.sdk.common.KakaoSdk
 import com.kakao.sdk.common.KakaoSdk.appKey
+import com.kakao.vectormap.KakaoMapSdk
 import com.kakaomobility.knsdk.KNLanguageType
 import com.kakaomobility.knsdk.KNSDK
 import com.kakaomobility.knsdk.common.objects.KNError_Code_C302
@@ -20,7 +21,7 @@ class MyApp : Application(){
     override fun onCreate() {
         super.onCreate()
         KakaoSdk.init(this, BuildConfig.NATIVE_APP_KEY)
-        //KakaoMapSdk.init(this, BuildConfig.NATIVE_APP_KEY);
+        KakaoMapSdk.init(this, BuildConfig.NATIVE_APP_KEY);
         KNSDK.install(this, "$filesDir/knsdk")
     }
 }
