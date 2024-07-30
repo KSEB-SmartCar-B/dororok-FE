@@ -237,7 +237,6 @@ class MainActivity : AppCompatActivity(), KNGuidance_GuideStateDelegate,
 
     private fun initSearchView() {
         // init SearchView
-        binding.svSearch.isSubmitButtonEnabled = true
         binding.svSearch.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(query: String): Boolean {
                 return false
