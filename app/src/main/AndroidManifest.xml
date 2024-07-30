@@ -36,6 +36,7 @@
         <activity
             android:name=".presentation.login.LoginActivity"
             android:exported="true">
+
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -51,6 +52,7 @@
 
         <activity android:name=".presentation.main.LocationActivity"
             android:exported="false">
+
         </activity>
 
         <activity android:name=".presentation.main.MainActivity"
@@ -64,6 +66,11 @@
         </activity>
 
         <activity android:name=".presentation.main.my.GenreActivity"
+            android:exported="false">
+
+        </activity>
+
+        <activity android:name=".presentation.main.search.SearchActivity"
             android:exported="false">
 
         </activity>

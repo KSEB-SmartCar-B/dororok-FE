@@ -33,8 +33,9 @@
 
     <ImageView
         android:id="@+id/iv_profile"
-        android:layout_width="90dp"
-        android:layout_height="90dp"
+        android:layout_width="75dp"
+        android:layout_height="75dp"
+        android:scaleType="centerCrop"
         android:background="@drawable/ic_basicprofile_foreground"
         app:layout_constraintBottom_toBottomOf="@id/iv_profile_background"
         app:layout_constraintStart_toStartOf="@id/iv_profile_background"
@@ -45,7 +46,7 @@
         android:id="@+id/tv_welcome"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="20dp"
+        android:layout_marginStart="15dp"
         android:text="행복한 하루되세요 !"
         android:textSize="20sp"
         android:textStyle="bold"

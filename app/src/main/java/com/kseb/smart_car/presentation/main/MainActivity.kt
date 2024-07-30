@@ -78,6 +78,8 @@ import com.spotify.android.appremote.api.ConnectionParams
 import com.spotify.android.appremote.api.Connector
 import com.spotify.android.appremote.api.SpotifyAppRemote
 import com.spotify.android.appremote.api.error.SpotifyDisconnectedException
+import com.kseb.smart_car.presentation.main.search.SearchActivity
+import com.kseb.smart_car.presentation.main.search.SearchFragment
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import kotlin.coroutines.Continuation
@@ -94,8 +96,8 @@ class MainActivity : AppCompatActivity(), KNGuidance_GuideStateDelegate,
     KNGuidance_CitsGuideDelegate, KNNaviView_GuideStateDelegate {
     private lateinit var binding: ActivityMainBinding
     private val subjectViewModel: SubjectViewModel by viewModels()
-    private val mainViewModel:MainViewModel by viewModels()
-    private val situationViewModel:SituationViewModel by viewModels()
+    private val mainViewModel: MainViewModel by viewModels()
+    private val situationViewModel: SituationViewModel by viewModels()
     private var spotifyAppRemote: SpotifyAppRemote? = null
     private val errorCallback = { throwable: Throwable -> logError(throwable) }
 
@@ -108,7 +110,7 @@ class MainActivity : AppCompatActivity(), KNGuidance_GuideStateDelegate,
     private var currentLongitude by Delegates.notNull<Double>()
     private var currentLatitude by Delegates.notNull<Double>()
 
-    private var isPlay=false
+    private var isPlay = false
 
     object AuthParams {
         const val CLIENT_ID = "d8e2d4268f28445eac8333a5292c8e9f"
@@ -124,6 +126,7 @@ class MainActivity : AppCompatActivity(), KNGuidance_GuideStateDelegate,
         initBinds()
         setting()
         clickButtonNavigation()
+        clickButtonSearch()
     }
 
     private fun initBinds() {
@@ -158,10 +161,10 @@ class MainActivity : AppCompatActivity(), KNGuidance_GuideStateDelegate,
         //상단 버튼 만들기
         val subjectAdapter = SubjectAdapter()
 
-       // binding.rvSubject.adapter = subjectAdapter
+        // binding.rvSubject.adapter = subjectAdapter
         subjectAdapter.getList(subjectViewModel.makeList())
 
-       // binding.btnMusic.visibility=View.INVISIBLE
+        // binding.btnMusic.visibility=View.INVISIBLE
 
         knNaviView = binding.naviView
         //현재 위치 버튼 클릭 시
@@ -170,12 +173,12 @@ class MainActivity : AppCompatActivity(), KNGuidance_GuideStateDelegate,
         }
 
         binding.btnSearch.setOnClickListener {
-            with(binding){
-                svSearch.visibility=View.INVISIBLE
-                bnvMain.visibility=View.INVISIBLE
-                btnSearch.visibility=View.INVISIBLE
-                btnCurrentLocation.visibility=View.INVISIBLE
-                btnMusic.visibility=View.VISIBLE
+            with(binding) {
+                svSearch.visibility = View.INVISIBLE
+                bnvMain.visibility = View.INVISIBLE
+                btnSearch.visibility = View.INVISIBLE
+                btnCurrentLocation.visibility = View.INVISIBLE
+                btnMusic.visibility = View.VISIBLE
             }
 
 
@@ -242,18 +245,22 @@ class MainActivity : AppCompatActivity(), KNGuidance_GuideStateDelegate,
 
             override fun onQueryTextChange(newText: String?): Boolean {
                 // @TODO
-                if(newText!=null){
+                if (newText != null) {
                     mainViewModel.getAddress(newText)
                     lifecycleScope.launch {
-                        mainViewModel.addressState.collect{ addressState->
-                            when(addressState){
-                                is AddressState.Success->{
+                        mainViewModel.addressState.collect { addressState ->
+                            when (addressState) {
+                                is AddressState.Success -> {
                                     Log.d("mainActivity", "주소 가져오기 성공!")
-                                    Log.d("mainActivity", "${addressState.addressDto.documents[0].placeName}")
+                                    Log.d(
+                                        "mainActivity",
+                                        "${addressState.addressDto.documents[0].placeName}"
+                                    )
                                 }
-                                is AddressState.Loading->{}
-                                is AddressState.Error->{
-                                    Log.e("mainActivity","주소 가져오기 에러!")
+
+                                is AddressState.Loading -> {}
+                                is AddressState.Error -> {
+                                    Log.e("mainActivity", "주소 가져오기 에러!")
                                 }
                             }
                         }
@@ -330,7 +337,7 @@ class MainActivity : AppCompatActivity(), KNGuidance_GuideStateDelegate,
                         )
                     } else {
                         // 경로 요청 성공
-                        Log.d("mainActivity","경로 요청 성공!")
+                        Log.d("mainActivity", "경로 요청 성공!")
                         naviView?.apply {
                             // 각 가이던스 델리게이트 등록
                             guideStateDelegate = this@MainActivity
@@ -370,37 +377,46 @@ class MainActivity : AppCompatActivity(), KNGuidance_GuideStateDelegate,
 //        }
 //    }
 
-    private fun clickMusicButton(){
-        binding.btnMusic.setOnClickListener{
+    private fun clickMusicButton() {
+        binding.btnMusic.setOnClickListener {
             if (binding.rvSituation.visibility == View.GONE) {
                 binding.rvSituation.visibility = View.VISIBLE
             } else {
                 binding.rvSituation.visibility = View.GONE
             }
 
-                if(isPlay){
-                   isPlay=false
-                    Log.d("mainActivity","isPlay true")
-                    onPlayPauseButtonClicked()
-                }else{
-                    val situationAdapter=SituationAdapter{situation -> onItemClicked(situation)}
-                    binding.rvSituation.adapter=situationAdapter
-                    situationAdapter.getList(situationViewModel.makeList())
-                    Log.d("mainActivity","isPlay false")
-                }
+            if (isPlay) {
+                isPlay = false
+                Log.d("mainActivity", "isPlay true")
+                onPlayPauseButtonClicked()
+            } else {
+                val situationAdapter = SituationAdapter { situation -> onItemClicked(situation) }
+                binding.rvSituation.adapter = situationAdapter
+                situationAdapter.getList(situationViewModel.makeList())
+                Log.d("mainActivity", "isPlay false")
+            }
         }
     }
 
     private fun onItemClicked(situation: String) {
         SpotifyAppRemote.disconnect(spotifyAppRemote)
-        binding.rvSituation.visibility=View.INVISIBLE
-        Log.d("mainactivity","음악 클릭!")
+        binding.rvSituation.visibility = View.INVISIBLE
+        Log.d("mainactivity", "음악 클릭!")
         lifecycleScope.launch {
             try {
                 spotifyAppRemote = connectToAppRemote()
                 playUri(TRACK_URI) // onItemClicked에서 연결 후 재생 시도
             } catch (error: Throwable) {
                 logError(error)
+            }
+        }
+    }
+
+    private fun clickButtonSearch() {
+        binding.svSearch.setOnQueryTextFocusChangeListener { _, hasFocus ->
+            if (hasFocus) {
+                val intent = Intent(this, SearchActivity::class.java)
+                startActivity(intent)
             }
         }
     }
@@ -415,12 +431,12 @@ class MainActivity : AppCompatActivity(), KNGuidance_GuideStateDelegate,
                     .build(),
                 object : Connector.ConnectionListener {
                     override fun onConnected(spotifyAppRemote: SpotifyAppRemote) {
-                        Log.d("connec","onConnected 실행!")
+                        Log.d("connec", "onConnected 실행!")
                         cont.resume(spotifyAppRemote)
                     }
 
                     override fun onFailure(error: Throwable) {
-                        Log.e("mainActivity","connect fail!",error)
+                        Log.e("mainActivity", "connect fail!", error)
                         cont.resumeWithException(error)
                     }
                 })
@@ -432,7 +448,14 @@ class MainActivity : AppCompatActivity(), KNGuidance_GuideStateDelegate,
             assertAppRemoteConnected()
                 .playerApi
                 .play(uri)
-                .setResultCallback { logMessage(getString(R.string.command_feedback, "play")) }
+                .setResultCallback {
+                    logMessage(
+                        getString(
+                            R.string.command_feedback,
+                            "play"
+                        )
+                    )
+                }
                 .setErrorCallback { error -> logError(error) }
             onPlayPauseButtonClicked()
         } catch (e: SpotifyDisconnectedException) {
@@ -469,15 +492,29 @@ class MainActivity : AppCompatActivity(), KNGuidance_GuideStateDelegate,
                     if (playerState.isPaused) {
                         it.playerApi
                             .resume()
-                            .setResultCallback { logMessage(getString(R.string.command_feedback, "play")) }
+                            .setResultCallback {
+                                logMessage(
+                                    getString(
+                                        R.string.command_feedback,
+                                        "play"
+                                    )
+                                )
+                            }
                             .setErrorCallback(errorCallback)
-                        isPlay=true
+                        isPlay = true
                     } else {
                         it.playerApi
                             .pause()
-                            .setResultCallback { logMessage(getString(R.string.command_feedback, "pause")) }
+                            .setResultCallback {
+                                logMessage(
+                                    getString(
+                                        R.string.command_feedback,
+                                        "pause"
+                                    )
+                                )
+                            }
                             .setErrorCallback(errorCallback)
-                        isPlay=false
+                        isPlay = false
                     }
                 }
         }
@@ -495,6 +532,13 @@ class MainActivity : AppCompatActivity(), KNGuidance_GuideStateDelegate,
 
     private fun showDialog(title: String, message: String) {
         AlertDialog.Builder(this).setTitle(title).setMessage(message).create().show()
+
+    }
+
+    //메인 액티비티에서 searchview 타자 보이지 않도록 설정
+    override fun onResume() {
+        super.onResume()
+        binding.svSearch.clearFocus()
     }
 
     private fun clickButtonNavigation() {
@@ -534,7 +578,10 @@ class MainActivity : AppCompatActivity(), KNGuidance_GuideStateDelegate,
 
     private fun removeAllFragments() {
         val fragmentManager = supportFragmentManager
-        fragmentManager.popBackStackImmediate(null, FragmentManager.POP_BACK_STACK_INCLUSIVE)
+        fragmentManager.popBackStackImmediate(
+            null,
+            FragmentManager.POP_BACK_STACK_INCLUSIVE
+        )
         val currentFragment = fragmentManager.findFragmentById(R.id.fcv_main)
         currentFragment?.let {
             fragmentManager.beginTransaction().remove(it).commitNow()
@@ -557,7 +604,10 @@ class MainActivity : AppCompatActivity(), KNGuidance_GuideStateDelegate,
     }
 
     // 경로에 오류가 발생 시 호출
-    override fun guidanceRouteUnchangedWithError(aGuidnace: KNGuidance, aError: KNError) {
+    override fun guidanceRouteUnchangedWithError(
+        aGuidnace: KNGuidance,
+        aError: KNError
+    ) {
         knNaviView.guidanceRouteUnchangedWithError(aGuidnace, aError)
     }
 
@@ -599,14 +649,17 @@ class MainActivity : AppCompatActivity(), KNGuidance_GuideStateDelegate,
         aGuidance: KNGuidance,
         aLocationGuide: KNGuide_Location
     ) {
-        knNaviView.guidanceDidUpdateLocation(aGuidance,aLocationGuide)
+        knNaviView.guidanceDidUpdateLocation(aGuidance, aLocationGuide)
     }
 
     // KNGuidance_RouteGuideDelegate
 
     // 경로 안내 정보 업데이트 시 호출. `routeGuide`의 항목이 1개 이상 변경 시 전달됨.
-    override fun guidanceDidUpdateRouteGuide(aGuidance: KNGuidance, aRouteGuide: KNGuide_Route) {
-        knNaviView.guidanceDidUpdateRouteGuide(aGuidance,aRouteGuide)
+    override fun guidanceDidUpdateRouteGuide(
+        aGuidance: KNGuidance,
+        aRouteGuide: KNGuide_Route
+    ) {
+        knNaviView.guidanceDidUpdateRouteGuide(aGuidance, aRouteGuide)
     }
 
     // KNGuidance_SafetyGuideDelegate
@@ -616,7 +669,7 @@ class MainActivity : AppCompatActivity(), KNGuidance_GuideStateDelegate,
         aGuidance: KNGuidance,
         aSafetyGuide: KNGuide_Safety?
     ) {
-        knNaviView.guidanceDidUpdateSafetyGuide(aGuidance,aSafetyGuide)
+        knNaviView.guidanceDidUpdateSafetyGuide(aGuidance, aSafetyGuide)
     }
 
     // 주변의 안전 운행 정보 업데이트 시 호출
@@ -639,19 +692,28 @@ class MainActivity : AppCompatActivity(), KNGuidance_GuideStateDelegate,
     }
 
     // 음성 안내 시작
-    override fun willPlayVoiceGuide(aGuidance: KNGuidance, aVoiceGuide: KNGuide_Voice) {
+    override fun willPlayVoiceGuide(
+        aGuidance: KNGuidance,
+        aVoiceGuide: KNGuide_Voice
+    ) {
         knNaviView.willPlayVoiceGuide(aGuidance, aVoiceGuide)
     }
 
     // 음성 안내 종료
-    override fun didFinishPlayVoiceGuide(aGuidance: KNGuidance, aVoiceGuide: KNGuide_Voice) {
+    override fun didFinishPlayVoiceGuide(
+        aGuidance: KNGuidance,
+        aVoiceGuide: KNGuide_Voice
+    ) {
         knNaviView.didFinishPlayVoiceGuide(aGuidance, aVoiceGuide)
     }
 
     // KNGuidance_CitsGuideDelegate
 
     // CITS 정보 변경 시 호출
-    override fun didUpdateCitsGuide(aGuidance: KNGuidance, aCitsGuide: KNGuide_Cits) {
+    override fun didUpdateCitsGuide(
+        aGuidance: KNGuidance,
+        aCitsGuide: KNGuide_Cits
+    ) {
         knNaviView.didUpdateCitsGuide(aGuidance, aCitsGuide)
     }
 
@@ -665,7 +727,7 @@ class MainActivity : AppCompatActivity(), KNGuidance_GuideStateDelegate,
         knNaviView.guideCancel()
         knNaviView.guidance.stop()
         naviView!!.stop()
-        Log.d("mainactivity","안내 종료 버튼 클릭")
+        Log.d("mainactivity", "안내 종료 버튼 클릭")
     }
 
     override fun naviViewGuideState(state: KNGuideState) {
