@@ -27,88 +27,134 @@
             app:layout_constraintTop_toTopOf="parent"
             app:srcCompat="@drawable/join_info" />
 
-        <TextView
-            android:id="@+id/tv_gender"
-            android:layout_width="wrap_content"
+        <!-- 첫번째 묶음: 성별 선택 -->
+        <LinearLayout
+            android:id="@+id/gender"
+            android:layout_width="300dp"
             android:layout_height="wrap_content"
-            android:layout_marginStart="60dp"
             android:layout_marginTop="220dp"
-            android:text="성별"
-            android:textSize="20sp"
-            android:textStyle="bold"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-
-        <androidx.appcompat.widget.AppCompatButton
-            android:id="@+id/btn_male"
-            android:layout_width="120dp"
-            android:layout_height="40dp"
-            android:layout_marginStart="30dp"
-            android:layout_marginTop="15dp"
-            android:layout_marginEnd="-10dp"
-            android:text="남자"
-            android:textSize="15sp"
-            android:background="@drawable/btn_gender"
-            app:layout_constraintEnd_toStartOf="@id/btn_female"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/tv_gender" />
-
-        <androidx.appcompat.widget.AppCompatButton
-            android:id="@+id/btn_female"
-            android:layout_width="120dp"
-            android:layout_height="40dp"
-            android:layout_marginStart="-10dp"
-            android:layout_marginEnd="30dp"
-            android:text="여자"
-            android:textSize="15sp"
-            android:background="@drawable/btn_gender"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@id/btn_male"
-            app:layout_constraintTop_toTopOf="@id/btn_male" />
-
-        <TextView
-            android:id="@+id/tv_nick"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="70dp"
-            android:text="닉네임"
-            android:textSize="20sp"
-            android:textStyle="bold"
-            app:layout_constraintStart_toStartOf="@id/tv_gender"
-            app:layout_constraintTop_toBottomOf="@id/btn_male" />
-
-        <EditText
-            android:id="@+id/et_nick"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="15dp"
-            android:ems="15"
-            android:hint="닉네임을 입력하세요"
-            android:inputType="text"
+            android:background="@drawable/border_default"
+            android:orientation="vertical"
+            android:padding="10dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/tv_nick" />
+            app:layout_constraintTop_toTopOf="parent">
 
-        <TextView
-            android:id="@+id/tv_birth"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="70dp"
-            android:text="생년월일"
-            android:textSize="20sp"
-            android:textStyle="bold"
-            app:layout_constraintStart_toStartOf="@id/tv_nick"
-            app:layout_constraintTop_toBottomOf="@id/et_nick" />
+            <TextView
+                android:id="@+id/tv_gender"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="10dp"
+                android:text="성별"
+                android:textSize="20sp"
+                android:textStyle="bold" />
 
-        <DatePicker
-            android:id="@+id/dpSpinner"
-            android:layout_width="wrap_content"
+            <FrameLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal">
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    app:layout_constraintEnd_toEndOf="@id/gender"
+                    app:layout_constraintStart_toStartOf="@id/gender">
+
+                    <androidx.appcompat.widget.AppCompatButton
+                        android:id="@+id/btn_male"
+                        android:layout_width="110dp"
+                        android:layout_height="40dp"
+                        android:layout_margin="5dp"
+                        android:layout_marginEnd="10dp"
+                        android:background="@drawable/btn_gender"
+                        android:text="남자"
+                        android:textSize="15sp" />
+
+                    <androidx.appcompat.widget.AppCompatButton
+                        android:id="@+id/btn_female"
+                        android:layout_width="110dp"
+                        android:layout_height="40dp"
+                        android:layout_margin="5dp"
+                        android:background="@drawable/btn_gender"
+                        android:text="여자"
+                        android:textSize="15sp" />
+                </LinearLayout>
+            </FrameLayout>
+        </LinearLayout>
+
+        <!-- 두번째 묶음: 닉네임 -->
+        <LinearLayout
+            android:id="@+id/nickname"
+            android:layout_width="300dp"
             android:layout_height="wrap_content"
-            android:calendarViewShown="false"
-            android:datePickerMode="spinner"
-            app:layout_constraintEnd_toEndOf="@id/et_nick"
-            app:layout_constraintStart_toStartOf="@id/et_nick"
-            app:layout_constraintTop_toBottomOf="@id/tv_birth" />
+            android:layout_marginTop="20dp"
+            android:background="@drawable/border_default"
+            android:orientation="vertical"
+            android:padding="10dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/gender">
+
+            <TextView
+                android:id="@+id/tv_nick"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="10dp"
+                android:text="닉네임"
+                android:textSize="20sp"
+                android:textStyle="bold" />
+
+            <FrameLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal">
+
+                <EditText
+                    android:id="@+id/et_nick"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:ems="13"
+                    android:hint="닉네임을 입력하세요"
+                    android:inputType="text" />
+            </FrameLayout>
+        </LinearLayout>
+
+        <!-- 세번째 묶음: 생년월일 -->
+        <LinearLayout
+            android:id="@+id/birthday"
+            android:layout_width="300dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:background="@drawable/border_default"
+            android:orientation="vertical"
+            android:padding="10dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/nickname">
+
+            <TextView
+                android:id="@+id/tv_birth"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="10dp"
+                android:text="생년월일"
+                android:textSize="20sp"
+                android:textStyle="bold" />
+
+            <FrameLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal">
+
+                <DatePicker
+                    android:id="@+id/dpSpinner"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:calendarViewShown="false"
+                    android:datePickerMode="spinner" />
+            </FrameLayout>
+        </LinearLayout>
 
         <TextView
             android:id="@+id/tv_personal"
@@ -118,8 +164,8 @@
             android:text="개인정보수집동의"
             android:textSize="20sp"
             android:textStyle="bold"
-            app:layout_constraintStart_toStartOf="@id/tv_birth"
-            app:layout_constraintTop_toBottomOf="@id/dpSpinner" />
+            app:layout_constraintStart_toStartOf="@id/birthday"
+            app:layout_constraintTop_toBottomOf="@id/birthday" />
 
         <TextView
             android:id="@+id/tv_position"
