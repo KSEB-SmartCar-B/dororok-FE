@@ -52,19 +52,20 @@ class JoinGenreFragment: Fragment() {
 //            ).show()
 //        }
 
-        val joinGenreAdapter = JoinGenreAdapter { buttonText -> joinviewmodel.getGenre(buttonText)}
+        val joinGenreAdapter = JoinGenreAdapter { buttonText -> joinviewmodel.getGenre(buttonText) }
         binding.rvGenre.adapter = joinGenreAdapter
         joinGenreViewModel.getGenreList()
 
         lifecycleScope.launch {
-            joinGenreViewModel.genreListState.collect{allGenreState ->
-                when(allGenreState){
-                    is AllGenreState.Success->{
+            joinGenreViewModel.genreListState.collect { allGenreState ->
+                when (allGenreState) {
+                    is AllGenreState.Success -> {
                         joinGenreAdapter.getList(allGenreState.genreDto.names)
                     }
-                    is AllGenreState.Loading->{}
-                    is AllGenreState.Error->{
-                        Log.e("joinGenreFragment","allGenreState is error!")
+
+                    is AllGenreState.Loading -> {}
+                    is AllGenreState.Error -> {
+                        Log.e("joinGenreFragment", "allGenreState is error!")
                     }
                 }
             }
@@ -77,14 +78,22 @@ class JoinGenreFragment: Fragment() {
         binding.btnJoin.setOnClickListener {
             joinviewmodel.makeSignUp()
             lifecycleScope.launch {
-                joinviewmodel.signUpState.collect{signUpState ->
-                    when(signUpState){
+                joinviewmodel.signUpState.collect { signUpState ->
+                    when (signUpState) {
                         is SignUpState.Success -> {
                             connect(requireContext()) {
-                                if(it){
-                                    startActivity(Intent(requireContext(), LocationActivity::class.java).putExtra("accessToken","Bearer ${signUpState.accessToken}"))
+                                if (it) {
+                                    startActivity(
+                                        Intent(
+                                            requireContext(),
+                                            LocationActivity::class.java
+                                        ).putExtra(
+                                            "accessToken",
+                                            "Bearer ${signUpState.accessToken}"
+                                        )
+                                    )
                                     requireActivity().finish()
-                                }else {
+                                } else {
                                     Toast.makeText(
                                         requireContext(),
                                         R.string.spotify_error,
@@ -93,11 +102,13 @@ class JoinGenreFragment: Fragment() {
                                 }
                             }
                         }
-                        is SignUpState.Loading->{
+
+                        is SignUpState.Loading -> {
 
                         }
-                        is SignUpState.Error ->{
-                            Log.e("join2Fragment","회원가입 실패 ${signUpState.message}")
+
+                        is SignUpState.Error -> {
+                            Log.e("join2Fragment", "회원가입 실패 ${signUpState.message}")
                         }
                     }
                 }
