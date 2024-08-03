@@ -90,16 +90,11 @@ class MainActivity : AppCompatActivity() {
     private lateinit var updateReceiver: BroadcastReceiver
 
     private lateinit var kakaoMapView: MapView
-    private lateinit var knNaviView: KNNaviView
-    private lateinit var fusedLocationClient: FusedLocationProviderClient
-    private val REQUEST_CODE_LOCATION_PERMISSION = 123
 
-    private var currentLongitude by Delegates.notNull<Double>()
-    private var currentLatitude by Delegates.notNull<Double>()
     private var currentPosition: LatLng? = null
     val PERMISSIONS_REQUEST_CODE = 100
     var REQUIRED_PERMISSIONS = arrayOf<String>(
-        android.Manifest.permission.ACCESS_FINE_LOCATION
+        Manifest.permission.ACCESS_FINE_LOCATION
     )
 
     private var isPlay = false
@@ -145,11 +140,6 @@ class MainActivity : AppCompatActivity() {
         // binding.rvSubject.adapter = subjectAdapter
         subjectAdapter.getList(subjectViewModel.makeList())
         // binding.btnMusic.visibility=View.INVISIBLE
-
-        binding.btnSearch.setOnClickListener {
-            //내비 초기화
-            setKakaoNavi()
-        }
 
         clickMusicButton()
 
@@ -208,8 +198,10 @@ class MainActivity : AppCompatActivity() {
             override fun onMapReady(kakaoMap: KakaoMap) {
                 // 인증 후 API 가 정상적으로 실행될 때 호출됨
                 Log.d("mainactivity", "mapready")
+
+                //방위 컴패스
                 val compass = kakaoMap.compass
-                compass!!.setPosition(MapGravity.TOP or MapGravity.LEFT, 100f, 150f)
+                compass!!.setPosition(MapGravity.TOP or MapGravity.LEFT, 80f, 300f)
                 compass.setBackToNorthOnClick(true)
                 compass.show()
 
@@ -297,116 +289,6 @@ class MainActivity : AppCompatActivity() {
                 return "FirstMapTag"
             }
         })
-    }
-
-    private fun setKakaoNavi() {
-        knNaviView = KNNaviView(this)
-        fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
-        checkLocation()
-    }
-
-    private fun initializeKNSDK(longitude: Double, latitude: Double) {
-        KNSDK.initializeWithAppKey(
-            appKey, BuildConfig.VERSION_NAME,
-            null, KNLanguageType.KNLanguageType_KOREAN, aCompletion = {
-                if (it != null) {
-                    when (it.code) {
-                        KNError_Code_C302 -> {
-                            Log.e("error", "error code c302")
-                        }
-
-                        else -> {
-                            Log.e("error", "unknown error")
-                        }
-                    }
-                } else {
-                    // 인증 완료
-                    Log.d("mainActivity", "인증완료")
-                    Log.d("mainActivity", "initialize -> 현재좌표: ${longitude}, ${latitude}")
-                    val intent = Intent(this, NaviActivity::class.java)
-                    intent.putExtra("currentLongitude", longitude)
-                    intent.putExtra("currentLatitude", latitude)
-                    startActivity(intent)
-                }
-            })
-    }
-
-    private fun checkLocation() {
-        // 위치 권한이 이미 허용되어 있는지 확인
-        if (isLocationPermissionGranted()) {
-            // 위치 기능 사용 가능
-            if (ActivityCompat.checkSelfPermission(
-                    this,
-                    Manifest.permission.ACCESS_FINE_LOCATION
-                ) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
-                    this,
-                    Manifest.permission.ACCESS_COARSE_LOCATION
-                ) != PackageManager.PERMISSION_GRANTED
-            ) {
-                // 권한이 없는 경우 처리
-                requestLocationPermission()
-                return
-            }
-
-            // 위치 요청
-            fusedLocationClient.lastLocation.addOnSuccessListener { location ->
-                if (location != null) {
-                    // 위치 정보를 가져온 후 처리
-                    currentLongitude = location.longitude
-                    currentLatitude = location.latitude
-                    Log.d("mainActivity", "long:${currentLongitude}, lati:${currentLatitude}")
-                    initializeKNSDK(currentLongitude, currentLatitude)
-                    // KNNaviView에 위치 정보 전달
-                    /* knNaviView.mapComponent.mapView.getMapToCenter().let { pos ->
-                         val point = KATECToWGS84(
-                             pos.x.roundToInt().toDouble(),
-                             pos.y.roundToInt().toDouble()
-                         )*/
-                    /*// 위치 정보를 보여주는 다이얼로그
-                    AlertDialog.Builder(this)
-                        .setTitle("현재 위치")
-                        .setMessage("longitude: ${point.x}\nlatitude: ${point.y}")
-                        .setCancelable(true)
-                        .setNegativeButton("close") { dialog, _ -> dialog.dismiss() }
-                        .create()
-                        .show()*/
-
-
-                    // 위치 정보를 사용하여 다음 Activity로 이동
-                    /*val token=intent.getStringExtra("accessToken")
-                    Log.d("locationActivity","token:${token}")
-                    val intent = Intent(this, NaviActivity::class.java)
-                    intent.putExtra("accessToken",token)
-                    intent.putExtra("longitude", currentLongitude)
-                    intent.putExtra("latitude", currentLatitude)
-                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK)
-                    startActivity(intent)
-                    finish()*/
-                    //}
-                } else {
-                    Log.e("mainActivity", "Location is null")
-                }
-            }
-        } else {
-            // 위치 권한 요청
-            requestLocationPermission()
-        }
-    }
-
-    private fun isLocationPermissionGranted(): Boolean {
-        return ContextCompat.checkSelfPermission(
-            this,
-            Manifest.permission.ACCESS_FINE_LOCATION
-        ) == PackageManager.PERMISSION_GRANTED
-    }
-
-    private fun requestLocationPermission() {
-        ActivityCompat.requestPermissions(
-            this,
-            arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
-            REQUEST_CODE_LOCATION_PERMISSION
-        )
-        checkLocation()
     }
 
     private fun initSearchView() {
@@ -528,12 +410,16 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun clickButtonSearch() {
-        binding.svSearch.setOnQueryTextFocusChangeListener { _, hasFocus ->
-            if (hasFocus) {
-                val intent = Intent(this, SearchActivity::class.java)
-                startActivity(intent)
+        mainViewModel.accessToken.observe(this){ token ->
+            binding.svSearch.setOnQueryTextFocusChangeListener { _, hasFocus ->
+                if (hasFocus) {
+                    val intent = Intent(this, SearchActivity::class.java)
+                    intent.putExtra("accessToken", token)
+                    startActivity(intent)
+                }
             }
         }
+
     }
 
     private suspend fun connectToAppRemote(): SpotifyAppRemote? =

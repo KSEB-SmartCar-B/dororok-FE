@@ -40,6 +40,7 @@ import com.kakaomobility.knsdk.ui.view.KNNaviView
 import com.kakaomobility.knsdk.ui.view.KNNaviView_GuideStateDelegate
 import com.kseb.smart_car.R
 import com.kseb.smart_car.databinding.ActivityNaviBinding
+import dagger.hilt.android.AndroidEntryPoint
 import kotlin.properties.Delegates
 
 class NaviActivity:AppCompatActivity(), KNGuidance_GuideStateDelegate,
@@ -119,8 +120,11 @@ class NaviActivity:AppCompatActivity(), KNGuidance_GuideStateDelegate,
         //위도 : 37.28682370552076
         //경도 : 126.57606547684927
         Log.d("naviActivity","현재 좌표: ${currentLongitude}, ${currentLatitude }")
+        val goalLongitude = intent.getDoubleExtra("goalLongitude", 0.0)
+        val goalLatitude= intent.getDoubleExtra("goalLatitude", 0.0)
+
         val currentKatec = WGS84ToKATEC(currentLongitude, currentLatitude)
-        val goalKatec = WGS84ToKATEC(127.0506751840799, 37.28991021417339)
+        val goalKatec = WGS84ToKATEC(goalLongitude, goalLatitude)
         Log.d("naviActivity", "Current: long:${currentKatec.x}, lati:${currentKatec.y}")
         Log.d("naviActivity", "Goal: long:${goalKatec.x}, lati:${goalKatec.y}")
 
@@ -136,7 +140,7 @@ class NaviActivity:AppCompatActivity(), KNGuidance_GuideStateDelegate,
         KNSDK.makeTripWithStart(start, goal, null) { knError, knTrip ->
             if (knError != null) {
                 // 오류 처리
-                println("경로 생성 실패: ${knError.msg}")
+                Log.e("naviActivity","경로 생성 실패: ${knError.msg}")
                 // 여기에서 사용자에게 오류를 알리거나 로그를 남기는 작업을 수행합니다.
             } else if (knTrip != null) {
                 // 성공 처리
@@ -241,6 +245,7 @@ class NaviActivity:AppCompatActivity(), KNGuidance_GuideStateDelegate,
 
     // 길 안내 종료 시 호출
     override fun guidanceGuideEnded(aGuidance: KNGuidance) {
+        Log.d("naviActivity","=========안내 종료========")
         knNaviView.guidanceGuideEnded(aGuidance)
     }
 
@@ -330,12 +335,12 @@ class NaviActivity:AppCompatActivity(), KNGuidance_GuideStateDelegate,
 
     override fun naviViewGuideEnded() {
         finish()
-        Log.d("mainactivity", "안내 종료 버튼 클릭")
+        Log.d("naviActivity", "안내 종료 버튼 클릭")
     }
 
     override fun naviViewGuideState(state: KNGuideState) {
         TODO("Not yet implemented")
-        Log.d("mainactivity", "state: ${state}")
+        Log.d("naviActivity", "state: ${state}")
     }
 
     override fun onDestroy() {
