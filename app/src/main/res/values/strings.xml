@@ -1,6 +1,10 @@
 <resources>
     <string name="app_name">smart-car</string>
 
+    <string name="login_logo_name">도로록</string>
+    <string name="login_title">도로록과 함께 \n여행을 떠나 볼까요?</string>
+    <string name="login_subtitle">3초만에 시작하기</string>
+
     <string name="spotify_error">스포티파이 로그인 실패</string>
 
     <string name="main_btn_search">검색</string>

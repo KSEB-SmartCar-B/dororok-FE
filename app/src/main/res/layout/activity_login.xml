@@ -2,40 +2,64 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:fitsSystemWindows="true"
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:fitsSystemWindows="true"
     tools:context=".presentation.login.LoginActivity">
 
     <ImageView
-        android:id="@+id/iv_dororok_logo"
-        android:layout_width="140dp"
-        android:layout_height="140dp"
-        android:layout_marginTop="230dp"
+        android:id="@+id/iv_background"
+        android:layout_width="match_parent"
+        android:layout_height="950dp"
+        android:layout_marginBottom="30dp"
+        android:scaleType="centerCrop"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:srcCompat="@drawable/dororok_logo2"/>
+        app:layout_constraintVertical_bias="0.502"
+        app:srcCompat="@drawable/background_road"
+        tools:layout_editor_absoluteX="0dp" />
 
     <ImageView
-        android:id="@+id/iv_dororok_name"
+        android:id="@+id/iv_dororok_logo"
         android:layout_width="110dp"
         android:layout_height="80dp"
-        android:layout_marginTop="10dp"
+        android:scaleType="centerCrop"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@id/iv_background"
+        app:srcCompat="@drawable/logo" />
+
+    <TextView
+        android:id="@+id/tv_dororok_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/utoimage_ciao_churu"
+        android:letterSpacing="0.1"
+        android:shadowColor="@color/shadow_dark"
+        android:shadowDx="7.0"
+        android:shadowDy="7.0"
+        android:shadowRadius="7.0"
+        android:text="@string/login_logo_name"
+        android:textColor="@color/white"
+        android:textSize="50sp"
+        android:textStyle="bold"
+        android:alpha="0"
+        android:visibility="invisible"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/iv_dororok_logo"
-        app:srcCompat="@drawable/dororok_name" />
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"/>
 
-    <androidx.appcompat.widget.AppCompatButton
-        android:id="@+id/btn_login"
-        android:layout_width="140dp"
-        android:layout_height="40dp"
-        android:background="@drawable/kakao_login_medium_narrow"
-        android:layout_marginTop="30dp"
-        app:layout_constraintTop_toBottomOf="@id/iv_dororok_name"
+    <androidx.fragment.app.FragmentContainerView
+        android:id="@+id/fcv_login"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="-300dp"
+        android:visibility="invisible"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"/>
+
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>
