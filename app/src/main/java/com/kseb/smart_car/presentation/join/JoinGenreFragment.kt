@@ -15,7 +15,6 @@ import androidx.recyclerview.widget.GridLayoutManager
 import com.kseb.smart_car.R
 import com.kseb.smart_car.data.service.SpotifyService.connect
 import com.kseb.smart_car.extension.SignUpState
-import com.kseb.smart_car.presentation.main.LocationActivity
 import com.kseb.smart_car.presentation.main.MainActivity
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
@@ -86,7 +85,7 @@ class JoinGenreFragment: Fragment() {
                                     startActivity(
                                         Intent(
                                             requireContext(),
-                                            LocationActivity::class.java
+                                            MainActivity::class.java
                                         ).putExtra(
                                             "accessToken",
                                             "Bearer ${signUpState.accessToken}"

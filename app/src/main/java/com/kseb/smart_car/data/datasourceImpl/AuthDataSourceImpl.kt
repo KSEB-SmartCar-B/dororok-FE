@@ -2,15 +2,20 @@ package com.kseb.smart_car.data.datasourceImpl
 
 import com.kseb.smart_car.data.datasource.AuthDataSource
 import com.kseb.smart_car.data.requestDto.RequestAccessDto
+import com.kseb.smart_car.data.requestDto.RequestAddSearchDto
+import com.kseb.smart_car.data.requestDto.RequestDeleteSearchDto
 import com.kseb.smart_car.data.requestDto.RequestSignUpDto
 import com.kseb.smart_car.data.requestDto.RequestUpdateGenreDto
 import com.kseb.smart_car.data.requestDto.RequestUpdateInfoDto
 import com.kseb.smart_car.data.responseDto.ResponseAccessDto
+import com.kseb.smart_car.data.responseDto.ResponseAddSearchDto
 import com.kseb.smart_car.data.responseDto.ResponseAddressDto
 import com.kseb.smart_car.data.responseDto.ResponseAllGenreDto
+import com.kseb.smart_car.data.responseDto.ResponseDeleteSearchDto
 import com.kseb.smart_car.data.responseDto.ResponseIsSignedDto
 import com.kseb.smart_car.data.responseDto.ResponseMyGenreDto
 import com.kseb.smart_car.data.responseDto.ResponseMyInfoDto
+import com.kseb.smart_car.data.responseDto.ResponseSearchListDto
 import com.kseb.smart_car.data.responseDto.ResponseSignInDto
 import com.kseb.smart_car.data.responseDto.ResponseSignUpDto
 import com.kseb.smart_car.data.responseDto.ResponseUpdateGenreDto
@@ -33,6 +38,13 @@ class AuthDataSourceImpl @Inject constructor(
 
     override suspend fun getAllGenreList(): ResponseAllGenreDto  = authService.getGenreList()
 
+    override suspend fun getSearch(token: String): ResponseSearchListDto = authService.getSearch(token)
+
+    override suspend fun addSearch(token: String, addSearchDto: RequestAddSearchDto): ResponseAddSearchDto = authService.addSearch(token,addSearchDto)
+
+    override suspend fun deleteSearch(token: String, deleteSearchDto: RequestDeleteSearchDto): ResponseDeleteSearchDto  = authService.deleteSearch(token,deleteSearchDto)
+
+    //개인 정보 및 선호 장르 수정
     override suspend fun getMyInfo(token: String): ResponseMyInfoDto = authService.getMyInfo(token)
 
     override suspend fun getMyGenre(token: String): ResponseMyGenreDto = authService.getMyGenre(token)

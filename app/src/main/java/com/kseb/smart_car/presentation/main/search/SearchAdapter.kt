@@ -3,31 +3,30 @@ package com.kseb.smart_car.presentation.main.search
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
+import com.kseb.smart_car.data.responseDto.ResponseSearchListDto
 import com.kseb.smart_car.databinding.ItemSearchBinding
 
-class SearchAdapter() : RecyclerView.Adapter<SearchAdapter.SearchViewHolder>() {
+class SearchAdapter(private val deleteButtonClick: (String) -> Unit, private val clickButton:(String)->Unit) : RecyclerView.Adapter<SearchAdapter.SearchViewHolder>() {
     private val searchList: MutableList<String> = mutableListOf()
 
     inner class SearchViewHolder(
-        private val binding: ItemSearchBinding,
-        private val adapter: SearchAdapter
+        private val binding: ItemSearchBinding
     ) : RecyclerView.ViewHolder(binding.root) {
-
-        init {
-            // Delete 버튼 클릭 리스너 설정
-            binding.tvDelete.setOnClickListener {
-                adapter.removeItem(adapterPosition)
-            }
-        }
 
         fun onBind(item: String) {
             binding.tvSearch.text = searchList[position]
+            binding.tvDelete.setOnClickListener{
+                deleteButtonClick(item)
+            }
+            binding.itemLayout.setOnClickListener{
+                clickButton(item)
+            }
         }
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): SearchViewHolder {
         val binding = ItemSearchBinding.inflate(LayoutInflater.from(parent.context), parent, false)
-        return SearchViewHolder(binding, this)
+        return SearchViewHolder(binding)
     }
 
     override fun getItemCount(): Int = searchList.size
@@ -37,18 +36,9 @@ class SearchAdapter() : RecyclerView.Adapter<SearchAdapter.SearchViewHolder>() {
         holder.onBind(item)
     }
 
-    fun getList(text: String) {
-        if (text in searchList) {
-            searchList.remove(text)
-            searchList.add(0, text)
-        } else searchList.add(0, text)
+    fun getList(text: ResponseSearchListDto) {
+        searchList.clear()
+        searchList.addAll(text.searchLogs)
         notifyDataSetChanged()
-    }
-
-    fun removeItem(position: Int) {
-        if (position >= 0 && position < searchList.size) {
-            searchList.removeAt(position)
-            notifyItemRemoved(position)
-        }
     }
 }
