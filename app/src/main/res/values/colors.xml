@@ -6,10 +6,12 @@
     <color name="system_bnv_grey">#F5F7F8</color>
 
     <color name="login_background_orange">#FF9A00</color>
-    <color name="join_pink">#FFF9DEDC</color>
-    <color name="choice_dark">#33000000</color>
-    <color name="choice_black">#88000000</color>
-    <color name="shadow_dark">#BB000000</color>
+    <color name="join_yellow">#FFFFD062</color>
+    <color name="choice_yellow">#AAFFD062</color>
+
+    <color name="low_dark">#33000000</color>
+    <color name="medium_dark">#77000000</color>
+    <color name="high_dark">#BB000000</color>
 
     <color name="bnv_clicked_pink">#F4A6A8 </color>
     <color name="bnv_unclicked_grey">#686D76</color>

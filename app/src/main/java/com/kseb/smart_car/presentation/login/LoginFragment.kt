@@ -109,7 +109,7 @@ class LoginFragment: Fragment() {
                             intent.putExtra("kakaoToken", kakaoToken)
                             //intent.addFlags(FLAG_ACTIVITY_CLEAR_TOP)
                             startActivity(intent)
-                            requireActivity().finish()
+//                            requireActivity().finish() 회원가입에서 뒤로가기하면 로그인 안나와서 주석처리 했음
                             allViewModel.setSignInStateLoading()
                             Log.e("loginFragment", "회원가입 하시오!")
                         }
