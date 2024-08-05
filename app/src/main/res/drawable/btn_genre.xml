@@ -21,7 +21,7 @@
 <!--</selector>-->
 
 <shape xmlns:android="http://schemas.android.com/apk/res/android">
-    <solid android:color="@color/choice_black"/>
+    <solid android:color="@color/high_dark"/>
     <corners android:radius="1000dp"/>
 <!--    <gradient-->
 <!--        android:angle="0"-->
@@ -29,5 +29,5 @@
 <!--        android:centerColor="@color/rainbow_yellow"-->
 <!--        android:endColor="@color/rainbow_purple"-->
 <!--        android:type="linear" />-->
-    <stroke android:width="5dp" android:color="@color/join_pink"/>
+    <stroke android:width="3dp" android:color="@color/join_yellow"/>
 </shape>

@@ -6,9 +6,7 @@ import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import com.kseb.smart_car.R
 import com.kseb.smart_car.databinding.ActivityJoinBinding
-import com.kseb.smart_car.presentation.main.MainActivity
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
 class JoinActivity: AppCompatActivity() {
@@ -26,7 +24,7 @@ class JoinActivity: AppCompatActivity() {
         joinViewModel.setKakaoToken(token!!)
 
         supportFragmentManager.beginTransaction()
-            .replace(R.id.fcv_join, JoinInfoFragment())
+            .replace(R.id.fcv_join, JoinAgreeFragment())
             .commit()
     }
 }

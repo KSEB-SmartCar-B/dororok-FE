@@ -15,7 +15,7 @@ import androidx.fragment.app.viewModels
 import com.kseb.smart_car.R
 import com.kseb.smart_car.databinding.FragmentJoinInfoBinding
 
-class JoinInfoFragment : Fragment() {
+class JoinInfoFragment: Fragment() {
     private var _binding: FragmentJoinInfoBinding? = null
     private val binding: FragmentJoinInfoBinding
         get() = requireNotNull(_binding) { "null" }
@@ -117,7 +117,6 @@ class JoinInfoFragment : Fragment() {
                 transaction.commit()
             }
         }
-//        clickButtonNext()
     }
 
     //입력한 정보 유효한지 췤
