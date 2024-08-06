@@ -50,6 +50,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal"
+                    android:layout_marginTop="5dp"
                     app:layout_constraintEnd_toEndOf="@id/gender"
                     app:layout_constraintStart_toStartOf="@id/gender">
 
@@ -104,10 +105,13 @@
                 <EditText
                     android:id="@+id/et_nick"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:layout_height="40dp"
+                    android:layout_marginTop="7dp"
+                    android:padding="5dp"
                     android:ems="14"
-                    android:hint="닉네임을 입력하세요"
-                    android:inputType="text" />
+                    android:inputType="text"
+                    android:gravity="center"
+                    android:background="@drawable/background_nickname" />
             </FrameLayout>
         </LinearLayout>
 
@@ -142,6 +146,7 @@
                     android:id="@+id/dpSpinner"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_marginTop="-10dp"
                     android:calendarViewShown="false"
                     android:datePickerMode="spinner" />
             </FrameLayout>
@@ -151,7 +156,7 @@
             android:id="@+id/btn_next"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="50dp"
+            android:layout_marginTop="40dp"
             android:layout_marginEnd="40dp"
             android:layout_marginBottom="50dp"
             android:background="@drawable/btn_join"
