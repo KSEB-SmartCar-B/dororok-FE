@@ -12,7 +12,7 @@
             android:id="@+id/tv_title"
             android:layout_width="match_parent"
             android:layout_height="50dp"
-            android:layout_marginTop="25dp"
+            android:layout_marginTop="28dp"
             android:background="@color/join_yellow"
             android:gravity="center"
             android:text="위치기반 서비스 이용약관 동의"

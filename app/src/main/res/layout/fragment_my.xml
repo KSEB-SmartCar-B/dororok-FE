@@ -1,28 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:paddingBottom="10dp"
-    android:background="@color/my_background_yellow">
+    android:layout_height="match_parent"
+    android:background="@color/white">
 
     <ImageView
         android:id="@+id/iv_background"
         android:layout_width="match_parent"
         android:layout_height="90dp"
-        android:layout_marginTop="15dp"
-        android:layout_marginStart="15dp"
-        android:layout_marginEnd="15dp"
-        android:background="@drawable/my_background"
+        android:layout_marginTop="28dp"
+        android:background="@drawable/background_gray"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <ImageView
         android:id="@+id/iv_profile_background"
-        android:layout_width="60dp"
-        android:layout_height="60dp"
+        android:layout_width="70dp"
+        android:layout_height="70dp"
         android:layout_margin="20dp"
         android:background="@drawable/ic_basicprofile_background"
         android:clipToOutline="true"
@@ -33,190 +30,219 @@
 
     <ImageView
         android:id="@+id/iv_profile"
-        android:layout_width="75dp"
-        android:layout_height="75dp"
-        android:scaleType="centerCrop"
+        android:layout_width="70dp"
+        android:layout_height="70dp"
         android:background="@drawable/ic_basicprofile_foreground"
+        android:scaleType="centerCrop"
         app:layout_constraintBottom_toBottomOf="@id/iv_profile_background"
+        app:layout_constraintEnd_toEndOf="@id/iv_profile_background"
         app:layout_constraintStart_toStartOf="@id/iv_profile_background"
-        app:layout_constraintTop_toTopOf="@id/iv_profile_background"
-        app:layout_constraintEnd_toEndOf="@id/iv_profile_background"/>
+        app:layout_constraintTop_toTopOf="@id/iv_profile_background" />
 
     <TextView
         android:id="@+id/tv_welcome"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="15dp"
-        android:text="행복한 하루되세요 !"
+        android:text="회원님 행복한 하루되세요 !"
         android:textSize="18sp"
         android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="@+id/iv_background"
         app:layout_constraintStart_toEndOf="@id/iv_profile"
         app:layout_constraintTop_toTopOf="@id/iv_background" />
 
-    <ImageView
-        android:id="@+id/iv_background2"
+    <LinearLayout
+        android:id="@+id/info"
         android:layout_width="match_parent"
-        android:layout_height="200dp"
-        android:layout_marginTop="15dp"
-        android:layout_marginStart="15dp"
-        android:layout_marginEnd="15dp"
-        android:background="@drawable/my_background"
-        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="50dp"
+        android:layout_marginEnd="50dp"
+        android:layout_marginTop="30dp"
+        android:orientation="horizontal"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/iv_background" />
+        app:layout_constraintTop_toBottomOf="@id/iv_background">
 
-    <ImageView
-        android:id="@+id/iv_information_background"
-        android:layout_width="60dp"
-        android:layout_height="60dp"
-        android:layout_marginTop="15dp"
-        android:background="@drawable/ic_basicprofile_background"
-        android:clipToOutline="true"
-        android:scaleType="centerCrop"
-        app:layout_constraintEnd_toStartOf="@+id/divider"
-        app:layout_constraintStart_toStartOf="@id/iv_background2"
-        app:layout_constraintTop_toTopOf="@id/iv_background2"
-        app:layout_constraintBottom_toTopOf="@id/tv_information"/>
+        <ImageButton
+            android:id="@+id/ib_info"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:background="@drawable/icon_info" />
 
-    <ImageButton
-        android:id="@+id/ib_information"
-        android:layout_width="30dp"
-        android:layout_height="30dp"
-        android:background="@drawable/information"
-        app:layout_constraintBottom_toBottomOf="@id/iv_information_background"
-        app:layout_constraintEnd_toEndOf="@id/iv_information_background"
-        app:layout_constraintStart_toStartOf="@id/iv_information_background"
-        app:layout_constraintTop_toTopOf="@id/iv_information_background" />
+        <TextView
+            android:id="@+id/tv_info"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="20dp"
+            android:layout_gravity="center_vertical"
+            android:layout_weight="1"
+            android:text="개인정보수정"
+            android:textSize="15sp" />
 
-    <TextView
-        android:id="@+id/tv_information"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="개인정보수정"
-        app:layout_constraintBottom_toTopOf="@+id/iv_genre_background"
-        app:layout_constraintEnd_toStartOf="@id/divider"
-        app:layout_constraintStart_toStartOf="@id/iv_background2"
-        app:layout_constraintTop_toBottomOf="@id/iv_information_background" />
-
-    <ImageView
-        android:id="@+id/iv_genre_background"
-        android:layout_width="60dp"
-        android:layout_height="60dp"
-        android:layout_marginTop="10dp"
-        android:background="@drawable/ic_basicprofile_background"
-        android:clipToOutline="true"
-        android:scaleType="centerCrop"
-        app:layout_constraintEnd_toStartOf="@id/divider"
-        app:layout_constraintStart_toStartOf="@id/iv_background2"
-        app:layout_constraintTop_toBottomOf="@id/tv_information"
-        app:layout_constraintBottom_toTopOf="@id/tv_genre"/>
-
-    <ImageButton
-        android:id="@+id/ib_genre"
-        android:layout_width="30dp"
-        android:layout_height="30dp"
-        android:background="@drawable/musicgenre"
-        app:layout_constraintBottom_toBottomOf="@id/iv_genre_background"
-        app:layout_constraintEnd_toEndOf="@id/iv_genre_background"
-        app:layout_constraintStart_toStartOf="@id/iv_genre_background"
-        app:layout_constraintTop_toTopOf="@id/iv_genre_background" />
-
-    <TextView
-        android:id="@+id/tv_genre"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="15dp"
-        android:text="음악정보수정"
-        app:layout_constraintBottom_toBottomOf="@id/iv_background2"
-        app:layout_constraintEnd_toStartOf="@id/divider"
-        app:layout_constraintStart_toStartOf="@id/iv_background2"
-        app:layout_constraintTop_toBottomOf="@id/iv_genre_background" />
+    </LinearLayout>
 
     <View
-        android:id="@+id/divider"
-        android:layout_width="2dp"
-        android:layout_height="150dp"
-        android:layout_marginStart="120dp"
-        android:background="?android:attr/listDivider"
-        app:layout_constraintBottom_toBottomOf="@id/iv_background2"
-        app:layout_constraintStart_toStartOf="@id/iv_background2"
-        app:layout_constraintTop_toTopOf="@id/iv_background2" />
-
-    <TextView
-        android:id="@+id/tv_place"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:id="@+id/divider1"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_marginStart="30dp"
+        android:layout_marginEnd="30dp"
         android:layout_marginTop="15dp"
-        android:layout_marginStart="15dp"
-        android:text="어디로 떠나볼까요?"
-        android:textSize="15sp"
-        android:textStyle="bold"
-        app:layout_constraintStart_toEndOf="@id/divider"
-        app:layout_constraintTop_toTopOf="@id/iv_background2" />
+        android:background="?android:attr/listDivider"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/info" />
 
-    <ImageView
-        android:id="@+id/iv_photo1"
-        android:layout_width="90dp"
-        android:layout_height="90dp"
-        android:background="@drawable/btn_gender"
-        android:layout_marginTop="10dp"
-        android:layout_marginStart="15dp"
-        app:layout_constraintStart_toEndOf="@id/divider"
-        app:layout_constraintEnd_toStartOf="@id/iv_photo2"
-        app:layout_constraintTop_toBottomOf="@id/tv_place" />
-
-    <ImageView
-        android:id="@+id/iv_photo2"
-        android:layout_width="90dp"
-        android:layout_height="90dp"
-        android:layout_marginStart="7dp"
-        android:layout_marginEnd="15dp"
-        android:background="@drawable/btn_gender"
-        app:layout_constraintEnd_toEndOf="@+id/iv_background2"
-        app:layout_constraintStart_toEndOf="@id/iv_photo1"
-        app:layout_constraintTop_toTopOf="@id/iv_photo1" />
-
-    <ImageView
-        android:id="@+id/iv_place1"
-        android:layout_width="90dp"
-        android:layout_height="45dp"
-        android:background="@drawable/btn_gender"
-        android:layout_marginTop="7dp"
-        app:layout_constraintStart_toStartOf="@id/iv_photo1"
-        app:layout_constraintTop_toBottomOf="@id/iv_photo1" />
-
-    <TextView
-        android:id="@+id/tv_place1"
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:id="@+id/genre"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="장소1"
-        android:textStyle="bold"
-        app:layout_constraintTop_toTopOf="@id/iv_place1"
-        app:layout_constraintBottom_toBottomOf="@id/iv_place1"
-        app:layout_constraintStart_toStartOf="@id/iv_place1"
-        app:layout_constraintEnd_toEndOf="@id/iv_place1" />
+        android:layout_marginStart="50dp"
+        android:layout_marginEnd="50dp"
+        android:layout_marginTop="30dp"
+        android:orientation="horizontal"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/info">
 
-    <ImageView
-        android:id="@+id/iv_place2"
-        android:layout_width="90dp"
-        android:layout_height="45dp"
-        android:background="@drawable/btn_gender"
-        android:layout_marginTop="7dp"
-        app:layout_constraintStart_toStartOf="@id/iv_photo2"
-        app:layout_constraintTop_toBottomOf="@id/iv_photo2"/>
+        <ImageButton
+            android:id="@+id/ib_genre"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:background="@drawable/icon_genre" />
 
-    <TextView
-        android:id="@+id/tv_place2"
-        android:layout_width="wrap_content"
+        <TextView
+            android:id="@+id/tv_genre"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="20dp"
+            android:layout_gravity="center_vertical"
+            android:layout_weight="1"
+            android:text="음악장르수정"
+            android:textSize="15sp" />
+
+    </LinearLayout>
+
+    <View
+        android:id="@+id/divider2"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_marginStart="30dp"
+        android:layout_marginEnd="30dp"
+        android:layout_marginTop="15dp"
+        android:background="?android:attr/listDivider"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/genre" />
+
+    <LinearLayout
+        android:id="@+id/music"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="장소2"
-        android:textStyle="bold"
-        app:layout_constraintTop_toTopOf="@id/iv_place2"
-        app:layout_constraintBottom_toBottomOf="@id/iv_place2"
-        app:layout_constraintStart_toStartOf="@id/iv_place2"
-        app:layout_constraintEnd_toEndOf="@id/iv_place2" />
+        android:layout_marginStart="50dp"
+        android:layout_marginEnd="50dp"
+        android:layout_marginTop="30dp"
+        android:orientation="horizontal"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/genre">
 
+        <ImageButton
+            android:id="@+id/ib_music"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:background="@drawable/icon_music" />
 
+        <TextView
+            android:id="@+id/tv_music"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="20dp"
+            android:layout_gravity="center_vertical"
+            android:layout_weight="1"
+            android:text="좋아하는음악"
+            android:textSize="15sp" />
+
+    </LinearLayout>
+
+    <View
+        android:id="@+id/divider3"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_marginStart="30dp"
+        android:layout_marginEnd="30dp"
+        android:layout_marginTop="15dp"
+        android:background="?android:attr/listDivider"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/music" />
+
+    <LinearLayout
+        android:id="@+id/place"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="50dp"
+        android:layout_marginEnd="50dp"
+        android:layout_marginTop="30dp"
+        android:orientation="horizontal"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/music">
+
+        <ImageButton
+            android:id="@+id/ib_place"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:background="@drawable/icon_place" />
+
+        <TextView
+            android:id="@+id/tv_place"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="20dp"
+            android:layout_gravity="center_vertical"
+            android:layout_weight="1"
+            android:text="좋아하는장소"
+            android:textSize="15sp" />
+
+    </LinearLayout>
+
+    <View
+        android:id="@+id/divider4"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_marginStart="30dp"
+        android:layout_marginEnd="30dp"
+        android:layout_marginTop="15dp"
+        android:background="?android:attr/listDivider"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/place" />
+
+    <LinearLayout
+        android:id="@+id/logout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="50dp"
+        android:layout_marginEnd="50dp"
+        android:layout_marginTop="30dp"
+        android:orientation="horizontal"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/place">
+
+        <ImageButton
+            android:id="@+id/ib_logout"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:layout_margin="3dp"
+            android:background="@drawable/icon_logout" />
+
+        <TextView
+            android:id="@+id/tv_logout"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_marginStart="17dp"
+            android:layout_weight="1"
+            android:text="로그아웃"
+            android:textSize="15sp" />
+
+    </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
