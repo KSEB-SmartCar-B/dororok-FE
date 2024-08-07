@@ -1,5 +1,7 @@
 package com.kseb.smart_car.presentation.main.music
 
+import android.animation.ObjectAnimator
+import android.content.res.ColorStateList
 import android.graphics.Color
 import android.graphics.PorterDuff
 import android.os.Bundle
@@ -7,32 +9,30 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageView
+import android.view.animation.LinearInterpolator
+import android.widget.SeekBar
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
-import androidx.appcompat.widget.PopupMenu
+import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.constraintlayout.widget.ConstraintSet
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
+import com.bumptech.glide.Glide
+import com.bumptech.glide.load.resource.bitmap.CenterCrop
+import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.google.gson.GsonBuilder
 import com.kseb.smart_car.R
 import com.kseb.smart_car.databinding.FragmentPlayBinding
 import com.kseb.smart_car.presentation.main.music.PlayFragment.AuthParams.CLIENT_ID
 import com.kseb.smart_car.presentation.main.music.PlayFragment.AuthParams.REDIRECT_URI
-import com.kseb.smart_car.presentation.main.music.PlayFragment.SpotifySampleContexts.ALBUM_URI
-import com.kseb.smart_car.presentation.main.music.PlayFragment.SpotifySampleContexts.ARTIST_URI
-import com.kseb.smart_car.presentation.main.music.PlayFragment.SpotifySampleContexts.PLAYLIST_URI
-import com.kseb.smart_car.presentation.main.music.PlayFragment.SpotifySampleContexts.PODCAST_URI
-import com.kseb.smart_car.presentation.main.music.PlayFragment.SpotifySampleContexts.TRACK_URI
 import com.spotify.android.appremote.api.ConnectionParams
 import com.spotify.android.appremote.api.Connector
-import com.spotify.android.appremote.api.ContentApi
 import com.spotify.android.appremote.api.SpotifyAppRemote
 import com.spotify.android.appremote.api.error.SpotifyDisconnectedException
 import com.spotify.protocol.client.Subscription
-import com.spotify.protocol.types.Capabilities
 import com.spotify.protocol.types.Image
-import com.spotify.protocol.types.ListItem
-import com.spotify.protocol.types.ListItems
 import com.spotify.protocol.types.PlayerContext
 import com.spotify.protocol.types.PlayerState
 import com.spotify.sdk.demo.TrackProgressBar
@@ -43,10 +43,13 @@ import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 import kotlin.coroutines.suspendCoroutine
 
-class PlayFragment: Fragment() {
-    private var _binding:FragmentPlayBinding?= null
-    private val binding:FragmentPlayBinding
-        get()= requireNotNull(_binding){"null"}
+class PlayFragment : Fragment() {
+    private var _binding: FragmentPlayBinding? = null
+    private val binding: FragmentPlayBinding
+        get() = requireNotNull(_binding) { "null" }
+
+    private val playViewModel:PlayViewModel by viewModels()
+    private lateinit var playAdapter: PlayAdapter
 
     object AuthParams {
         const val CLIENT_ID = "d8e2d4268f28445eac8333a5292c8e9f"
@@ -55,14 +58,10 @@ class PlayFragment: Fragment() {
 
     object SpotifySampleContexts {
         const val TRACK_URI = "spotify:track:5sdQOyqq2IDhvmx2lHOpwd"
-        const val ALBUM_URI = "spotify:album:4m2880jivSbbyEGAKfITCa"
-        const val ARTIST_URI = "spotify:artist:3WrFJ7ztbogyGnTHbHJFl2"
-        const val PLAYLIST_URI = "spotify:playlist:37i9dQZEVXbMDoHDwVN2tF"
-        const val PODCAST_URI = "spotify:show:2tgPYIeGErjk6irHRhk9kj"
     }
 
     companion object {
-        const val TAG = "App-Remote Sample"
+        const val TAG = "Spotify"
         const val STEP_MS = 15000L
     }
 
@@ -70,7 +69,6 @@ class PlayFragment: Fragment() {
 
     private var playerStateSubscription: Subscription<PlayerState>? = null
     private var playerContextSubscription: Subscription<PlayerContext>? = null
-    private var capabilitiesSubscription: Subscription<Capabilities>? = null
     private var spotifyAppRemote: SpotifyAppRemote? = null
 
     private lateinit var views: List<View>
@@ -82,16 +80,18 @@ class PlayFragment: Fragment() {
 
     private val errorCallback = { throwable: Throwable -> logError(throwable) }
 
-    private val playerContextEventCallback = Subscription.EventCallback<PlayerContext> { playerContext ->
-        binding.btnCurrentTrackLabel.apply {
-            text = String.format(Locale.US, "%s\n%s", playerContext.title, playerContext.subtitle)
-            tag = playerContext
+    private val playerContextEventCallback =
+        Subscription.EventCallback<PlayerContext> { playerContext ->
+            binding.btnCurrentTrackLabel.apply {
+                text =
+                    String.format(Locale.US, "%s\n%s", playerContext.title, playerContext.subtitle)
+                tag = playerContext
+            }
         }
-    }
 
     private val playerStateEventCallback = Subscription.EventCallback<PlayerState> { playerState ->
         Log.v(TAG, String.format("Player State: %s", gson.toJson(playerState)))
-        Log.d("playfragment","update success")
+        Log.d("playfragment", "update success")
 
         updateTrackStateButton(playerState)
 
@@ -113,9 +113,14 @@ class PlayFragment: Fragment() {
 
     private fun updateTrackStateButton(playerState: PlayerState) {
         binding.btnCurrentTrackLabel.apply {
-            visibility=View.VISIBLE
-            text = String.format(Locale.US, "%s\n%s", playerState.track.name, playerState.track.artist.name)
-            Log.d("playfragment","label: ${text}")
+            text = String.format(Locale.US, "%s", playerState.track.name)
+            Log.d("playfragment", "label: ${text}")
+            tag = playerState
+        }
+
+        binding.btnCurrentTrackSinger.apply {
+            text = String.format(Locale.US, "%s", playerState.track.artist.name)
+            Log.d("playfragment", "label: ${text}")
             tag = playerState
         }
     }
@@ -129,8 +134,8 @@ class PlayFragment: Fragment() {
                 pause()
             }
             // Invalidate seekbar length and position
-            binding.seekTo.max = playerState.track.duration.toInt()
-            binding.seekTo.isEnabled = true
+            binding.sbBar.max = playerState.track.duration.toInt()
+            binding.sbBar.isEnabled = true
             setDuration(playerState.track.duration)
             update(playerState.playbackPosition)
         }
@@ -142,8 +147,40 @@ class PlayFragment: Fragment() {
             .imagesApi
             .getImage(playerState.track.imageUri, Image.Dimension.LARGE)
             .setResultCallback { bitmap ->
-                binding.ivMusic.setImageBitmap(bitmap)
+                Glide.with(requireContext())
+                    .load(bitmap)
+                    .transform(RoundedCorners(requireContext().resources.getDimensionPixelSize(R.dimen.radius_music_image))) // 반지름을 dimens 파일에서 가져옴
+                    .into(binding.ivMusic)
+
+                val constraintSet = ConstraintSet()
+                constraintSet.clone(binding.root as ConstraintLayout)
+
+                // iv_shadow를 iv_music과 동일한 위치에 고정
+                constraintSet.connect(R.id.iv_shadow, ConstraintSet.TOP, R.id.iv_music, ConstraintSet.TOP,40)
+                constraintSet.connect(R.id.iv_shadow, ConstraintSet.BOTTOM, R.id.iv_music, ConstraintSet.BOTTOM)
+                constraintSet.connect(R.id.iv_shadow, ConstraintSet.START, R.id.iv_music, ConstraintSet.START,60)
+                constraintSet.connect(R.id.iv_shadow, ConstraintSet.END, R.id.iv_music, ConstraintSet.END)
+
+                // iv_shadow의 가로와 세로를 MATCH_CONSTRAINT로 설정
+                constraintSet.constrainWidth(R.id.iv_shadow, ConstraintSet.MATCH_CONSTRAINT)
+                constraintSet.constrainHeight(R.id.iv_shadow, ConstraintSet.MATCH_CONSTRAINT)
+
+                // iv_shadow의 비율을 iv_music과 동일하게 설정
+                constraintSet.setDimensionRatio(R.id.iv_shadow, "W,1:1")
+
+                constraintSet.applyTo(binding.root as ConstraintLayout)
+
+                // iv_music을 회전시키는 애니메이션 설정
+                val animator = ObjectAnimator.ofFloat(binding.ivMusic, View.ROTATION, 0f, 360f)
+                animator.duration = 4000 // 애니메이션 지속 시간 (3초)
+                animator.repeatCount = ObjectAnimator.INFINITE // 무한 반복
+                animator.interpolator = LinearInterpolator() // 일정한 속도로 회전
+                animator.start()
             }
+    }
+
+    private fun updateNextMusicList(playerState: PlayerState){
+
     }
 
     override fun onCreateView(
@@ -151,42 +188,50 @@ class PlayFragment: Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        _binding=FragmentPlayBinding.inflate(inflater,container, false)
+        _binding = FragmentPlayBinding.inflate(inflater, container, false)
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        binding.seekTo.apply {
+        binding.sbBar.apply {
             isEnabled = false
             progressDrawable.setColorFilter(Color.WHITE, PorterDuff.Mode.SRC_ATOP)
             indeterminateDrawable.setColorFilter(Color.WHITE, PorterDuff.Mode.SRC_ATOP)
         }
 
-        trackProgressBar = TrackProgressBar(binding.seekTo) { seekToPosition: Long -> seekTo(seekToPosition) }
+        trackProgressBar =
+            TrackProgressBar(binding.sbBar) { seekToPosition: Long -> seekTo(seekToPosition) }
 
         views = listOf(
             binding.btnPlayPauseButton,
             binding.btnSkipPrevButton,
             binding.btnSkipNextButton,
-            binding.connectSwitchToLocal,
-            binding.playPodcastButton,
-            binding.playTrackButton,
-            binding.playAlbumButton,
-            binding.playArtistButton,
-            binding.playPlaylistButton,
-            binding.subscribeToCapabilities,
-            binding.getCollectionState,
-            binding.removeUri,
-            binding.saveUri,
-            binding.getFitnessRecommendedItemsButton,
-            binding.seekTo)
+            binding.sbBar
+        )
+
+        val seekBar: SeekBar = binding.sbBar
+        seekBar.progressTintList = ColorStateList.valueOf(resources.getColor(R.color.bnv_clicked_black))
+        seekBar.thumbTintList = ColorStateList.valueOf(resources.getColor(R.color.bnv_clicked_black))
+        seekBar.progressBackgroundTintList = ColorStateList.valueOf(resources.getColor(R.color.bnv_clicked_black))
+
+
+        lifecycleScope.launch {
+            playViewModel.isLoginSpotify.observe(viewLifecycleOwner){
+                if(it){
+                    playAdapter= spotifyAppRemote?.let { PlayAdapter(requireContext(), it) }!!
+                    playAdapter.getList(playViewModel.nextMusicList)
+                }
+
+            }
+        }
+
 
         SpotifyAppRemote.setDebugMode(true)
         clickButton()
 
-        onDisconnected()
+        connectToSpotify()
     }
 
     private fun seekTo(seekToPosition: Long) {
@@ -206,38 +251,23 @@ class PlayFragment: Fragment() {
         for (input in views) {
             input.isEnabled = true
         }
-        binding.btnConnect.apply {
-            isEnabled = false
-            text = getString(R.string.connected)
-        }
 
         onSubscribedToPlayerStateButtonClicked()
         onSubscribedToPlayerContextButtonClicked()
-    }
 
-    private fun onConnecting() {
-        binding.btnConnect.apply {
-            isEnabled = false
-            text = getString(R.string.connecting)
-        }
+        //Spotify에 연결되었을 때 uri 실행
+        playUri(SpotifySampleContexts.TRACK_URI)
+        playViewModel.loginSpotify()
     }
 
     private fun onDisconnected() {
         for (view in views) {
             view.isEnabled = false
         }
-
-        binding.btnConnect.apply {
-            isEnabled = true
-            text = getString(R.string.connect)
-        }
         binding.ivMusic.setImageResource(R.drawable.widget_placeholder)
-
-        binding.btnCurrentTrackLabel.visibility = View.INVISIBLE
     }
 
-    private fun onConnectClicked(notUsed: View) {
-        onConnecting()
+    private fun connectToSpotify() {
         connect(false)
     }
 
@@ -264,7 +294,7 @@ class PlayFragment: Fragment() {
                     .build(),
                 object : Connector.ConnectionListener {
                     override fun onConnected(spotifyAppRemote: SpotifyAppRemote) {
-                        Log.d("connec","onConnected 실행!")
+                        Log.d("connec", "onConnected 실행!")
                         cont.resume(spotifyAppRemote)
                     }
 
@@ -274,90 +304,12 @@ class PlayFragment: Fragment() {
                 })
         }
 
-    private fun onImageClicked(view: View) {
-        assertAppRemoteConnected().let {
-            it.playerApi
-                .playerState
-                .setResultCallback { playerState ->
-                    val popupMenu = PopupMenu(requireContext(), view)
-                    popupMenu.run {
-                        menu.add(720, 720, 0, "Large (720px)")
-                        menu.add(480, 480, 1, "Medium (480px)")
-                        menu.add(360, 360, 2, "Small (360px)")
-                        menu.add(240, 240, 3, "X Small (240px)")
-                        menu.add(144, 144, 4, "Thumbnail (144px)")
-                        setOnMenuItemClickListener { item ->
-                            it.imagesApi
-                                .getImage(
-                                    playerState.track.imageUri, Image.Dimension.values()[item.order])
-                                .setResultCallback { bitmap ->
-                                    binding.ivMusic.setImageBitmap(bitmap)
-                                }
-                            false
-                        }
-                        show()
-                    }
-                }
-                .setErrorCallback(errorCallback)
-        }
-    }
-
-    fun onImageScaleTypeClicked(view: View) {
-        assertAppRemoteConnected()
-            .playerApi
-            .playerState
-            .setResultCallback {
-                val popupMenu = PopupMenu(requireContext(), view)
-                popupMenu.run {
-                    menu.add(0, ImageView.ScaleType.CENTER.ordinal, 0, "CENTER")
-                    menu.add(1, ImageView.ScaleType.CENTER_CROP.ordinal, 1, "CENTER_CROP")
-                    menu.add(2, ImageView.ScaleType.CENTER_INSIDE.ordinal, 2, "CENTER_INSIDE")
-                    menu.add(3, ImageView.ScaleType.MATRIX.ordinal, 3, "MATRIX")
-                    menu.add(4, ImageView.ScaleType.FIT_CENTER.ordinal, 4, "FIT_CENTER")
-                    menu.add(4, ImageView.ScaleType.FIT_XY.ordinal, 5, "FIT_XY")
-                    setOnMenuItemClickListener { item ->
-                        binding.ivMusic.scaleType = ImageView.ScaleType.values()[item.itemId]
-                        false
-                    }
-                    show()
-                }
-
-            }
-            .setErrorCallback(errorCallback)
-    }
-
-    private fun onPlayPodcastButtonClicked(notUsed: View) {
-        playUri(PODCAST_URI)
-    }
-
-    private fun onPlayTrackButtonClicked(notUsed: View) {
-        playUri(TRACK_URI)
-    }
-
-    private fun onPlayAlbumButtonClicked(notUsed: View) {
-        playUri(ALBUM_URI)
-    }
-
-    private fun onPlayArtistButtonClicked(notUsed: View) {
-        playUri(ARTIST_URI)
-    }
-
-    private fun onPlayPlaylistButtonClicked(notUsed: View) {
-        playUri(PLAYLIST_URI)
-    }
-
     private fun playUri(uri: String) {
         assertAppRemoteConnected()
             .playerApi
             .play(uri)
             .setResultCallback { logMessage(getString(R.string.command_feedback, "play")) }
             .setErrorCallback(errorCallback)
-    }
-
-    private fun showCurrentPlayerState(view: View) {
-        view.tag?.let {
-            showDialog("PlayerState", gson.toJson(it))
-        }
     }
 
     private fun onSkipPreviousButtonClicked(notUsed: View) {
@@ -376,12 +328,26 @@ class PlayFragment: Fragment() {
                     if (playerState.isPaused) {
                         it.playerApi
                             .resume()
-                            .setResultCallback { logMessage(getString(R.string.command_feedback, "play")) }
+                            .setResultCallback {
+                                logMessage(
+                                    getString(
+                                        R.string.command_feedback,
+                                        "play"
+                                    )
+                                )
+                            }
                             .setErrorCallback(errorCallback)
                     } else {
                         it.playerApi
                             .pause()
-                            .setResultCallback { logMessage(getString(R.string.command_feedback, "pause")) }
+                            .setResultCallback {
+                                logMessage(
+                                    getString(
+                                        R.string.command_feedback,
+                                        "pause"
+                                    )
+                                )
+                            }
                             .setErrorCallback(errorCallback)
                     }
                 }
@@ -415,126 +381,21 @@ class PlayFragment: Fragment() {
     fun onSubscribedToPlayerContextButtonClicked() {
         playerContextSubscription = cancelAndResetSubscription(playerContextSubscription)
 
-        binding.currentContextLabel.visibility = View.VISIBLE
+        //binding.currentContextLabel.visibility = View.VISIBLE
         playerContextSubscription = assertAppRemoteConnected()
             .playerApi
             .subscribeToPlayerContext()
             .setEventCallback(playerContextEventCallback)
             .setErrorCallback { throwable ->
-                binding.currentContextLabel.visibility = View.INVISIBLE
+                //binding.currentContextLabel.visibility = View.INVISIBLE
                 logError(throwable)
             } as Subscription<PlayerContext>
     }
 
-    fun onSubscribeToCapabilitiesClicked(notUsed: View) {
-        capabilitiesSubscription = cancelAndResetSubscription(capabilitiesSubscription)
-
-        capabilitiesSubscription = assertAppRemoteConnected()
-            .userApi
-            .subscribeToCapabilities()
-            .setEventCallback { capabilities ->
-                logMessage(getString(R.string.on_demand_feedback, capabilities.canPlayOnDemand))
-            }
-            .setErrorCallback(errorCallback) as Subscription<Capabilities>
-
-        assertAppRemoteConnected()
-            .userApi
-            .capabilities
-            .setResultCallback { capabilities -> logMessage(getString(R.string.on_demand_feedback, capabilities.canPlayOnDemand)) }
-            .setErrorCallback(errorCallback)
-    }
-
-    private fun onGetCollectionStateClicked(notUsed: View) {
-        assertAppRemoteConnected()
-            .userApi
-            .getLibraryState(TRACK_URI)
-            .setResultCallback { libraryState ->
-                showDialog(getString(R.string.command_response, getString(R.string.get_collection_state)), gson.toJson(libraryState))
-            }
-            .setErrorCallback { throwable -> logError(throwable) }
-    }
-
-    private fun onRemoveUriClicked(notUsed: View) {
-        assertAppRemoteConnected()
-            .userApi
-            .removeFromLibrary(TRACK_URI)
-            .setResultCallback { logMessage(getString(R.string.command_feedback, getString(R.string.remove_uri))) }
-            .setErrorCallback { throwable -> logError(throwable) }
-    }
-
-    private fun onSaveUriClicked(notUsed: View) {
-        assertAppRemoteConnected()
-            .userApi
-            .addToLibrary(TRACK_URI)
-            .setResultCallback { logMessage(getString(R.string.command_feedback, getString(R.string.save_uri))) }
-            .setErrorCallback { throwable -> logError(throwable) }
-    }
-
-    private fun onGetFitnessRecommendedContentItemsClicked(notUsed: View) {
-        assertAppRemoteConnected().let {
-            lifecycleScope.launch {
-                val combined = ArrayList<ListItem>(50)
-                val listItems = loadRootRecommendations(it)
-                listItems?.apply {
-                    for (i in items.indices) {
-                        if (items[i].playable) {
-                            combined.add(items[i])
-                        } else {
-                            val children: ListItems? = loadChildren(it, items[i])
-                            combined.addAll(convertToList(children))
-                        }
-                    }
-                }
-                showDialog(
-                    getString(R.string.command_response, getString(R.string.browse_content)),
-                    gson.toJson(combined))
-            }
-        }
-    }
-
-    private fun convertToList(inputItems: ListItems?): List<ListItem> {
-        return if (inputItems?.items != null) {
-            inputItems.items.toList()
-        } else {
-            emptyList()
-        }
-    }
-
-    private suspend fun loadRootRecommendations(appRemote: SpotifyAppRemote): ListItems? =
-        suspendCoroutine { cont ->
-            appRemote.contentApi
-                .getRecommendedContentItems(ContentApi.ContentType.FITNESS)
-                .setResultCallback { listItems -> cont.resume(listItems) }
-                .setErrorCallback { throwable ->
-                    errorCallback.invoke(throwable)
-                    cont.resumeWithException(throwable)
-                }
-        }
-
-    private suspend fun loadChildren(appRemote: SpotifyAppRemote, parent: ListItem): ListItems? =
-        suspendCoroutine { cont ->
-            appRemote.contentApi
-                .getChildrenOfItem(parent, 6, 0)
-                .setResultCallback { listItems -> cont.resume(listItems) }
-                .setErrorCallback { throwable ->
-                    errorCallback.invoke(throwable)
-                    cont.resumeWithException(throwable)
-                }
-        }
-
-
-    private fun onConnectSwitchToLocalClicked(notUsed: View) {
-        assertAppRemoteConnected()
-            .connectApi
-            .connectSwitchToLocalDevice()
-            .setResultCallback { logMessage(getString(R.string.command_feedback, getString(R.string.connect_switch_to_local))) }
-            .setErrorCallback(errorCallback)
-    }
 
     private fun onSubscribedToPlayerStateButtonClicked() {
         playerStateSubscription = cancelAndResetSubscription(playerStateSubscription)
 
-        binding.btnCurrentTrackLabel.visibility = View.VISIBLE
 
         playerStateSubscription = assertAppRemoteConnected()
             .playerApi
@@ -544,7 +405,7 @@ class PlayFragment: Fragment() {
                 object : Subscription.LifecycleCallback {
                     override fun onStart() {
                         logMessage("Event: start")
-                        Log.d("playfragment","노래 시작!")
+                        Log.d("playfragment", "노래 시작!")
                     }
 
                     override fun onStop() {
@@ -552,7 +413,6 @@ class PlayFragment: Fragment() {
                     }
                 })
             .setErrorCallback {
-                binding.btnCurrentTrackLabel.visibility = View.INVISIBLE
             } as Subscription<PlayerState>
     }
 
@@ -576,12 +436,12 @@ class PlayFragment: Fragment() {
     }
 
     private fun logError(throwable: Throwable) {
-        Toast.makeText(requireContext(), R.string.err_generic_toast, Toast.LENGTH_SHORT).show()
+        //Toast.makeText(requireContext(), R.string.err_generic_toast, Toast.LENGTH_SHORT).show()
         Log.e(TAG, "", throwable)
     }
 
     private fun logMessage(msg: String, duration: Int = Toast.LENGTH_SHORT) {
-        Toast.makeText(requireContext(), msg, duration).show()
+        //Toast.makeText(requireContext(), msg, duration).show()
         Log.d(TAG, msg)
     }
 
@@ -589,66 +449,23 @@ class PlayFragment: Fragment() {
         AlertDialog.Builder(requireContext()).setTitle(title).setMessage(message).create().show()
     }
 
-    private fun clickButton(){
-        with(binding){
-            connectSwitchToLocal.setOnClickListener {
-                onConnectSwitchToLocalClicked(it)
-            }
-            playPodcastButton.setOnClickListener {
-                onPlayPodcastButtonClicked(it)
-            }
-            playTrackButton.setOnClickListener {
-                onPlayTrackButtonClicked(it)
-            }
-            playAlbumButton.setOnClickListener {
-                onPlayAlbumButtonClicked(it)
-            }
-            playArtistButton.setOnClickListener {
-                onPlayArtistButtonClicked(it)
-            }
-            playPlaylistButton.setOnClickListener {
-                onPlayPlaylistButtonClicked(it)
-            }
-            getFitnessRecommendedItemsButton.setOnClickListener {
-                onGetFitnessRecommendedContentItemsClicked(it)
-            }
-            subscribeToCapabilities.setOnClickListener {
-                onSubscribedToPlayerStateButtonClicked()
-            }
-            getCollectionState.setOnClickListener {
-                onGetCollectionStateClicked(it)
-            }
-            removeUri.setOnClickListener {
-                onRemoveUriClicked(it)
-            }
-            saveUri.setOnClickListener {
-                onSaveUriClicked(it)
-            }
-            ivMusic.setOnClickListener{
-                onImageClicked(it)
-            }
-            btnCurrentTrackLabel.setOnClickListener {
-                showCurrentPlayerState(it)
-            }
-            btnSkipPrevButton.setOnClickListener{
+    private fun clickButton() {
+        with(binding) {
+            btnSkipPrevButton.setOnClickListener {
                 onSkipPreviousButtonClicked(it)
             }
-            btnPlayPauseButton.setOnClickListener{
+            btnPlayPauseButton.setOnClickListener {
                 onPlayPauseButtonClicked(it)
             }
-            btnSkipNextButton.setOnClickListener{
+            btnSkipNextButton.setOnClickListener {
                 onSkipNextButtonClicked(it)
             }
-            btnConnect.setOnClickListener{
-                onConnectClicked(it)
-            }
-
         }
     }
 
     override fun onDestroyView() {
         super.onDestroyView()
-        _binding=null
+        _binding = null
     }
 
 }

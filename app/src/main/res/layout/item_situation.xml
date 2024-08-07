@@ -4,11 +4,12 @@
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:padding="5dp"
+    android:layout_margin="5dp"
     xmlns:app="http://schemas.android.com/apk/res-auto" >
 
     <ImageButton
         android:id="@+id/ib_situation"
-        android:layout_width="110dp"
+        android:layout_width="150dp"
         android:layout_height="90dp"
         android:background="@drawable/my_background"
         app:layout_constraintStart_toStartOf="parent"

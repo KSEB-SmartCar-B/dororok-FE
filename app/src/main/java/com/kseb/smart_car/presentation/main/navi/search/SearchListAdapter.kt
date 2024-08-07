@@ -1,4 +1,4 @@
-package com.kseb.smart_car.presentation.main.search
+package com.kseb.smart_car.presentation.main.navi.search
 
 import android.util.Log
 import android.view.LayoutInflater

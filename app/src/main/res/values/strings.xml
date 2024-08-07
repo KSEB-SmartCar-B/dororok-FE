@@ -7,7 +7,9 @@
 
     <string name="spotify_error">스포티파이 로그인 실패</string>
 
+    <string name="main_title">어떤 상황에 맞춰 음악을 틀을까요?</string>
     <string name="main_btn_search">검색</string>
+    <string name="music_next">다음에 재생될 음악</string>
 
     <!-- Music -->
     <!-- Errors -->

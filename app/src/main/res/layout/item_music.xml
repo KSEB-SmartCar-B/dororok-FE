@@ -2,69 +2,38 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/item_layout"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:paddingBottom="5dp">
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content">
 
     <ImageView
-        android:id="@+id/iv_background"
-        android:layout_width="match_parent"
-        android:layout_height="70dp"
-        android:background="@drawable/background_gray"
-        app:layout_constraintEnd_toEndOf="parent"
+        android:id="@+id/iv_music"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:elevation="20dp"
+        android:background="@drawable/music"
+        app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <ImageView
-        android:id="@+id/iv_profile_background"
-        android:layout_width="50dp"
-        android:layout_height="50dp"
-        android:layout_margin="20dp"
-        android:background="@drawable/ic_basicprofile_background"
-        android:clipToOutline="true"
-        android:scaleType="centerCrop"
-        app:layout_constraintBottom_toBottomOf="@id/iv_background"
-        app:layout_constraintStart_toStartOf="@id/iv_background"
-        app:layout_constraintTop_toTopOf="@id/iv_background" />
-
-    <ImageView
-        android:id="@+id/iv_profile"
-        android:layout_width="25dp"
-        android:layout_height="25dp"
-        android:background="@drawable/ic_music_white"
-        android:scaleType="centerCrop"
-        app:layout_constraintBottom_toBottomOf="@id/iv_profile_background"
-        app:layout_constraintEnd_toEndOf="@id/iv_profile_background"
-        app:layout_constraintStart_toStartOf="@id/iv_profile_background"
-        app:layout_constraintTop_toTopOf="@id/iv_profile_background" />
-
-    <LinearLayout
-        android:id="@+id/music"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="15dp"
-        android:orientation="vertical"
-        app:layout_constraintStart_toEndOf="@id/iv_profile_background"
-        app:layout_constraintTop_toTopOf="@id/iv_background"
-        app:layout_constraintBottom_toBottomOf="@id/iv_background" >
+        app:layout_constraintEnd_toEndOf="parent" />
 
     <TextView
-        android:id="@+id/tv_song"
+        android:id="@+id/tv_title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="노래제목"
-        android:textSize="18sp"
-        android:textStyle="bold" />
+        android:text="Cruel Summer"
+        android:textStyle="bold"
+        android:textSize="12sp"
+        app:layout_constraintTop_toBottomOf="@id/iv_music"
+        app:layout_constraintStart_toStartOf="@id/iv_music"
+        app:layout_constraintEnd_toEndOf="@id/iv_music"/>
 
     <TextView
         android:id="@+id/tv_singer"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="5dp"
-        android:text="가수이름"
-        android:textSize="15sp" />
-
-    </LinearLayout>
-
+        android:text="Talor Swift "
+        android:textSize="10sp"
+        android:textColor="@color/bnv_unclicked_grey"
+        app:layout_constraintTop_toBottomOf="@id/tv_title"
+        app:layout_constraintStart_toStartOf="@id/iv_music"
+        app:layout_constraintEnd_toEndOf="@id/iv_music"/>
 </androidx.constraintlayout.widget.ConstraintLayout>

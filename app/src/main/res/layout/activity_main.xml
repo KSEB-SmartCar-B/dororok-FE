@@ -11,6 +11,7 @@
         android:id="@+id/map_view"
         android:layout_width="match_parent"
         android:layout_height="0dp"
+        android:visibility="invisible"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -25,6 +26,7 @@
         android:padding="5dp"
         android:layout_marginTop="35dp"
         android:background="@drawable/sv_search_white"
+        android:visibility="invisible"
         app:iconifiedByDefault="false"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
@@ -53,11 +55,12 @@
         android:background="@drawable/btn_current_location"
         android:layout_marginBottom="35dp"
         android:layout_marginEnd="20dp"
-        app:layout_constraintBottom_toTopOf="@id/fcv_main"
+        android:visibility="invisible"
+        app:layout_constraintBottom_toBottomOf="@id/fcv_main"
         app:layout_constraintEnd_toEndOf="parent"
         />
 
-    <androidx.appcompat.widget.AppCompatButton
+    <!--<androidx.appcompat.widget.AppCompatButton
         android:id="@+id/btn_music"
         android:layout_width="40dp"
         android:layout_height="40dp"
@@ -66,9 +69,9 @@
         android:layout_marginEnd="20dp"
         app:layout_constraintBottom_toTopOf="@id/bnv_main"
         app:layout_constraintEnd_toEndOf="parent"
-        />
+        />-->
 
-    <androidx.recyclerview.widget.RecyclerView
+   <!-- <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rv_situation"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
@@ -78,21 +81,31 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintBottom_toBottomOf="@id/btn_music"
         app:layout_constraintTop_toTopOf="@id/btn_music"
-        tools:listitem="@layout/item_navi_situation" />
+        tools:listitem="@layout/item_navi_situation" />-->
 
     <androidx.fragment.app.FragmentContainerView
         android:id="@+id/fcv_main"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        app:layout_constraintBottom_toTopOf="@id/bnv_main"
+        android:layout_height="0dp"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/v_bnv_divider"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
+
+    <View
+        android:id="@+id/v_bnv_divider"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@android:color/darker_gray"
+        app:layout_constraintBottom_toTopOf="@id/bnv_main"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"/>
 
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/bnv_main"
         android:layout_width="0dp"
         android:layout_height="73dp"
-        android:background="@color/bnv_background_yellow"
+        android:background="@color/white"
         android:paddingTop="6dp"
         android:paddingBottom="4dp"
         app:elevation="0dp"

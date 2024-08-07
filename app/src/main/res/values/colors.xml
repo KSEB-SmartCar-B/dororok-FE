@@ -13,8 +13,14 @@
     <color name="medium_dark">#77000000</color>
     <color name="high_dark">#BB000000</color>
 
-    <color name="bnv_clicked_pink">#F4A6A8 </color>
-    <color name="bnv_unclicked_grey">#686D76</color>
+    <color name="music_list_background_gray">#0C000000</color>
+    <color name="seekbar_background">#FFC0C0C0</color>
+    <color name="seekbar_secondary_progress">#FF888888</color>
+    <color name="seekbar_progress">#FF000000</color>
+    <color name="seekbar_thumb">#FF000000</color>
+
+    <color name="bnv_clicked_black">#000000 </color>
+    <color name="bnv_unclicked_grey">#9B9B9B</color>
     <color name="bnv_background_yellow">#BBFFF4E4</color>
 
     <color name="my_background_pink">#AAF9DEDC</color>

@@ -26,6 +26,7 @@ class TrackProgressBar(private val seekBar: SeekBar, private val seekStopListene
             val progress = seekBar.progress
             seekBar.progress = progress + LOOP_DURATION
             handler.postDelayed(this, LOOP_DURATION.toLong())
+
         }
     }
 
