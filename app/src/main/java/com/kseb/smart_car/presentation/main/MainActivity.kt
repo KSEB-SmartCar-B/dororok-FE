@@ -562,7 +562,6 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    //마이페이지
     private fun replaceFragment(fragment: Fragment) {
         supportFragmentManager.beginTransaction()
             .replace(R.id.fcv_main, fragment)
