@@ -3,6 +3,7 @@
     <color name="color_translate">#00000000</color>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+    <color name="white_transparent">#AAFFFFFF</color>
     <color name="system_bnv_grey">#F5F7F8</color>
 
     <color name="login_background_orange">#FF9A00</color>
@@ -26,6 +27,9 @@
     <color name="my_background_pink">#AAF9DEDC</color>
     <color name="my_background_yellow">#AAFFF4E4</color>
     <color name="my_profile_blue">#FFCFD7E7</color>
+
+    <color name="shadow_dark">#0F000000</color>
+    <color name="shadow_dark_transparent">#0A000000</color>
 
 <!--    <color name="rainbow_red">#FF0000</color> &lt;!&ndash; 빨강 &ndash;&gt;-->
 <!--    <color name="rainbow_orange">#FF7F00</color> &lt;!&ndash; 주황 &ndash;&gt;-->

@@ -13,7 +13,7 @@ class MusicAdapter(): RecyclerView.Adapter<MusicAdapter.MusicViewHolder>() {
         private val binding: ItemMusicBinding
     ) : RecyclerView.ViewHolder(binding.root) {
         fun onBind(item: String) {
-            binding.tvSong.text = musicList[position]
+            binding.tvTitle.text = musicList[position]
         }
     }
 
