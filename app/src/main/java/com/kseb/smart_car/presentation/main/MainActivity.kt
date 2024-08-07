@@ -26,9 +26,6 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.lifecycleScope
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
-import com.google.android.gms.location.FusedLocationProviderClient
-import com.google.android.gms.location.LocationServices
-import com.kakao.sdk.common.KakaoSdk.appKey
 import com.kakao.vectormap.KakaoMap
 import com.kakao.vectormap.KakaoMapReadyCallback
 import com.kakao.vectormap.LatLng
@@ -39,31 +36,23 @@ import com.kakao.vectormap.camera.CameraUpdateFactory
 import com.kakao.vectormap.label.LabelOptions
 import com.kakao.vectormap.label.LabelStyle
 import com.kakao.vectormap.label.LabelStyles
-import com.kakaomobility.knsdk.KNLanguageType
-import com.kakaomobility.knsdk.KNSDK
-import com.kakaomobility.knsdk.common.gps.KATECToWGS84
-import com.kakaomobility.knsdk.common.objects.KNError_Code_C302
 import com.kakaomobility.knsdk.common.util.FloatPoint
 import com.kakaomobility.knsdk.map.knmaprenderer.objects.KNMapCameraUpdate
-import com.kakaomobility.knsdk.ui.view.KNNaviView
-import com.kseb.smart_car.BuildConfig
 import com.kseb.smart_car.R
 import com.kseb.smart_car.databinding.ActivityMainBinding
 import com.kseb.smart_car.extension.AddressState
-import com.kseb.smart_car.presentation.main.MainActivity.SpotifySampleContexts.TRACK_URI
-import com.kseb.smart_car.presentation.main.music.MusicFragment
+import com.kseb.smart_car.presentation.main.music.MainFragment
 import com.kseb.smart_car.presentation.main.music.PlayFragment.AuthParams.CLIENT_ID
 import com.kseb.smart_car.presentation.main.music.PlayFragment.AuthParams.REDIRECT_URI
 import com.kseb.smart_car.presentation.main.music.PlayFragment.Companion.TAG
-import com.kseb.smart_car.presentation.main.music.SituationAdapter
 import com.kseb.smart_car.presentation.main.music.SituationViewModel
 import com.kseb.smart_car.presentation.main.my.MyFragment
-import com.kseb.smart_car.presentation.main.navi.NaviActivity
 import com.spotify.android.appremote.api.ConnectionParams
 import com.spotify.android.appremote.api.Connector
 import com.spotify.android.appremote.api.SpotifyAppRemote
 import com.spotify.android.appremote.api.error.SpotifyDisconnectedException
-import com.kseb.smart_car.presentation.main.search.SearchActivity
+import com.kseb.smart_car.presentation.main.navi.search.SearchActivity
+import com.kseb.smart_car.presentation.main.place.PlaceFragment
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -72,8 +61,6 @@ import kotlin.coroutines.Continuation
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 import kotlin.coroutines.suspendCoroutine
-import kotlin.math.roundToInt
-import kotlin.properties.Delegates
 
 
 @AndroidEntryPoint
@@ -141,7 +128,9 @@ class MainActivity : AppCompatActivity() {
         subjectAdapter.getList(subjectViewModel.makeList())
         // binding.btnMusic.visibility=View.INVISIBLE
 
-        clickMusicButton()
+        replaceFragment(MainFragment())
+
+        //clickMusicButton()
 
         // BroadcastReceiver 초기화 및 등록 (마이페이지에서 정보 수정 시 사용)
         updateReceiver = object : BroadcastReceiver() {
@@ -208,11 +197,15 @@ class MainActivity : AppCompatActivity() {
                 CoroutineScope(Dispatchers.IO).launch {
                     getMyLocation(this@MainActivity, kakaoMap)
                     getPosition()
-                    kakaoMap.moveCamera(CameraUpdateFactory.newCenterPosition(currentPosition!!))
+                    currentPosition?.let {
+                        kakaoMap.moveCamera(CameraUpdateFactory.newCenterPosition(it))
+                    }
                 }
 
                 binding.btnCurrentLocation.setOnClickListener {
-                    kakaoMap.moveCamera(CameraUpdateFactory.newCenterPosition(currentPosition!!))
+                    currentPosition?.let {
+                        kakaoMap.moveCamera(CameraUpdateFactory.newCenterPosition(it))
+                    }
                 }
             }
 
@@ -222,14 +215,14 @@ class MainActivity : AppCompatActivity() {
                     android.Manifest.permission.ACCESS_FINE_LOCATION
                 )
                 if (permissionCheck == PackageManager.PERMISSION_GRANTED) {
-                    Log.d("mainactivity", "permission_granted")
+                    Log.d("mainActivity", "permission_granted")
                     val lm = context.getSystemService(Context.LOCATION_SERVICE) as LocationManager
                     try {
                         val userCurLocation =
                             lm.getLastKnownLocation(LocationManager.NETWORK_PROVIDER)
                         val uLatitude = userCurLocation!!.latitude
                         val uLogitude = userCurLocation.longitude
-                        Log.d("mainactivity", "latitude: ${uLatitude}, logitude: ${uLogitude}")
+                        Log.d("mainActivity", "latitude: ${uLatitude}, logitude: ${uLogitude}")
                         currentPosition = LatLng.from(uLatitude, uLogitude)
 
                         //label 생성
@@ -373,7 +366,7 @@ class MainActivity : AppCompatActivity() {
 //        }
 //    }
 
-    private fun clickMusicButton() {
+    /*private fun clickMusicButton() {
         binding.btnMusic.setOnClickListener {
             if (binding.rvSituation.visibility == View.GONE) {
                 binding.rvSituation.visibility = View.VISIBLE
@@ -407,7 +400,7 @@ class MainActivity : AppCompatActivity() {
                 logError(error)
             }
         }
-    }
+    }*/
 
     private fun clickButtonSearch() {
         mainViewModel.accessToken.observe(this){ token ->
@@ -556,14 +549,15 @@ class MainActivity : AppCompatActivity() {
                     true
                 }
 
-                R.id.menu_music -> {
-                    replaceFragment(MusicFragment())
+                R.id.menu_main -> {
+                    replaceFragment(MainFragment())
                     true
                 }
-
-                else -> {
-                    false
+                R.id.menu_recommend->{
+                    replaceFragment(PlaceFragment())
+                    true
                 }
+                else->false
             }
         }
     }

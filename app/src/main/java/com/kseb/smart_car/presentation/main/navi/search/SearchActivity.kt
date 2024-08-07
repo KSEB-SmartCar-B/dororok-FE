@@ -1,4 +1,4 @@
-package com.kseb.smart_car.presentation.main.search
+package com.kseb.smart_car.presentation.main.navi.search
 
 import android.os.Bundle
 import android.util.Log
@@ -12,7 +12,7 @@ import dagger.hilt.android.AndroidEntryPoint
 @AndroidEntryPoint
 class SearchActivity: AppCompatActivity() {
     private lateinit var binding: ActivitySearchBinding
-    private val searchViewModel:SearchViewModel by viewModels()
+    private val searchViewModel: SearchViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
