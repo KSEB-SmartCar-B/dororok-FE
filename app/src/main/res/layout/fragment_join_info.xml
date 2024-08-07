@@ -10,18 +10,10 @@
         android:layout_height="match_parent">
 
         <ImageView
-            android:id="@+id/iv_dororok_logo"
-            android:layout_width="70dp"
-            android:layout_height="70dp"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:srcCompat="@drawable/dororok_logo2" />
-
-        <ImageView
             android:id="@+id/iv_sequence_bar"
-            android:layout_width="200dp"
-            android:layout_height="200dp"
-            android:layout_marginTop="25dp"
+            android:layout_width="250dp"
+            android:layout_height="100dp"
+            android:layout_marginTop="50dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
@@ -32,13 +24,13 @@
             android:id="@+id/gender"
             android:layout_width="300dp"
             android:layout_height="wrap_content"
-            android:layout_marginTop="220dp"
+            android:layout_marginTop="30dp"
             android:background="@drawable/border_default"
             android:orientation="vertical"
             android:padding="10dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent">
+            app:layout_constraintTop_toBottomOf="@id/iv_sequence_bar" >
 
             <TextView
                 android:id="@+id/tv_gender"
@@ -58,6 +50,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal"
+                    android:layout_marginTop="5dp"
                     app:layout_constraintEnd_toEndOf="@id/gender"
                     app:layout_constraintStart_toStartOf="@id/gender">
 
@@ -65,8 +58,7 @@
                         android:id="@+id/btn_male"
                         android:layout_width="110dp"
                         android:layout_height="40dp"
-                        android:layout_margin="5dp"
-                        android:layout_marginEnd="10dp"
+                        android:layout_margin="7dp"
                         android:background="@drawable/btn_gender"
                         android:text="남자"
                         android:textSize="15sp" />
@@ -75,7 +67,7 @@
                         android:id="@+id/btn_female"
                         android:layout_width="110dp"
                         android:layout_height="40dp"
-                        android:layout_margin="5dp"
+                        android:layout_margin="7dp"
                         android:background="@drawable/btn_gender"
                         android:text="여자"
                         android:textSize="15sp" />
@@ -113,10 +105,13 @@
                 <EditText
                     android:id="@+id/et_nick"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:ems="13"
-                    android:hint="닉네임을 입력하세요"
-                    android:inputType="text" />
+                    android:layout_height="40dp"
+                    android:layout_marginTop="7dp"
+                    android:padding="5dp"
+                    android:ems="14"
+                    android:inputType="text"
+                    android:gravity="center"
+                    android:background="@drawable/background_nickname" />
             </FrameLayout>
         </LinearLayout>
 
@@ -151,37 +146,17 @@
                     android:id="@+id/dpSpinner"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_marginTop="-10dp"
                     android:calendarViewShown="false"
                     android:datePickerMode="spinner" />
             </FrameLayout>
         </LinearLayout>
 
-        <TextView
-            android:id="@+id/tv_personal"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="40dp"
-            android:text="개인정보수집동의"
-            android:textSize="20sp"
-            android:textStyle="bold"
-            app:layout_constraintStart_toStartOf="@id/birthday"
-            app:layout_constraintTop_toBottomOf="@id/birthday" />
-
-        <TextView
-            android:id="@+id/tv_position"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="위치정보수집동의"
-            android:textSize="20sp"
-            android:textStyle="bold"
-            app:layout_constraintStart_toStartOf="@id/tv_personal"
-            app:layout_constraintTop_toBottomOf="@id/tv_personal" />
-
         <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/btn_next"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="70dp"
+            android:layout_marginTop="40dp"
             android:layout_marginEnd="40dp"
             android:layout_marginBottom="50dp"
             android:background="@drawable/btn_join"
@@ -189,7 +164,7 @@
             android:textSize="15sp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/tv_position" />
+            app:layout_constraintTop_toBottomOf="@+id/birthday" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

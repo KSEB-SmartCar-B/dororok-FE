@@ -50,7 +50,9 @@ class MyFragment: Fragment() {
             myViewModel.accessToken.observe(viewLifecycleOwner){token ->
                 myViewModel.getInfo(token)
                 clickButtonGenre(token)
-                clickButtonInformation(token)
+                clickButtonInfo(token)
+                clickButtonMusic(token)
+                clickButtonPlace(token)
             }
             Log.d("myfragment","token:${token}")
         }
@@ -78,16 +80,28 @@ class MyFragment: Fragment() {
         }
     }
 
-    private fun clickButtonInformation(accessToken:String) {
-        binding.ibInformation.setOnClickListener {
+    private fun clickButtonInfo(accessToken:String) {
+        binding.info.setOnClickListener {
             Log.d("myFragment","accesstoken: $accessToken")
                 startActivity(Intent(requireContext(), InformationActivity::class.java).putExtra("info",myViewModel.getMyInfo()).putExtra("accessToken",accessToken))
         }
     }
 
     private fun clickButtonGenre(accessToken:String) {
-        binding.ibGenre.setOnClickListener {
+        binding.genre.setOnClickListener {
             startActivity(Intent(requireContext(), GenreActivity::class.java).putExtra("token", accessToken))
+        }
+    }
+
+    private fun clickButtonMusic(accessToken:String) {
+        binding.music.setOnClickListener {
+            startActivity(Intent(requireContext(), MusicActivity::class.java).putExtra("token", accessToken))
+        }
+    }
+
+    private fun clickButtonPlace(accessToken:String) {
+        binding.place.setOnClickListener {
+            startActivity(Intent(requireContext(), PlaceActivity::class.java).putExtra("token", accessToken))
         }
     }
 

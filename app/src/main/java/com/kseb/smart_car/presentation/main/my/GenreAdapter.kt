@@ -12,9 +12,6 @@ import com.kseb.smart_car.data.responseDto.ResponseMyGenreDto
 import com.kseb.smart_car.databinding.ItemGenreBinding
 import com.kseb.smart_car.presentation.join.Genre
 
-/*import com.kseb.smart_car.presentation.join.Join2Adapter
-import com.kseb.smart_car.presentation.join.JoinViewModel*/
-
 class GenreAdapter(private val onButtonClick: (String) -> Unit): RecyclerView.Adapter<GenreAdapter.GenreViewHolder>() {
     private val genreList = mutableListOf<ResponseAllGenreDto.GenreDto>()
     private val myGenreList = mutableListOf<ResponseMyGenreDto.Name>()
