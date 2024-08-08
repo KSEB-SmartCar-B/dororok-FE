@@ -26,7 +26,7 @@ class SituationAdapter(
         fun onBind(situation: String) {
             binding.tvSituation.text = situation
 
-            binding.ibSituation.setOnClickListener {
+            binding.ivSituation.setOnClickListener {
                 itemClickListener(situation)
             }
         }

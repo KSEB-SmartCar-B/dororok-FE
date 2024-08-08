@@ -8,10 +8,11 @@ import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.GridLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import com.kseb.smart_car.NoScrollRecyclerView
 import com.kseb.smart_car.R
 import com.kseb.smart_car.data.service.SpotifyService.connect
 import com.kseb.smart_car.databinding.FragmentMainBinding
-import com.kseb.smart_car.databinding.FragmentMusicBinding
 
 class MainFragment:Fragment() {
     private var _binding:FragmentMainBinding?=null
@@ -24,7 +25,7 @@ class MainFragment:Fragment() {
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         _binding=FragmentMainBinding.inflate(inflater,container,false)
         return binding.root
     }
@@ -35,6 +36,10 @@ class MainFragment:Fragment() {
         val situationAdapter = SituationAdapter (requireContext(), { situation -> onItemClicked(situation) },"music")
         binding.rvSituation.adapter = situationAdapter
         situationAdapter.getList(viewmodel.makeList())
+
+        //리사이클러뷰 스크롤 안되게 (한페이지에 들어올 것 같아서 꿀렁거리는 느낌 빼고싶어서)
+        val recyclerView: NoScrollRecyclerView = view.findViewById(R.id.rv_situation)
+        recyclerView.itemAnimator = null
     }
 
     private fun onItemClicked(situation: String) {
