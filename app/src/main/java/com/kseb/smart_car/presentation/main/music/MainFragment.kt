@@ -37,6 +37,7 @@ class MainFragment:Fragment() {
         binding.rvSituation.adapter = situationAdapter
         situationAdapter.getList(viewmodel.makeList())
 
+        //리사이클러뷰 스크롤 안되게 (한페이지에 들어올 것 같아서 꿀렁거리는 느낌 빼고싶어서)
         val recyclerView: NoScrollRecyclerView = view.findViewById(R.id.rv_situation)
         recyclerView.itemAnimator = null
     }
