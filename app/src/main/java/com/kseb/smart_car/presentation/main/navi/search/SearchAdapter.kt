@@ -15,7 +15,7 @@ class SearchAdapter(private val deleteButtonClick: (String) -> Unit, private val
 
         fun onBind(item: String) {
             binding.tvSearch.text = searchList[position]
-            binding.tvDelete.setOnClickListener{
+            binding.ivDelete.setOnClickListener{
                 deleteButtonClick(item)
             }
             binding.itemLayout.setOnClickListener{
