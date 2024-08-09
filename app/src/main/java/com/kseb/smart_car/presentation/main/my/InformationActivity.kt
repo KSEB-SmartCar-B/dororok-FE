@@ -11,7 +11,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.kseb.smart_car.data.requestDto.RequestUpdateInfoDto
 import com.kseb.smart_car.data.responseDto.ResponseMyInfoDto
-import com.kseb.smart_car.databinding.ActivityInfoBinding
+import com.kseb.smart_car.databinding.ActivitySavedinfoBinding
 import com.kseb.smart_car.extension.UpdateInfoState
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collect
@@ -24,13 +24,13 @@ import kotlin.coroutines.suspendCoroutine
 
 @AndroidEntryPoint
 class InformationActivity : AppCompatActivity() {
-    private lateinit var binding: ActivityInfoBinding
+    private lateinit var binding: ActivitySavedinfoBinding
     private val infoViewModel by viewModels<InfoViewModel>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        binding = ActivityInfoBinding.inflate(layoutInflater)
+        binding = ActivitySavedinfoBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
         setting()

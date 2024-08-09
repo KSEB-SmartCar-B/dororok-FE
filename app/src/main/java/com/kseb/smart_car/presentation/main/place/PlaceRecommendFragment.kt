@@ -7,7 +7,6 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import com.kseb.smart_car.R
 import com.kseb.smart_car.databinding.FragmentPlaceRecommendBinding
-import com.kseb.smart_car.presentation.main.my.PlaceAdapter
 
 class PlaceRecommendFragment: Fragment() {
     private var _binding: FragmentPlaceRecommendBinding? = null

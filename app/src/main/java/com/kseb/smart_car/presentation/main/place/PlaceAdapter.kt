@@ -8,7 +8,7 @@ import com.kseb.smart_car.databinding.ItemPlaceBinding
 
 class PlaceAdapter() : RecyclerView.Adapter<PlaceAdapter.PlaceViewHolder>() {
 
-    private val placeList = listOf("수원시", "부산광역시", "대전광역시", "포항시", "규선이집")
+    private val placeList = listOf("1", "2", "3", "4", "5", "6")
 
     inner class PlaceViewHolder(
         private val binding: ItemPlaceBinding
@@ -16,6 +16,15 @@ class PlaceAdapter() : RecyclerView.Adapter<PlaceAdapter.PlaceViewHolder>() {
 
         fun onBind(item: String) {
             binding.tvMainplace.text = placeList[position]
+
+            clickSaveButton()
+        }
+
+        private fun clickSaveButton() {
+            binding.ivSaved.isSelected = false
+            binding.ivSaved.setOnClickListener {
+                binding.ivSaved.isSelected = !binding.ivSaved.isSelected
+            }
         }
     }
 

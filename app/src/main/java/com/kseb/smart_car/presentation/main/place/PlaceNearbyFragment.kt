@@ -7,7 +7,6 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import com.kseb.smart_car.R
 import com.kseb.smart_car.databinding.FragmentPlaceNearbyBinding
-import com.kseb.smart_car.presentation.main.my.PlaceAdapter
 
 class PlaceNearbyFragment: Fragment() {
     private var _binding: FragmentPlaceNearbyBinding? = null
