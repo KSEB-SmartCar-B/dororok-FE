@@ -11,7 +11,7 @@
         android:layout_width="match_parent"
         android:layout_height="90dp"
         android:layout_marginTop="28dp"
-        android:background="@drawable/background_gray"
+        android:background="@color/join_yellow"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -44,7 +44,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="15dp"
-        android:text="회원님 행복한 하루되세요 !"
+        android:text="회원님 행복한 하루 되세요 !"
         android:textSize="18sp"
         android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="@+id/iv_background"

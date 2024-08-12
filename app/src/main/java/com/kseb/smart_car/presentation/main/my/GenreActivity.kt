@@ -6,7 +6,7 @@ import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.GridLayoutManager
-import com.kseb.smart_car.databinding.ActivityGenreBinding
+import com.kseb.smart_car.databinding.ActivitySavedgenreBinding
 import com.kseb.smart_car.extension.AllGenreState
 import com.kseb.smart_car.extension.GenreState
 import com.kseb.smart_car.presentation.join.JoinGenreViewModel
@@ -15,7 +15,7 @@ import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
 class GenreActivity: AppCompatActivity() {
-    private lateinit var binding: ActivityGenreBinding
+    private lateinit var binding: ActivitySavedgenreBinding
 
     private val genreViewModel by viewModels<GenreViewModel>()
     private val joinGenreViewModel by viewModels<JoinGenreViewModel>()
@@ -23,7 +23,7 @@ class GenreActivity: AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        binding = ActivityGenreBinding.inflate(layoutInflater)
+        binding = ActivitySavedgenreBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
         val token = intent.getStringExtra("token")

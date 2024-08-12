@@ -70,17 +70,17 @@
 
         </activity>
 
-        <activity android:name=".presentation.main.my.MusicActivity"
+        <activity android:name=".presentation.main.my.music.MymusicActivity"
             android:exported="false">
 
         </activity>
 
-        <activity android:name=".presentation.main.my.PlaceActivity"
+        <activity android:name=".presentation.main.my.place.MyplaceActivity"
             android:exported="false">
 
         </activity>
 
-        <activity android:name=".presentation.main.search.SearchActivity"
+        <activity android:name=".presentation.main.navi.search.SearchActivity"
             android:exported="false">
 
         </activity>

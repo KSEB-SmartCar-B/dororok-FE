@@ -1,7 +1,6 @@
 package com.kseb.smart_car.presentation.main.my
 
 import android.content.Intent
-import android.icu.text.IDNA.Info
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -15,11 +14,11 @@ import coil.load
 import coil.transform.CircleCropTransformation
 import com.kseb.smart_car.R
 import com.kseb.smart_car.databinding.FragmentMyBinding
-import com.kseb.smart_car.extension.GenreState
 import com.kseb.smart_car.extension.InfoState
 import com.kseb.smart_car.presentation.main.MainViewModel
+import com.kseb.smart_car.presentation.main.my.music.MymusicActivity
+import com.kseb.smart_car.presentation.main.my.place.MyplaceActivity
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
@@ -95,13 +94,13 @@ class MyFragment: Fragment() {
 
     private fun clickButtonMusic(accessToken:String) {
         binding.music.setOnClickListener {
-            startActivity(Intent(requireContext(), MusicActivity::class.java).putExtra("token", accessToken))
+            startActivity(Intent(requireContext(), MymusicActivity::class.java).putExtra("token", accessToken))
         }
     }
 
     private fun clickButtonPlace(accessToken:String) {
         binding.place.setOnClickListener {
-            startActivity(Intent(requireContext(), PlaceActivity::class.java).putExtra("token", accessToken))
+            startActivity(Intent(requireContext(), MyplaceActivity::class.java).putExtra("token", accessToken))
         }
     }
 
