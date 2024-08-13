@@ -9,6 +9,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.ViewTreeObserver
 import android.view.animation.LinearInterpolator
 import android.widget.SeekBar
 import android.widget.Toast
@@ -50,6 +51,7 @@ class PlayFragment : Fragment() {
 
     private val playViewModel:PlayViewModel by viewModels()
     private lateinit var playAdapter: PlayAdapter
+    private lateinit var animator: ObjectAnimator
 
     object AuthParams {
         const val CLIENT_ID = "d8e2d4268f28445eac8333a5292c8e9f"
@@ -89,9 +91,9 @@ class PlayFragment : Fragment() {
             }
         }
 
-    private val playerStateEventCallback = Subscription.EventCallback<PlayerState> { playerState ->
+    private val playerStateEventCallback = Subscription.EventCallback<PlayerState> { playerState ->/*
         Log.v(TAG, String.format("Player State: %s", gson.toJson(playerState)))
-        Log.d("playfragment", "update success")
+        Log.d("playfragment", "update success")*/
 
         updateTrackStateButton(playerState)
 
@@ -142,7 +144,6 @@ class PlayFragment : Fragment() {
     }
 
     private fun updateTrackCoverArt(playerState: PlayerState) {
-        // Get image from track
         assertAppRemoteConnected()
             .imagesApi
             .getImage(playerState.track.imageUri, Image.Dimension.LARGE)
@@ -152,30 +153,45 @@ class PlayFragment : Fragment() {
                     .transform(RoundedCorners(requireContext().resources.getDimensionPixelSize(R.dimen.radius_music_image))) // 반지름을 dimens 파일에서 가져옴
                     .into(binding.ivMusic)
 
-                val constraintSet = ConstraintSet()
-                constraintSet.clone(binding.root as ConstraintLayout)
+                binding.ivMusic.viewTreeObserver.addOnGlobalLayoutListener(object : ViewTreeObserver.OnGlobalLayoutListener {
+                    override fun onGlobalLayout() {
+                        binding.ivMusic.viewTreeObserver.removeOnGlobalLayoutListener(this)
 
-                // iv_shadow를 iv_music과 동일한 위치에 고정
-                constraintSet.connect(R.id.iv_shadow, ConstraintSet.TOP, R.id.iv_music, ConstraintSet.TOP,40)
-                constraintSet.connect(R.id.iv_shadow, ConstraintSet.BOTTOM, R.id.iv_music, ConstraintSet.BOTTOM)
-                constraintSet.connect(R.id.iv_shadow, ConstraintSet.START, R.id.iv_music, ConstraintSet.START,60)
-                constraintSet.connect(R.id.iv_shadow, ConstraintSet.END, R.id.iv_music, ConstraintSet.END)
+                        val constraintSet = ConstraintSet()
+                        constraintSet.clone(binding.root as ConstraintLayout)
 
-                // iv_shadow의 가로와 세로를 MATCH_CONSTRAINT로 설정
-                constraintSet.constrainWidth(R.id.iv_shadow, ConstraintSet.MATCH_CONSTRAINT)
-                constraintSet.constrainHeight(R.id.iv_shadow, ConstraintSet.MATCH_CONSTRAINT)
+                        // 크기를 1.2배로 설정
+                        constraintSet.constrainWidth(R.id.iv_shadow, (binding.ivMusic.width * 1.2).toInt())
+                        constraintSet.constrainHeight(R.id.iv_shadow, (binding.ivMusic.height * 1.2).toInt())
 
-                // iv_shadow의 비율을 iv_music과 동일하게 설정
-                constraintSet.setDimensionRatio(R.id.iv_shadow, "W,1:1")
+                        constraintSet.connect(R.id.iv_shadow, ConstraintSet.TOP, R.id.iv_music, ConstraintSet.TOP)
+                        constraintSet.connect(R.id.iv_shadow, ConstraintSet.BOTTOM, R.id.iv_music, ConstraintSet.BOTTOM)
+                        constraintSet.connect(R.id.iv_shadow, ConstraintSet.START, R.id.iv_music, ConstraintSet.START)
+                        constraintSet.connect(R.id.iv_shadow, ConstraintSet.END, R.id.iv_music, ConstraintSet.END)
 
-                constraintSet.applyTo(binding.root as ConstraintLayout)
+                        constraintSet.setDimensionRatio(R.id.iv_shadow, "W,1:1")
 
-                // iv_music을 회전시키는 애니메이션 설정
-                val animator = ObjectAnimator.ofFloat(binding.ivMusic, View.ROTATION, 0f, 360f)
-                animator.duration = 4000 // 애니메이션 지속 시간 (3초)
-                animator.repeatCount = ObjectAnimator.INFINITE // 무한 반복
-                animator.interpolator = LinearInterpolator() // 일정한 속도로 회전
-                animator.start()
+                        constraintSet.applyTo(binding.root as ConstraintLayout)
+                        Log.d("PlayFragment", "ivShadow width: ${binding.ivShadow.width}, height: ${binding.ivShadow.height}")
+                    }
+                })
+
+                // 회전 애니메이션 초기화
+                if (!this::animator.isInitialized) {
+                    animator = ObjectAnimator.ofFloat(binding.ivMusic, View.ROTATION, 0f, 360f).apply {
+                        duration = 4000 // 애니메이션 지속 시간
+                        repeatCount = ObjectAnimator.INFINITE // 무한 반복
+                        interpolator = LinearInterpolator() // 일정한 속도로 회전
+                    }
+                }
+
+                if (playerState.isPaused) {
+                    // 애니메이션 멈춤
+                    animator.cancel()
+                } else {
+                    // 애니메이션 시작
+                    animator.start()
+                }
             }
     }
 
@@ -243,6 +259,7 @@ class PlayFragment : Fragment() {
 
     override fun onStop() {
         super.onStop()
+        animator.cancel() // 애니메이션 중지
         SpotifyAppRemote.disconnect(spotifyAppRemote)
         onDisconnected()
     }
@@ -442,9 +459,8 @@ class PlayFragment : Fragment() {
 
     private fun logMessage(msg: String, duration: Int = Toast.LENGTH_SHORT) {
         //Toast.makeText(requireContext(), msg, duration).show()
-        Log.d(TAG, msg)
+        //Log.d(TAG, msg)
     }
-
     private fun showDialog(title: String, message: String) {
         AlertDialog.Builder(requireContext()).setTitle(title).setMessage(message).create().show()
     }

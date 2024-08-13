@@ -10,8 +10,14 @@ import com.kseb.smart_car.data.responseDto.ResponseAddSearchDto
 import com.kseb.smart_car.data.responseDto.ResponseAllGenreDto
 import com.kseb.smart_car.data.responseDto.ResponseDeleteSearchDto
 import com.kseb.smart_car.data.responseDto.ResponseIsSignedDto
+import com.kseb.smart_car.data.responseDto.ResponseSituationDto
 import com.kseb.smart_car.data.responseDto.ResponseMyGenreDto
 import com.kseb.smart_car.data.responseDto.ResponseMyInfoDto
+import com.kseb.smart_car.data.requestDto.RequestRecommendMusicDto
+import com.kseb.smart_car.data.responseDto.ResponseFavoritePlaceDto
+import com.kseb.smart_car.data.responseDto.ResponseRecommendMusicDto
+import com.kseb.smart_car.data.responseDto.ResponseRecommendPlaceNearbyDto
+import com.kseb.smart_car.data.responseDto.ResponseSaveFavoritePlaceDto
 import com.kseb.smart_car.data.responseDto.ResponseSearchListDto
 import com.kseb.smart_car.data.responseDto.ResponseSignInDto
 import com.kseb.smart_car.data.responseDto.ResponseSignUpDto
@@ -36,6 +42,22 @@ interface AuthRepository {
     ):Result<ResponseSignUpDto>
 
     suspend fun getGenreList():Result<ResponseAllGenreDto>
+
+    suspend fun getSituations():Result<ResponseSituationDto>
+
+    suspend fun getRecommendMusic(
+        token:String,
+        lat:String,
+        lng:String,
+        musicMode:String
+    ):Result<ResponseRecommendMusicDto>
+
+    suspend fun getRecommendPlaceNearby(
+        token:String,
+        lat:String,
+        lng:String,
+        pageNo:Int
+    ):Result<ResponseRecommendPlaceNearbyDto>
 
     suspend fun getSearch(
         token:String
@@ -69,4 +91,23 @@ interface AuthRepository {
         token: String,
         requestUpdateGenreDto: RequestUpdateGenreDto
     ):Result<ResponseUpdateGenreDto>
+
+    //저장된 장소
+    suspend fun getFavoritePlace(
+        token:String
+    ):Result<ResponseFavoritePlaceDto>
+
+    //장소 저장
+    suspend fun saveFavoritePlace(
+        token:String,
+        title:String,
+        address:String,
+        imageUrl:String,
+        contentId:String
+    ):Result<ResponseSaveFavoritePlaceDto>
+
+    suspend fun deleteFavoritePlace(
+        token:String,
+        contentId:String
+    ):Result<ResponseSaveFavoritePlaceDto>
 }

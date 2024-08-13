@@ -3,17 +3,20 @@ package com.kseb.smart_car.presentation.main.my.place
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
+import coil.load
+import com.kseb.smart_car.data.responseDto.ResponseFavoritePlaceDto
 import com.kseb.smart_car.databinding.ItemSavedplaceBinding
+import okhttp3.internal.notify
 
 class SavedplaceAdapter(): RecyclerView.Adapter<SavedplaceAdapter.SavedplaceViewHolder>() {
 
-    private val placeList = listOf("1", "2", "3", "4", "5", "6", "7", "8",)
+    private val placeList = mutableListOf<ResponseFavoritePlaceDto.FavoritesPlaceListDto>()
 
     inner class SavedplaceViewHolder(
         private val binding: ItemSavedplaceBinding
     ) : RecyclerView.ViewHolder(binding.root) {
-        fun onBind(item: String) {
-
+        fun onBind(item: ResponseFavoritePlaceDto.FavoritesPlaceListDto) {
+            binding.ivPlace.load(item.imageUrl)
         }
     }
 
@@ -27,5 +30,10 @@ class SavedplaceAdapter(): RecyclerView.Adapter<SavedplaceAdapter.SavedplaceView
     override fun onBindViewHolder(holder: SavedplaceViewHolder, position: Int) {
         val item = placeList[position]
         holder.onBind(item)
+    }
+
+    fun setList(list:List<ResponseFavoritePlaceDto.FavoritesPlaceListDto>){
+        placeList.addAll(list)
+        notifyDataSetChanged()
     }
 }

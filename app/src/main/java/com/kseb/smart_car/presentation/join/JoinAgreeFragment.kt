@@ -1,17 +1,16 @@
 package com.kseb.smart_car.presentation.join
 
-import android.R
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.CheckBox
-import androidx.compose.ui.test.isSelected
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
-import com.kseb.smart_car.databinding.FragmentAgreeLocationBinding
-import com.kseb.smart_car.databinding.FragmentAgreeServiceBinding
 import com.kseb.smart_car.databinding.FragmentJoinAgreeBinding
+import com.kseb.smart_car.presentation.join.agree.AgreeInfoFragment
+import com.kseb.smart_car.presentation.join.agree.AgreeLocationFragment
+import com.kseb.smart_car.presentation.join.agree.AgreeServiceFragment
+import com.kseb.smart_car.presentation.join.agree.AgreeTransferFragment
 
 
 class JoinAgreeFragment : Fragment() {

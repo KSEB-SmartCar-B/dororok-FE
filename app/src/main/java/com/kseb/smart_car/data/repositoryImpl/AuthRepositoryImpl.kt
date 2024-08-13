@@ -1,6 +1,5 @@
 package com.kseb.smart_car.data.repositoryImpl
 
-import android.util.Log
 import com.kseb.smart_car.data.datasource.AuthDataSource
 import com.kseb.smart_car.data.requestDto.RequestAccessDto
 import com.kseb.smart_car.data.requestDto.RequestAddSearchDto
@@ -13,8 +12,15 @@ import com.kseb.smart_car.data.responseDto.ResponseAddSearchDto
 import com.kseb.smart_car.data.responseDto.ResponseAllGenreDto
 import com.kseb.smart_car.data.responseDto.ResponseDeleteSearchDto
 import com.kseb.smart_car.data.responseDto.ResponseIsSignedDto
+import com.kseb.smart_car.data.responseDto.ResponseSituationDto
 import com.kseb.smart_car.data.responseDto.ResponseMyGenreDto
 import com.kseb.smart_car.data.responseDto.ResponseMyInfoDto
+import com.kseb.smart_car.data.requestDto.RequestRecommendMusicDto
+import com.kseb.smart_car.data.requestDto.RequestRecommendPlaceDto
+import com.kseb.smart_car.data.responseDto.ResponseFavoritePlaceDto
+import com.kseb.smart_car.data.responseDto.ResponseRecommendMusicDto
+import com.kseb.smart_car.data.responseDto.ResponseRecommendPlaceNearbyDto
+import com.kseb.smart_car.data.responseDto.ResponseSaveFavoritePlaceDto
 import com.kseb.smart_car.data.responseDto.ResponseSearchListDto
 import com.kseb.smart_car.data.responseDto.ResponseSignInDto
 import com.kseb.smart_car.data.responseDto.ResponseSignUpDto
@@ -52,6 +58,34 @@ class AuthRepositoryImpl @Inject constructor(
     override suspend fun getGenreList(): Result<ResponseAllGenreDto> {
         return runCatching {
             authDataSource.getAllGenreList()
+        }
+    }
+
+    override suspend fun getSituations(): Result<ResponseSituationDto> {
+        return runCatching {
+            authDataSource.getSituations()
+        }
+    }
+
+    override suspend fun getRecommendMusic(
+        token: String,
+        lat: String,
+        lng: String,
+        musicMode: String
+    ): Result<ResponseRecommendMusicDto> {
+        return runCatching {
+            authDataSource.getRecommendMusic(token, RequestRecommendMusicDto(lat,lng,musicMode))
+        }
+    }
+
+    override suspend fun getRecommendPlaceNearby(
+        token: String,
+        lat: String,
+        lng: String,
+        pageNo:Int
+    ): Result<ResponseRecommendPlaceNearbyDto> {
+        return runCatching {
+            authDataSource.getPlacesNearby(token, lat,lng,pageNo)
         }
     }
 
@@ -101,6 +135,34 @@ class AuthRepositoryImpl @Inject constructor(
     ): Result<ResponseUpdateGenreDto> {
         return runCatching {
             authDataSource.updateGenre(token, requestUpdateGenreDto)
+        }
+    }
+
+    override suspend fun getFavoritePlace(token: String): Result<ResponseFavoritePlaceDto> {
+        return runCatching {
+            authDataSource.getFavoritePlace(token)
+        }
+    }
+
+    override suspend fun saveFavoritePlace(
+        token: String,
+        title:String,
+        address:String,
+        imageUrl:String,
+        contentId:String
+    ): Result<ResponseSaveFavoritePlaceDto> {
+        return runCatching {
+            authDataSource.saveFavoritePlace(token,
+                ResponseFavoritePlaceDto.FavoritesPlaceListDto(title,address,imageUrl,contentId))
+        }
+    }
+
+    override suspend fun deleteFavoritePlace(
+        token: String,
+        contentId: String
+    ): Result<ResponseSaveFavoritePlaceDto> {
+        return runCatching {
+            authDataSource.deleteFavoritePlace(token,contentId)
         }
     }
 }
