@@ -209,12 +209,9 @@ class PlayFragment : Fragment() {
     private fun updateFavoriteButton(playerState: PlayerState){
         playViewModel.getFavoriteMusicList()
         Log.d("playFragment","playerState: ${playerState}")
-        // 코드를 여기에 추가합니다.
-        viewLifecycleOwner.lifecycleScope.launch {
-            playViewModel.favoriteMusicState.collect { favoriteMusicState ->
-                if (_binding == null) return@collect
-                // 상태 처리 로직
-                when (favoriteMusicState) {
+        lifecycleScope.launch {
+            playViewModel.favoriteMusicState.collect{favoriteMusicState ->
+                when(favoriteMusicState){
                     is GetFavoriteMusicState.Success -> {
                         if (favoriteMusicState.favoriteMusicDto.favoritesMusicList.any { it.trackId == playerState.track.uri }) {
                             binding.btnFavorite.isSelected = true
@@ -222,16 +219,13 @@ class PlayFragment : Fragment() {
                             binding.btnFavorite.isSelected = false
                         }
                     }
-                    is GetFavoriteMusicState.Loading -> {
-                        // 로딩 상태 처리
-                    }
-                    is GetFavoriteMusicState.Error -> {
-                        Log.e("playFragment", "update favorite button error!: ${favoriteMusicState.message}")
+                    is GetFavoriteMusicState.Loading->{}
+                    is GetFavoriteMusicState.Error->{
+                        Log.e("playFragment","update favorite button error!: ${favoriteMusicState.message}")
                     }
                 }
             }
         }
-
 
         clickFavorite(playerState)
     }
