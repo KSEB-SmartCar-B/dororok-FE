@@ -70,7 +70,7 @@
 
         </activity>
 
-        <activity android:name=".presentation.main.my.music.MymusicActivity"
+        <activity android:name=".presentation.main.my.music.MyMusicActivity"
             android:exported="false">
 
         </activity>

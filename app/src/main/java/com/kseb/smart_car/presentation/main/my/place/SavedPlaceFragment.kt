@@ -5,27 +5,23 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.compose.ui.window.Dialog
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.lifecycleScope
 import com.kseb.smart_car.R
 import com.kseb.smart_car.databinding.FragmentSavedplaceBinding
-import com.kseb.smart_car.presentation.main.MainViewModel
 import com.kseb.smart_car.presentation.main.place.PlaceViewModel
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
-class SavedplaceFragment : Fragment() {
+class SavedPlaceFragment : Fragment() {
     private var _binding: FragmentSavedplaceBinding? = null
     private val binding: FragmentSavedplaceBinding
         get() = requireNotNull(_binding) { "null" }
 
     private val placeViewModel: PlaceViewModel by viewModels()
     private val savedPlaceViewModel: SavedPlaceViewModel by activityViewModels()
-    private lateinit var savedPlaceAdapter: SavedplaceAdapter
+    private lateinit var savedPlaceAdapter: SavedPlaceAdapter
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -44,7 +40,7 @@ class SavedplaceFragment : Fragment() {
     }
 
     private fun setting() {
-        savedPlaceAdapter = SavedplaceAdapter()
+        savedPlaceAdapter = SavedPlaceAdapter()
         binding.rvPlace.adapter = savedPlaceAdapter
 
         // 데이터를 관찰하는 observer 설정
@@ -71,7 +67,7 @@ class SavedplaceFragment : Fragment() {
     private fun clickEditButton() {
         binding.btnEdit.setOnClickListener {
             val transaction = requireActivity().supportFragmentManager.beginTransaction()
-            transaction.replace(R.id.fcv_place, DeletedplaceFragment())
+            transaction.replace(R.id.fcv_place, DeletedPlaceFragment())
             transaction.addToBackStack(null)
             transaction.commit()
         }

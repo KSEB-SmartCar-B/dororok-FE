@@ -56,6 +56,15 @@
         app:layout_constraintStart_toStartOf="@id/btn_current_track_label"
         app:layout_constraintTop_toBottomOf="@id/btn_current_track_label" />
 
+    <androidx.appcompat.widget.AppCompatImageButton
+        android:id="@+id/btn_favorite"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:background="@drawable/btn_favorite_music"
+        app:layout_constraintEnd_toEndOf="@id/iv_music"
+        app:layout_constraintTop_toTopOf="@id/btn_current_track_label"
+        app:layout_constraintBottom_toBottomOf="@id/btn_current_track_singer"/>
+
     <androidx.appcompat.widget.AppCompatSeekBar
         android:id="@+id/sb_bar"
         android:layout_width="0dp"

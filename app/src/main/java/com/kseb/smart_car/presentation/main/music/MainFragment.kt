@@ -14,6 +14,7 @@ import com.kseb.smart_car.R
 import com.kseb.smart_car.data.service.SpotifyService.connect
 import com.kseb.smart_car.databinding.FragmentMainBinding
 import com.kseb.smart_car.extension.SituationState
+import com.spotify.android.appremote.api.SpotifyAppRemote
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 
@@ -25,6 +26,7 @@ class MainFragment:Fragment() {
 
     private val situationViewModel:SituationViewModel by viewModels()
     private lateinit var situationAdapter: SituationAdapter
+    private var spotifyAppRemote: SpotifyAppRemote? = null
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -69,7 +71,9 @@ class MainFragment:Fragment() {
         connect(requireContext()) { isConnected ->
             if (isConnected) {
                 val transaction = requireActivity().supportFragmentManager.beginTransaction()
-                transaction.replace(R.id.fcv_main, PlayFragment())
+                val playFragment=PlayFragment()
+                playFragment.setSpotifyAppRemote(spotifyAppRemote)
+                transaction.replace(R.id.fcv_main, playFragment)
                 transaction.addToBackStack(null)
                 transaction.commit()
             } else {
@@ -80,6 +84,10 @@ class MainFragment:Fragment() {
                 ).show()
             }
         }
+    }
+
+    fun setSpotifyAppRemote(remote: SpotifyAppRemote?) {
+        this.spotifyAppRemote = remote
     }
 
     override fun onDestroyView() {

@@ -16,7 +16,7 @@ import com.kseb.smart_car.R
 import com.kseb.smart_car.databinding.FragmentMyBinding
 import com.kseb.smart_car.extension.InfoState
 import com.kseb.smart_car.presentation.main.MainViewModel
-import com.kseb.smart_car.presentation.main.my.music.MymusicActivity
+import com.kseb.smart_car.presentation.main.my.music.MyMusicActivity
 import com.kseb.smart_car.presentation.main.my.place.MyplaceActivity
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
@@ -88,13 +88,13 @@ class MyFragment: Fragment() {
 
     private fun clickButtonGenre(accessToken:String) {
         binding.genre.setOnClickListener {
-            startActivity(Intent(requireContext(), GenreActivity::class.java).putExtra("token", accessToken))
+            startActivity(Intent(requireContext(), GenreActivity::class.java).putExtra("accessToken", accessToken))
         }
     }
 
     private fun clickButtonMusic(accessToken:String) {
         binding.music.setOnClickListener {
-            startActivity(Intent(requireContext(), MymusicActivity::class.java).putExtra("token", accessToken))
+            startActivity(Intent(requireContext(), MyMusicActivity::class.java).putExtra("accessToken", accessToken))
         }
     }
 

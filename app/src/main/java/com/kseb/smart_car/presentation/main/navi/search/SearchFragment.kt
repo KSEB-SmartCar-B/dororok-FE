@@ -85,6 +85,7 @@ class SearchFragment : Fragment() {
     private fun setAccesstoken() {
         lifecycleScope.launch {
             searchViewModel.accessToken.observe(viewLifecycleOwner) {
+                Log.d("searchFragment","accessToken 가져옴!")
                 initSearchView()
                 setListener()
             }

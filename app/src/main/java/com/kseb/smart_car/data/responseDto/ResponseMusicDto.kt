@@ -14,5 +14,7 @@ data class ResponseMusicDto (
         val trackUri:String,
         @SerialName("PLAY_TIME")
         val playTime:Int,
+        @SerialName("TRACK_IMAGE")
+        val trackImage:String,
     )
 }

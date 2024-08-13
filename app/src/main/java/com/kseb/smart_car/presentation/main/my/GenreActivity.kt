@@ -27,7 +27,7 @@ class GenreActivity: AppCompatActivity() {
         binding = ActivitySavedgenreBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        val token = intent.getStringExtra("token")
+        val token = intent.getStringExtra("accessToken")
         genreViewModel.getMyGenre(token!!)
 
         lifecycleScope.launch {

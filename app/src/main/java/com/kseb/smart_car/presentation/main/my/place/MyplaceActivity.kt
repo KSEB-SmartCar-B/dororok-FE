@@ -21,7 +21,7 @@ class MyplaceActivity: AppCompatActivity() {
         setContentView(binding.root)
 
         savedPlaceViewModel.setToken(intent.getStringExtra("accessToken")!!)
-        replaceFragment(SavedplaceFragment())
+        replaceFragment(SavedPlaceFragment())
     }
 
     private fun replaceFragment(fragment: Fragment) {
