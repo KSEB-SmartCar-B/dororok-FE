@@ -1,21 +1,55 @@
 package com.kseb.smart_car.presentation.main.place
 
+import android.content.Context
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import com.kseb.smart_car.databinding.ItemMusicBinding
+import coil.load
+import com.kseb.smart_car.data.responseDto.ResponseFavoritePlaceDto
+import com.kseb.smart_car.data.responseDto.ResponseRecommendPlaceNearbyDto
+import com.kseb.smart_car.data.responseDto.ResponseSaveFavoritePlaceDto
 import com.kseb.smart_car.databinding.ItemPlaceBinding
 
-class PlaceAdapter() : RecyclerView.Adapter<PlaceAdapter.PlaceViewHolder>() {
-
+class PlaceAdapter(
+    context: Context,
+    private val where: String,
+    private val onPlaceClick:(ResponseRecommendPlaceNearbyDto.PlaceList)->Unit
+) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+    private val inflater by lazy { LayoutInflater.from(context) }
     private val placeList = listOf("1", "2", "3", "4", "5", "6")
+    private val placeNearbyList = mutableListOf<ResponseRecommendPlaceNearbyDto.PlaceList>()
+    private val savedPlaceList = mutableListOf<ResponseFavoritePlaceDto.FavoritesPlaceListDto>()
+
+    inner class PlaceNearbyViewHolder(
+        private val binding: ItemPlaceBinding
+    ) : RecyclerView.ViewHolder(binding.root) {
+        fun onBind(item: ResponseRecommendPlaceNearbyDto.PlaceList) {
+            binding.ivPhoto.load(item.imageUrl)
+            binding.tvMainplace.text = item.title
+            binding.tvSubplace.text = item.address
+
+            // savedPlaceList에 해당 아이템이 있는지 확인
+            val isSaved = savedPlaceList.any { it.contentId == item.contentId }
+            binding.ivSaved.isSelected = isSaved
+
+            clickSaveButton(item)
+        }
+
+        private fun clickSaveButton(item: ResponseRecommendPlaceNearbyDto.PlaceList) {
+            binding.ivSaved.setOnClickListener {
+                binding.ivSaved.isSelected = !binding.ivSaved.isSelected
+                onPlaceClick(item)
+            }
+        }
+    }
 
     inner class PlaceViewHolder(
         private val binding: ItemPlaceBinding
     ) : RecyclerView.ViewHolder(binding.root) {
 
         fun onBind(item: String) {
-            binding.tvMainplace.text = placeList[position]
+            binding.tvMainplace.text = item
 
             clickSaveButton()
         }
@@ -28,15 +62,41 @@ class PlaceAdapter() : RecyclerView.Adapter<PlaceAdapter.PlaceViewHolder>() {
         }
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PlaceViewHolder {
-        val binding = ItemPlaceBinding.inflate(LayoutInflater.from(parent.context), parent, false)
-        return PlaceViewHolder(binding)
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
+        return when (where) {
+            "nearby" -> PlaceNearbyViewHolder(ItemPlaceBinding.inflate(inflater, parent, false))
+            else -> PlaceViewHolder(ItemPlaceBinding.inflate(inflater, parent, false))
+        }
     }
 
-    override fun getItemCount(): Int = placeList.size
+    override fun getItemCount(): Int {
+        return when (where) {
+            "nearby" -> placeNearbyList.size
+            else -> placeList.size
+        }
+    }
 
-    override fun onBindViewHolder(holder: PlaceViewHolder, position: Int) {
-        val item = placeList[position]
-        holder.onBind(item)
+    override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
+        when (holder) {
+            is PlaceNearbyViewHolder -> {
+                val itemNearby = placeNearbyList[position]
+                holder.onBind(itemNearby)
+            }
+            is PlaceViewHolder -> {
+                val itemPlace = placeList[position]
+                holder.onBind(itemPlace)
+            }
+        }
+    }
+
+    fun getNearbyPlaceList(list: List<ResponseRecommendPlaceNearbyDto.PlaceList>) {
+        placeNearbyList.addAll(list)
+        Log.d("placeAdapter", "placelist: ${placeNearbyList}")
+        notifyDataSetChanged()
+    }
+
+    fun getSavedPlace(list:List<ResponseFavoritePlaceDto.FavoritesPlaceListDto>){
+        savedPlaceList.addAll(list)
+        notifyDataSetChanged()
     }
 }

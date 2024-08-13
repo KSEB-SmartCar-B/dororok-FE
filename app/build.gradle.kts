@@ -133,7 +133,7 @@ dependencies {
     implementation("com.kakao.sdk:v2-user:2.20.1")
 
     //kakao map
-    implementation ("com.kakao.maps.open:android:2.9.5")
+    implementation ("com.kakao.maps.open:android:2.11.9")
 
     //kakaomobility
     implementation ("com.kakaomobility.knsdk:knsdk_ui:1.9.4")

@@ -11,15 +11,21 @@ import com.kseb.smart_car.data.responseDto.ResponseAddSearchDto
 import com.kseb.smart_car.data.responseDto.ResponseAllGenreDto
 import com.kseb.smart_car.data.responseDto.ResponseDeleteSearchDto
 import com.kseb.smart_car.data.responseDto.ResponseIsSignedDto
+import com.kseb.smart_car.data.responseDto.ResponseSituationDto
 import com.kseb.smart_car.data.responseDto.ResponseMyGenreDto
 import com.kseb.smart_car.data.responseDto.ResponseMyInfoDto
+import com.kseb.smart_car.data.requestDto.RequestRecommendMusicDto
+import com.kseb.smart_car.data.requestDto.RequestRecommendPlaceDto
+import com.kseb.smart_car.data.responseDto.ResponseFavoritePlaceDto
+import com.kseb.smart_car.data.responseDto.ResponseRecommendMusicDto
+import com.kseb.smart_car.data.responseDto.ResponseRecommendPlaceNearbyDto
+import com.kseb.smart_car.data.responseDto.ResponseSaveFavoritePlaceDto
 import com.kseb.smart_car.data.responseDto.ResponseSearchListDto
 import com.kseb.smart_car.data.responseDto.ResponseSignInDto
 import com.kseb.smart_car.data.responseDto.ResponseSignUpDto
 import com.kseb.smart_car.data.responseDto.ResponseUpdateGenreDto
 import com.kseb.smart_car.data.responseDto.ResponseUpdateInfoDto
 import retrofit2.http.Body
-import retrofit2.http.DELETE
 import retrofit2.http.GET
 import retrofit2.http.Header
 import retrofit2.http.PATCH
@@ -50,6 +56,15 @@ interface AuthService {
     @GET("genre/name-list")
     suspend fun getGenreList():ResponseAllGenreDto
 
+    @GET("/musicmode")
+    suspend fun getSituations():ResponseSituationDto
+
+    @GET("/recommendation/music")
+    suspend fun getRecommendMusic(
+        @Header("Authorization") token:String,
+        @Query("query") requestRecommendMusicDto: RequestRecommendMusicDto
+    ): ResponseRecommendMusicDto
+
     //검색창
     @GET("search")
     suspend fun getSearch(
@@ -67,6 +82,15 @@ interface AuthService {
         @Header("Authorization") token:String,
         @Body deleteSearchDto: RequestDeleteSearchDto
     ):ResponseDeleteSearchDto
+
+    //내 주변 여행지
+    @GET("/recommendation/places/nearby")
+    suspend fun getPlaceNearby(
+        @Header("Authorization") token:String,
+        @Query("lat") lat:String,
+        @Query("lng") lng:String,
+        @Query("pageNo") pageNo:Int,
+    ):ResponseRecommendPlaceNearbyDto
 
 
     //개인 정보 및 선호 장르 수정
@@ -91,4 +115,25 @@ interface AuthService {
         @Header("Authorization") token: String,
         @Body requestUpdateGenreDto: RequestUpdateGenreDto
     ): ResponseUpdateGenreDto
+
+    //저장된 장소
+    @GET("/favorites/place")
+    suspend fun getFavoritePlace(
+        @Header("Authorization") token: String,
+    ):ResponseFavoritePlaceDto
+
+    //장소 저장
+    @POST("/favorites/place")
+    suspend fun saveFavoritePlace(
+        @Header("Authorization") token: String,
+        @Body responseFavoritePlaceDto: ResponseFavoritePlaceDto.FavoritesPlaceListDto
+    ):ResponseSaveFavoritePlaceDto
+
+    @POST("/favorites/place/delete")
+    suspend fun deleteFavoritePlace(
+        @Header("Authorization") token: String,
+        @Body contentId:String
+    ):ResponseSaveFavoritePlaceDto
+
+
 }

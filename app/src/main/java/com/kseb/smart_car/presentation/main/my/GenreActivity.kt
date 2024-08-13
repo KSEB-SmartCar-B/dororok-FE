@@ -9,6 +9,7 @@ import androidx.recyclerview.widget.GridLayoutManager
 import com.kseb.smart_car.databinding.ActivitySavedgenreBinding
 import com.kseb.smart_car.extension.AllGenreState
 import com.kseb.smart_car.extension.GenreState
+import com.kseb.smart_car.extension.UpdateGenreState
 import com.kseb.smart_car.presentation.join.JoinGenreViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
@@ -47,7 +48,7 @@ class GenreActivity: AppCompatActivity() {
 
                                         binding.rvGenre.layoutManager = GridLayoutManager(this@GenreActivity, 3)
 
-                                        clickButtonOk()
+                                        clickButtonOk(token)
                                     }
                                     is AllGenreState.Loading->{}
                                     is AllGenreState.Error -> {
@@ -67,9 +68,23 @@ class GenreActivity: AppCompatActivity() {
         }
     }
 
-    private fun clickButtonOk() {
+    private fun clickButtonOk(token:String) {
         binding.btnOk.setOnClickListener {
-            finish()
+            genreViewModel.setGenre(token)
+            lifecycleScope.launch {
+                genreViewModel.updateGenreState.collect{updateGenreState->
+                    when(updateGenreState){
+                        is UpdateGenreState.Success -> {
+                            finish()
+                        }
+                        is UpdateGenreState.Loading->{}
+                        is UpdateGenreState.Error->{
+                            Log.e("genreActivity","update genre error: ${updateGenreState.message}")
+                        }
+                    }
+                }
+            }
+
         }
     }
 }

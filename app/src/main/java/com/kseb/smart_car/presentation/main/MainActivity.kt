@@ -41,6 +41,7 @@ import com.kakaomobility.knsdk.map.knmaprenderer.objects.KNMapCameraUpdate
 import com.kseb.smart_car.R
 import com.kseb.smart_car.databinding.ActivityMainBinding
 import com.kseb.smart_car.extension.AddressState
+import com.kseb.smart_car.presentation.main.map.MapFragment
 import com.kseb.smart_car.presentation.main.music.MainFragment
 import com.kseb.smart_car.presentation.main.music.PlayFragment.AuthParams.CLIENT_ID
 import com.kseb.smart_car.presentation.main.music.PlayFragment.AuthParams.REDIRECT_URI
@@ -53,6 +54,7 @@ import com.spotify.android.appremote.api.SpotifyAppRemote
 import com.spotify.android.appremote.api.error.SpotifyDisconnectedException
 import com.kseb.smart_car.presentation.main.navi.search.SearchActivity
 import com.kseb.smart_car.presentation.main.place.PlaceFragment
+import com.kseb.smart_car.presentation.main.place.PlaceViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -70,6 +72,7 @@ class MainActivity : AppCompatActivity() {
     private val subjectViewModel: SubjectViewModel by viewModels()
     private val mainViewModel: MainViewModel by viewModels()
     private val situationViewModel: SituationViewModel by viewModels()
+    private val placeViewModel: PlaceViewModel by viewModels()
 
     private var spotifyAppRemote: SpotifyAppRemote? = null
     private val errorCallback = { throwable: Throwable -> logError(throwable) }
@@ -128,7 +131,11 @@ class MainActivity : AppCompatActivity() {
         subjectAdapter.getList(subjectViewModel.makeList())
         // binding.btnMusic.visibility=View.INVISIBLE
 
-        replaceFragment(MainFragment())
+        lifecycleScope.launch {
+            mainViewModel.accessToken.observe(this@MainActivity) { token ->
+                replaceFragment(MainFragment())
+            }
+        }
 
         //clickMusicButton()
 
@@ -403,7 +410,7 @@ class MainActivity : AppCompatActivity() {
     }*/
 
     private fun clickButtonSearch() {
-        mainViewModel.accessToken.observe(this){ token ->
+        mainViewModel.accessToken.observe(this) { token ->
             binding.svSearch.setOnQueryTextFocusChangeListener { _, hasFocus ->
                 if (hasFocus) {
                     val intent = Intent(this, SearchActivity::class.java)
@@ -539,8 +546,7 @@ class MainActivity : AppCompatActivity() {
         binding.bnvMain.setOnItemSelectedListener {
             when (it.itemId) {
                 R.id.menu_map -> {
-                    removeAllFragments()
-                    binding.btnCurrentLocation.visibility = View.VISIBLE
+                    replaceFragment(MapFragment())
                     true
                 }
 
@@ -553,11 +559,13 @@ class MainActivity : AppCompatActivity() {
                     replaceFragment(MainFragment())
                     true
                 }
-                R.id.menu_recommend->{
+
+                R.id.menu_recommend -> {
                     replaceFragment(PlaceFragment())
                     true
                 }
-                else->false
+
+                else -> false
             }
         }
     }
@@ -567,7 +575,6 @@ class MainActivity : AppCompatActivity() {
             .replace(R.id.fcv_main, fragment)
 //            .addToBackStack(null)
             .commit()
-        binding.btnCurrentLocation.visibility = View.INVISIBLE
     }
 
     private fun removeAllFragments() {

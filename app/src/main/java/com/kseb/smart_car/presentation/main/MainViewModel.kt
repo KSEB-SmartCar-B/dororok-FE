@@ -22,8 +22,16 @@ import javax.inject.Inject
 class MainViewModel @Inject constructor(
     private val kakaoRepository: KakaoRepository
 ) : ViewModel() {
+    data class CurrentLocation(
+        val lat:Double,
+        val lng:Double
+    )
+
     private val _accessToken = MutableLiveData<String>()
     val accessToken:MutableLiveData<String> get() = _accessToken
+
+    private val _currentLocation = MutableLiveData<CurrentLocation>()
+    val currentLocation:MutableLiveData<CurrentLocation> get() = _currentLocation
 
     private val _addressState = MutableStateFlow<AddressState>(AddressState.Loading)
     val addressState:StateFlow<AddressState> = _addressState.asStateFlow()
@@ -31,6 +39,11 @@ class MainViewModel @Inject constructor(
     fun setAccessToken(token: String) {
         _accessToken.value= token
     }
+
+    fun setCurrentLocation(lat:Double,lng:Double){
+        _currentLocation.value=CurrentLocation(lat,lng)
+    }
+
 
     fun getAddress(address:String){
         val api = "KakaoAK ${BuildConfig.KAKAO_REST_API}"

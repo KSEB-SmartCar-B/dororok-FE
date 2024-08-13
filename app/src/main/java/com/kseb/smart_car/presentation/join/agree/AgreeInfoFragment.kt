@@ -1,15 +1,15 @@
-package com.kseb.smart_car.presentation.join
+package com.kseb.smart_car.presentation.join.agree
 
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import com.kseb.smart_car.databinding.FragmentAgreeTransferBinding
+import com.kseb.smart_car.databinding.FragmentAgreeInfoBinding
 
-class AgreeTransferFragment: Fragment() {
-    private var _binding: FragmentAgreeTransferBinding? = null
-    private val binding: FragmentAgreeTransferBinding
+class AgreeInfoFragment: Fragment() {
+    private var _binding: FragmentAgreeInfoBinding? = null
+    private val binding: FragmentAgreeInfoBinding
         get() = requireNotNull(_binding) { "null" }
 
     override fun onCreateView(
@@ -17,7 +17,7 @@ class AgreeTransferFragment: Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        _binding = FragmentAgreeTransferBinding.inflate(inflater, container, false)
+        _binding = FragmentAgreeInfoBinding.inflate(inflater, container, false)
         return binding.root
     }
 

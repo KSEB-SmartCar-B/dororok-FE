@@ -100,7 +100,7 @@ class MyFragment: Fragment() {
 
     private fun clickButtonPlace(accessToken:String) {
         binding.place.setOnClickListener {
-            startActivity(Intent(requireContext(), MyplaceActivity::class.java).putExtra("token", accessToken))
+            startActivity(Intent(requireContext(), MyplaceActivity::class.java).putExtra("accessToken", accessToken))
         }
     }
 
