@@ -1,4 +1,4 @@
-package com.kseb.smart_car.presentation.main.navi.search
+package com.kseb.smart_car.presentation.main.map.navi.search
 
 import android.Manifest
 import android.content.Intent
@@ -17,7 +17,6 @@ import androidx.lifecycle.lifecycleScope
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import com.kakao.sdk.common.KakaoSdk.appKey
-import com.kakao.vectormap.LatLng
 import com.kakaomobility.knsdk.KNLanguageType
 import com.kakaomobility.knsdk.KNSDK
 import com.kakaomobility.knsdk.common.objects.KNError_Code_C302
@@ -28,7 +27,7 @@ import com.kseb.smart_car.extension.AddSearchState
 import com.kseb.smart_car.extension.AddressState
 import com.kseb.smart_car.extension.DeleteSearchState
 import com.kseb.smart_car.extension.GetSearchState
-import com.kseb.smart_car.presentation.main.navi.NaviActivity
+import com.kseb.smart_car.presentation.main.map.navi.NaviActivity
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import kotlin.properties.Delegates
@@ -69,7 +68,7 @@ class SearchFragment : Fragment() {
             searchViewModel.setGoalCoordinate(button.x.toDouble(),button.y.toDouble())
             lifecycleScope.launch {
                 searchViewModel.goalState.observe(viewLifecycleOwner){
-                    setKakaoNavi(it.x,it.y)
+                    setKakaoNavi(it.x,it.y, button.placeName)
                 }
             }}
 
@@ -213,13 +212,13 @@ class SearchFragment : Fragment() {
         }
     }
 
-    private fun setKakaoNavi(x:Double,y: Double) {
+    private fun setKakaoNavi(x: Double, y: Double, placeName: String) {
         knNaviView = KNNaviView(requireActivity())
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireActivity())
-        checkLocation(x,y)
+        checkLocation(x,y, placeName)
     }
 
-    private fun initializeKNSDK(x: Double,y: Double) {
+    private fun initializeKNSDK(x: Double,y: Double, placeName: String) {
         KNSDK.initializeWithAppKey(
             appKey, BuildConfig.VERSION_NAME,
             null, KNLanguageType.KNLanguageType_KOREAN, aCompletion = {
@@ -237,12 +236,12 @@ class SearchFragment : Fragment() {
                     // 인증 완료
                     Log.d("searchFragment", "인증완료")
                     Log.d("searchFragment", "initialize -> 현재좌표: ${currentLongitude}, ${currentLatitude}")
-                    startNavi(x,y)
+                    startNavi(x,y, placeName)
                 }
             })
     }
 
-    private fun checkLocation(x: Double,y: Double) {
+    private fun checkLocation(x: Double, y: Double, placeName: String) {
         // 위치 권한이 이미 허용되어 있는지 확인
         if (isLocationPermissionGranted()) {
             // 위치 기능 사용 가능
@@ -255,7 +254,7 @@ class SearchFragment : Fragment() {
                 ) != PackageManager.PERMISSION_GRANTED
             ) {
                 // 권한이 없는 경우 처리
-                requestLocationPermission(x,y)
+                requestLocationPermission(x,y,placeName)
                 return
             }
 
@@ -266,14 +265,14 @@ class SearchFragment : Fragment() {
                     currentLongitude = location.longitude
                     currentLatitude = location.latitude
                     Log.d("goal", "long:${x}, lati:${y}")
-                    initializeKNSDK(x,y)
+                    initializeKNSDK(x,y, placeName)
                 } else {
                     Log.e("searchFragment", "Location is null")
                 }
             }
         } else {
             // 위치 권한 요청
-            requestLocationPermission(x,y)
+            requestLocationPermission(x,y,placeName)
         }
     }
 
@@ -284,21 +283,22 @@ class SearchFragment : Fragment() {
         ) == PackageManager.PERMISSION_GRANTED
     }
 
-    private fun requestLocationPermission(x: Double,y: Double) {
+    private fun requestLocationPermission(x: Double,y: Double, placeName: String) {
         ActivityCompat.requestPermissions(
             requireActivity(),
             arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
             REQUEST_CODE_LOCATION_PERMISSION
         )
-        checkLocation(x,y)
+        checkLocation(x, y, placeName)
     }
 
-    private fun startNavi(x:Double, y:Double){
-        val intent=Intent(requireActivity(),NaviActivity::class.java)
+    private fun startNavi(x: Double, y: Double, placeName: String){
+        val intent=Intent(requireActivity(), NaviActivity::class.java)
         intent.putExtra("currentLongitude",currentLongitude)
         intent.putExtra("currentLatitude",currentLatitude)
         intent.putExtra("goalLongitude",x)
         intent.putExtra("goalLatitude",y)
+        intent.putExtra("placeName",placeName)
         Log.d("searchFragment","longitude: ${x}, latitude: ${y}")
         startActivity(intent)
     }

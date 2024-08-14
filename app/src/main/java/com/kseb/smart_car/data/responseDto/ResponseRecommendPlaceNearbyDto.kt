@@ -1,15 +1,19 @@
 package com.kseb.smart_car.data.responseDto
 
+import android.os.Parcelable
+import kotlinx.android.parcel.Parcelize
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
+@Parcelize
 @Serializable
 data class ResponseRecommendPlaceNearbyDto (
     @SerialName("places")
     val places:List<PlaceList>,
     @SerialName("pageNumbers")
     val pageNumbers:Int
-){
+):Parcelable{
+    @Parcelize
     @Serializable
     data class PlaceList(
         @SerialName("contentId")
@@ -26,5 +30,5 @@ data class ResponseRecommendPlaceNearbyDto (
         val imageUrl:String,
         @SerialName("title")
         val title:String,
-    )
+    ):Parcelable
 }

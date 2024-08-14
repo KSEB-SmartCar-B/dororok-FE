@@ -89,13 +89,13 @@
         </activity>
 
         <activity
-            android:name=".presentation.main.navi.search.SearchActivity"
+            android:name=".presentation.main.map.navi.search.SearchActivity"
             android:exported="false">
 
         </activity>
 
         <activity
-            android:name=".presentation.main.navi.NaviActivity"
+            android:name=".presentation.main.map.navi.NaviActivity"
             android:exported="false">
 
         </activity>

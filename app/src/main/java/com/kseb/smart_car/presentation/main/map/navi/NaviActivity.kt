@@ -1,4 +1,4 @@
-package com.kseb.smart_car.presentation.main.navi
+package com.kseb.smart_car.presentation.main.map.navi
 
 import android.os.Bundle
 import android.util.Log
@@ -54,6 +54,7 @@ class NaviActivity:AppCompatActivity(), KNGuidance_GuideStateDelegate,
 
     private var currentLongitude by Delegates.notNull<Double>()
     private var currentLatitude by Delegates.notNull<Double>()
+    private var placeName:String?=null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -71,9 +72,11 @@ class NaviActivity:AppCompatActivity(), KNGuidance_GuideStateDelegate,
         setWindowTransparent()
         mapView=binding.naviView.mapComponent.mapView
         knNaviView=binding.naviView
+        knNaviView.guideStateDelegate = this
 
         currentLongitude = intent.getDoubleExtra("currentLongitude", 0.0)
         currentLatitude = intent.getDoubleExtra("currentLatitude", 0.0)
+        placeName=intent.getStringExtra("placeName")
 
         val constraintLayout = binding.root as ConstraintLayout
         val constraintSet = ConstraintSet()
@@ -135,7 +138,7 @@ class NaviActivity:AppCompatActivity(), KNGuidance_GuideStateDelegate,
         }
 
         val start = KNPOI("current", currentKatec.x.toInt(), currentKatec.y.toInt())
-        val goal = KNPOI("sea", goalKatec.x.toInt(), goalKatec.y.toInt())
+        val goal = KNPOI(placeName!!, goalKatec.x.toInt(), goalKatec.y.toInt())
         // 경로 생성
         KNSDK.makeTripWithStart(start, goal, null) { knError, knTrip ->
             if (knError != null) {
@@ -339,11 +342,19 @@ class NaviActivity:AppCompatActivity(), KNGuidance_GuideStateDelegate,
     }
 
     override fun naviViewGuideState(state: KNGuideState) {
-        TODO("Not yet implemented")
-        Log.d("naviActivity", "state: ${state}")
+        // 여기에 메서드가 호출될 때 수행할 작업을 구현하세요.
+        Log.d("naviActivity", "Guide state changed: $state")
     }
 
     override fun onDestroy() {
         super.onDestroy()
+        naviView?.let {
+            it.guideStateDelegate = null
+            it.locationGuideDelegate = null
+            it.routeGuideDelegate = null
+            it.safetyGuideDelegate = null
+            it.voiceGuideDelegate = null
+            it.citsGuideDelegate = null
+        }
     }
 }
