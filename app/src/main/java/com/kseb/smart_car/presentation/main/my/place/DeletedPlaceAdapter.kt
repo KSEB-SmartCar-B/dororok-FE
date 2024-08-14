@@ -5,11 +5,11 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.kseb.smart_car.databinding.ItemDeletedplaceBinding
 
-class DeletedplaceAdapter(): RecyclerView.Adapter<DeletedplaceAdapter.DeletedplaceViewHolder>() {
+class DeletedPlaceAdapter(): RecyclerView.Adapter<DeletedPlaceAdapter.DeletedPlaceViewHolder>() {
 
     private val placeList = listOf("1", "2", "3", "4", "5", "6", "7", "8",)
 
-    inner class DeletedplaceViewHolder(
+    inner class DeletedPlaceViewHolder(
         private val binding: ItemDeletedplaceBinding
     ) : RecyclerView.ViewHolder(binding.root) {
         fun onBind(item: String) {
@@ -25,14 +25,14 @@ class DeletedplaceAdapter(): RecyclerView.Adapter<DeletedplaceAdapter.Deletedpla
         }
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): DeletedplaceViewHolder {
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): DeletedPlaceViewHolder {
         val binding = ItemDeletedplaceBinding.inflate(LayoutInflater.from(parent.context), parent, false)
-        return DeletedplaceViewHolder(binding)
+        return DeletedPlaceViewHolder(binding)
     }
 
     override fun getItemCount(): Int = placeList.size
 
-    override fun onBindViewHolder(holder: DeletedplaceViewHolder, position: Int) {
+    override fun onBindViewHolder(holder: DeletedPlaceViewHolder, position: Int) {
         val item = placeList[position]
         holder.onBind(item)
     }

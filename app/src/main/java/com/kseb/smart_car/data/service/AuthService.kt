@@ -16,6 +16,9 @@ import com.kseb.smart_car.data.responseDto.ResponseMyGenreDto
 import com.kseb.smart_car.data.responseDto.ResponseMyInfoDto
 import com.kseb.smart_car.data.requestDto.RequestRecommendMusicDto
 import com.kseb.smart_car.data.requestDto.RequestRecommendPlaceDto
+import com.kseb.smart_car.data.responseDto.ResponseExistFavoriteMusicDto
+import com.kseb.smart_car.data.responseDto.ResponseFavoriteMusicDto
+import com.kseb.smart_car.data.responseDto.ResponseFavoriteMusicStringDto
 import com.kseb.smart_car.data.responseDto.ResponseFavoritePlaceDto
 import com.kseb.smart_car.data.responseDto.ResponseRecommendMusicDto
 import com.kseb.smart_car.data.responseDto.ResponseRecommendPlaceNearbyDto
@@ -135,5 +138,27 @@ interface AuthService {
         @Body contentId:String
     ):ResponseSaveFavoritePlaceDto
 
+    //저장된 음악
+    @GET("/favorites/music")
+    suspend fun getFavoriteMusic(
+        @Header("Authorization") token: String,
+    ):ResponseFavoriteMusicDto
 
+    @POST("/favorites/music")
+    suspend fun addFavoriteMusic(
+        @Header("Authorization") token: String,
+        @Body responseFavoriteMusicDto: ResponseFavoriteMusicDto.FavoriteMusicListDto
+    ): ResponseFavoriteMusicStringDto
+
+    @POST("/favorites/music/delete")
+    suspend fun deleteFavoritesMusic(
+        @Header("Authorization") token: String,
+        @Body trackId:String
+    ):ResponseFavoriteMusicStringDto
+
+    @GET("/favorites/music/exist")
+    suspend fun existFavoriteMusic(
+        @Header("Authorization") token: String,
+        @Query("trackId") trackId:String
+    ):ResponseExistFavoriteMusicDto
 }

@@ -17,7 +17,10 @@ import com.spotify.android.appremote.api.SpotifyAppRemote
 import com.spotify.protocol.client.Subscription
 import com.spotify.protocol.types.Image
 
-class PlayAdapter(private val context:Context, private val spotifyAppRemote: SpotifyAppRemote):RecyclerView.Adapter<PlayAdapter.PlayViewHolder>() {
+class PlayAdapter(
+    private val context:Context,
+    private val spotifyAppRemote: SpotifyAppRemote
+):RecyclerView.Adapter<PlayAdapter.PlayViewHolder>() {
     private val musicList = mutableListOf<ResponseMusicDto.MusicListDto>()
 
     inner class PlayViewHolder(

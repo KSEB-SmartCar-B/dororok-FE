@@ -17,6 +17,9 @@ import com.kseb.smart_car.data.responseDto.ResponseMyGenreDto
 import com.kseb.smart_car.data.responseDto.ResponseMyInfoDto
 import com.kseb.smart_car.data.requestDto.RequestRecommendMusicDto
 import com.kseb.smart_car.data.requestDto.RequestRecommendPlaceDto
+import com.kseb.smart_car.data.responseDto.ResponseExistFavoriteMusicDto
+import com.kseb.smart_car.data.responseDto.ResponseFavoriteMusicDto
+import com.kseb.smart_car.data.responseDto.ResponseFavoriteMusicStringDto
 import com.kseb.smart_car.data.responseDto.ResponseFavoritePlaceDto
 import com.kseb.smart_car.data.responseDto.ResponseRecommendMusicDto
 import com.kseb.smart_car.data.responseDto.ResponseRecommendPlaceNearbyDto
@@ -27,6 +30,7 @@ import com.kseb.smart_car.data.responseDto.ResponseSignUpDto
 import com.kseb.smart_car.data.responseDto.ResponseUpdateGenreDto
 import com.kseb.smart_car.data.responseDto.ResponseUpdateInfoDto
 import com.kseb.smart_car.domain.repository.AuthRepository
+import com.spotify.protocol.types.Artist
 import javax.inject.Inject
 
 class AuthRepositoryImpl @Inject constructor(
@@ -163,6 +167,43 @@ class AuthRepositoryImpl @Inject constructor(
     ): Result<ResponseSaveFavoritePlaceDto> {
         return runCatching {
             authDataSource.deleteFavoritePlace(token,contentId)
+        }
+    }
+
+    override suspend fun getFavoriteMusic(token: String): Result<ResponseFavoriteMusicDto> {
+        return runCatching {
+            authDataSource.getFavoriteMusic(token)
+        }
+    }
+
+    override suspend fun addFavoriteMusic(
+        token: String,
+        trackId: String,
+        title: String,
+        artist: String,
+        imageUrl: String
+    ): Result<ResponseFavoriteMusicStringDto> {
+        val responseFavoriteMusicDto=ResponseFavoriteMusicDto.FavoriteMusicListDto(trackId,title,artist,imageUrl)
+        return runCatching {
+            authDataSource.addFavoriteMusic(token,responseFavoriteMusicDto)
+        }
+    }
+
+    override suspend fun deleteFavoriteMusic(
+        token: String,
+        trackId: String
+    ): Result<ResponseFavoriteMusicStringDto> {
+        return runCatching {
+            authDataSource.deleteFavoriteMusic(token,trackId)
+        }
+    }
+
+    override suspend fun existFavoriteMusic(
+        token: String,
+        trackId: String
+    ): Result<ResponseExistFavoriteMusicDto> {
+        return runCatching {
+            authDataSource.existFavoriteMusic(token,trackId)
         }
     }
 }

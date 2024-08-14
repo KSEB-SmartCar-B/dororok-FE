@@ -7,7 +7,7 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import com.kseb.smart_car.databinding.FragmentDeletedplaceBinding
 
-class DeletedplaceFragment: Fragment() {
+class DeletedPlaceFragment: Fragment() {
     private var _binding: FragmentDeletedplaceBinding? = null
     private val binding: FragmentDeletedplaceBinding
         get() = requireNotNull(_binding) { "null" }
@@ -24,8 +24,8 @@ class DeletedplaceFragment: Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val deletedplaceAdapter = DeletedplaceAdapter()
-        binding.rvPlace.adapter = deletedplaceAdapter
+        val deletedPlaceAdapter = DeletedPlaceAdapter()
+        binding.rvPlace.adapter = deletedPlaceAdapter
     }
 
     override fun onDestroyView() {

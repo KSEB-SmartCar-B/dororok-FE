@@ -17,6 +17,9 @@ import com.kseb.smart_car.data.responseDto.ResponseMyGenreDto
 import com.kseb.smart_car.data.responseDto.ResponseMyInfoDto
 import com.kseb.smart_car.data.requestDto.RequestRecommendMusicDto
 import com.kseb.smart_car.data.requestDto.RequestRecommendPlaceDto
+import com.kseb.smart_car.data.responseDto.ResponseExistFavoriteMusicDto
+import com.kseb.smart_car.data.responseDto.ResponseFavoriteMusicDto
+import com.kseb.smart_car.data.responseDto.ResponseFavoriteMusicStringDto
 import com.kseb.smart_car.data.responseDto.ResponseFavoritePlaceDto
 import com.kseb.smart_car.data.responseDto.ResponseRecommendMusicDto
 import com.kseb.smart_car.data.responseDto.ResponseRecommendPlaceNearbyDto
@@ -97,5 +100,20 @@ class AuthDataSourceImpl @Inject constructor(
         contentId: String
     ): ResponseSaveFavoritePlaceDto =authService.deleteFavoritePlace(token,contentId)
 
+    override suspend fun getFavoriteMusic(token: String): ResponseFavoriteMusicDto =authService.getFavoriteMusic(token)
 
+    override suspend fun addFavoriteMusic(
+        token: String,
+        responseFavoriteMusicDto: ResponseFavoriteMusicDto.FavoriteMusicListDto
+    ): ResponseFavoriteMusicStringDto =authService.addFavoriteMusic(token,responseFavoriteMusicDto)
+
+    override suspend fun deleteFavoriteMusic(
+        token: String,
+        trackId: String
+    ): ResponseFavoriteMusicStringDto =authService.deleteFavoritesMusic(token,trackId)
+
+    override suspend fun existFavoriteMusic(
+        token: String,
+        trackId: String
+    ): ResponseExistFavoriteMusicDto = authService.existFavoriteMusic(token,trackId)
 }

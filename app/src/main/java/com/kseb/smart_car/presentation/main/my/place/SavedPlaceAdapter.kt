@@ -6,13 +6,12 @@ import androidx.recyclerview.widget.RecyclerView
 import coil.load
 import com.kseb.smart_car.data.responseDto.ResponseFavoritePlaceDto
 import com.kseb.smart_car.databinding.ItemSavedplaceBinding
-import okhttp3.internal.notify
 
-class SavedplaceAdapter(): RecyclerView.Adapter<SavedplaceAdapter.SavedplaceViewHolder>() {
+class SavedPlaceAdapter(): RecyclerView.Adapter<SavedPlaceAdapter.SavedPlaceViewHolder>() {
 
     private val placeList = mutableListOf<ResponseFavoritePlaceDto.FavoritesPlaceListDto>()
 
-    inner class SavedplaceViewHolder(
+    inner class SavedPlaceViewHolder(
         private val binding: ItemSavedplaceBinding
     ) : RecyclerView.ViewHolder(binding.root) {
         fun onBind(item: ResponseFavoritePlaceDto.FavoritesPlaceListDto) {
@@ -20,14 +19,14 @@ class SavedplaceAdapter(): RecyclerView.Adapter<SavedplaceAdapter.SavedplaceView
         }
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): SavedplaceViewHolder {
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): SavedPlaceViewHolder {
         val binding = ItemSavedplaceBinding.inflate(LayoutInflater.from(parent.context), parent, false)
-        return SavedplaceViewHolder(binding)
+        return SavedPlaceViewHolder(binding)
     }
 
     override fun getItemCount(): Int = placeList.size
 
-    override fun onBindViewHolder(holder: SavedplaceViewHolder, position: Int) {
+    override fun onBindViewHolder(holder: SavedPlaceViewHolder, position: Int) {
         val item = placeList[position]
         holder.onBind(item)
     }

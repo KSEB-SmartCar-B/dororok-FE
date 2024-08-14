@@ -18,6 +18,7 @@ import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.constraintlayout.widget.ConstraintSet
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import com.bumptech.glide.Glide
@@ -26,6 +27,8 @@ import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.google.gson.GsonBuilder
 import com.kseb.smart_car.R
 import com.kseb.smart_car.databinding.FragmentPlayBinding
+import com.kseb.smart_car.extension.GetFavoriteMusicState
+import com.kseb.smart_car.presentation.main.MainViewModel
 import com.kseb.smart_car.presentation.main.music.PlayFragment.AuthParams.CLIENT_ID
 import com.kseb.smart_car.presentation.main.music.PlayFragment.AuthParams.REDIRECT_URI
 import com.spotify.android.appremote.api.ConnectionParams
@@ -49,7 +52,10 @@ class PlayFragment : Fragment() {
     private val binding: FragmentPlayBinding
         get() = requireNotNull(_binding) { "null" }
 
-    private val playViewModel:PlayViewModel by viewModels()
+    private val playViewModel:PlayViewModel by activityViewModels()
+    private val mainViewModel:MainViewModel by activityViewModels()
+
+    private var spotifyAppRemote: SpotifyAppRemote? = null
     private lateinit var playAdapter: PlayAdapter
     private lateinit var animator: ObjectAnimator
 
@@ -71,7 +77,6 @@ class PlayFragment : Fragment() {
 
     private var playerStateSubscription: Subscription<PlayerState>? = null
     private var playerContextSubscription: Subscription<PlayerContext>? = null
-    private var spotifyAppRemote: SpotifyAppRemote? = null
 
     private lateinit var views: List<View>
     private lateinit var trackProgressBar: TrackProgressBar
@@ -102,6 +107,8 @@ class PlayFragment : Fragment() {
         updateTrackCoverArt(playerState)
 
         updateSeekbar(playerState)
+
+        updateFavoriteButton(playerState)
     }
 
     private fun updatePlayPauseButton(playerState: PlayerState) {
@@ -172,7 +179,7 @@ class PlayFragment : Fragment() {
                         constraintSet.setDimensionRatio(R.id.iv_shadow, "W,1:1")
 
                         constraintSet.applyTo(binding.root as ConstraintLayout)
-                        Log.d("PlayFragment", "ivShadow width: ${binding.ivShadow.width}, height: ${binding.ivShadow.height}")
+                        //Log.d("PlayFragment", "ivShadow width: ${binding.ivShadow.width}, height: ${binding.ivShadow.height}")
                     }
                 })
 
@@ -197,6 +204,30 @@ class PlayFragment : Fragment() {
 
     private fun updateNextMusicList(playerState: PlayerState){
 
+    }
+
+    private fun updateFavoriteButton(playerState: PlayerState){
+        playViewModel.getFavoriteMusicList()
+        Log.d("playFragment","playerState: ${playerState}")
+        lifecycleScope.launch {
+            playViewModel.favoriteMusicState.collect{favoriteMusicState ->
+                when(favoriteMusicState){
+                    is GetFavoriteMusicState.Success -> {
+                        if (favoriteMusicState.favoriteMusicDto.favoritesMusicList.any { it.trackId == playerState.track.uri }) {
+                            binding.btnFavorite.isSelected = true
+                        } else {
+                            binding.btnFavorite.isSelected = false
+                        }
+                    }
+                    is GetFavoriteMusicState.Loading->{}
+                    is GetFavoriteMusicState.Error->{
+                        Log.e("playFragment","update favorite button error!: ${favoriteMusicState.message}")
+                    }
+                }
+            }
+        }
+
+        clickFavorite(playerState)
     }
 
     override fun onCreateView(
@@ -232,8 +263,8 @@ class PlayFragment : Fragment() {
         seekBar.thumbTintList = ColorStateList.valueOf(resources.getColor(R.color.bnv_clicked_black))
         seekBar.progressBackgroundTintList = ColorStateList.valueOf(resources.getColor(R.color.bnv_clicked_black))
 
-
-        lifecycleScope.launch {
+        //다음곡 리스트
+       /* lifecycleScope.launch {
             playViewModel.isLoginSpotify.observe(viewLifecycleOwner){
                 if(it){
                     playAdapter= spotifyAppRemote?.let { PlayAdapter(requireContext(), it) }!!
@@ -241,13 +272,19 @@ class PlayFragment : Fragment() {
                 }
 
             }
-        }
+        }*/
 
-
+        getAccessToken()
         SpotifyAppRemote.setDebugMode(true)
         clickButton()
 
         connectToSpotify()
+    }
+
+    private fun getAccessToken(){
+        mainViewModel.accessToken.observe(viewLifecycleOwner){token->
+            playViewModel.setAccessToken(token)
+        }
     }
 
     private fun seekTo(seekToPosition: Long) {
@@ -327,6 +364,8 @@ class PlayFragment : Fragment() {
             .play(uri)
             .setResultCallback { logMessage(getString(R.string.command_feedback, "play")) }
             .setErrorCallback(errorCallback)
+        //playViewModel.getFavoriteMusicList()
+        Log.d("playFragment","음악 재생 시작")
     }
 
     private fun onSkipPreviousButtonClicked(notUsed: View) {
@@ -431,6 +470,8 @@ class PlayFragment : Fragment() {
                 })
             .setErrorCallback {
             } as Subscription<PlayerState>
+
+        //playViewModel.getFavoriteMusicList()
     }
 
     private fun <T : Any?> cancelAndResetSubscription(subscription: Subscription<T>?): Subscription<T>? {
@@ -477,6 +518,22 @@ class PlayFragment : Fragment() {
                 onSkipNextButtonClicked(it)
             }
         }
+    }
+
+    private fun clickFavorite(playerState: PlayerState){
+        binding.btnFavorite.setOnClickListener{
+            if(binding.btnFavorite.isSelected){
+                playViewModel.deleteFavoriteMusicList(playerState.track.uri)
+                binding.btnFavorite.isSelected=false
+            }else{
+                playViewModel.addFavoriteMusicList(playerState)
+                binding.btnFavorite.isSelected=true
+            }
+        }
+    }
+
+    fun setSpotifyAppRemote(remote: SpotifyAppRemote?) {
+        this.spotifyAppRemote = remote
     }
 
     override fun onDestroyView() {

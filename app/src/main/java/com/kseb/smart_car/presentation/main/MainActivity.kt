@@ -41,11 +41,13 @@ import com.kakaomobility.knsdk.map.knmaprenderer.objects.KNMapCameraUpdate
 import com.kseb.smart_car.R
 import com.kseb.smart_car.databinding.ActivityMainBinding
 import com.kseb.smart_car.extension.AddressState
+import com.kseb.smart_car.presentation.BaseActivity
 import com.kseb.smart_car.presentation.main.map.MapFragment
 import com.kseb.smart_car.presentation.main.music.MainFragment
 import com.kseb.smart_car.presentation.main.music.PlayFragment.AuthParams.CLIENT_ID
 import com.kseb.smart_car.presentation.main.music.PlayFragment.AuthParams.REDIRECT_URI
 import com.kseb.smart_car.presentation.main.music.PlayFragment.Companion.TAG
+import com.kseb.smart_car.presentation.main.music.PlayViewModel
 import com.kseb.smart_car.presentation.main.music.SituationViewModel
 import com.kseb.smart_car.presentation.main.my.MyFragment
 import com.spotify.android.appremote.api.ConnectionParams
@@ -66,15 +68,15 @@ import kotlin.coroutines.suspendCoroutine
 
 
 @AndroidEntryPoint
-class MainActivity : AppCompatActivity() {
+class MainActivity : BaseActivity() {
     private lateinit var binding: ActivityMainBinding
 
     private val subjectViewModel: SubjectViewModel by viewModels()
     private val mainViewModel: MainViewModel by viewModels()
     private val situationViewModel: SituationViewModel by viewModels()
     private val placeViewModel: PlaceViewModel by viewModels()
+    private val playViewModel:PlayViewModel by viewModels()
 
-    private var spotifyAppRemote: SpotifyAppRemote? = null
     private val errorCallback = { throwable: Throwable -> logError(throwable) }
 
     private lateinit var updateReceiver: BroadcastReceiver
@@ -556,7 +558,9 @@ class MainActivity : AppCompatActivity() {
                 }
 
                 R.id.menu_main -> {
-                    replaceFragment(MainFragment())
+                    val mainFragment=MainFragment()
+                    mainFragment.setSpotifyAppRemote(spotifyAppRemote)
+                    replaceFragment(mainFragment)
                     true
                 }
 

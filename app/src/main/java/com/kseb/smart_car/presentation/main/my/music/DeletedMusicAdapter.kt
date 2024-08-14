@@ -5,13 +5,12 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.kseb.smart_car.databinding.ItemDeletedmusicBinding
-import com.kseb.smart_car.databinding.ItemDeletedplaceBinding
 
-class DeletedmusicAdapter(): RecyclerView.Adapter<DeletedmusicAdapter.DeletedmusicViewHolder>() {
+class DeletedMusicAdapter(): RecyclerView.Adapter<DeletedMusicAdapter.DeletedMusicViewHolder>() {
 
     private val musicList = listOf("1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15",)
 
-    inner class DeletedmusicViewHolder(
+    inner class DeletedMusicViewHolder(
         private val binding: ItemDeletedmusicBinding
     ) : RecyclerView.ViewHolder(binding.root) {
         fun onBind(item: String) {
@@ -30,14 +29,14 @@ class DeletedmusicAdapter(): RecyclerView.Adapter<DeletedmusicAdapter.Deletedmus
         }
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): DeletedmusicViewHolder {
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): DeletedMusicViewHolder {
         val binding = ItemDeletedmusicBinding.inflate(LayoutInflater.from(parent.context), parent, false)
-        return DeletedmusicViewHolder(binding)
+        return DeletedMusicViewHolder(binding)
     }
 
     override fun getItemCount(): Int = musicList.size
 
-    override fun onBindViewHolder(holder: DeletedmusicViewHolder, position: Int) {
+    override fun onBindViewHolder(holder: DeletedMusicViewHolder, position: Int) {
         val item = musicList[position]
         holder.onBind(item)
     }

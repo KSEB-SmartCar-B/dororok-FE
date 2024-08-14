@@ -14,6 +14,9 @@ import com.kseb.smart_car.data.responseDto.ResponseSituationDto
 import com.kseb.smart_car.data.responseDto.ResponseMyGenreDto
 import com.kseb.smart_car.data.responseDto.ResponseMyInfoDto
 import com.kseb.smart_car.data.requestDto.RequestRecommendMusicDto
+import com.kseb.smart_car.data.responseDto.ResponseExistFavoriteMusicDto
+import com.kseb.smart_car.data.responseDto.ResponseFavoriteMusicDto
+import com.kseb.smart_car.data.responseDto.ResponseFavoriteMusicStringDto
 import com.kseb.smart_car.data.responseDto.ResponseFavoritePlaceDto
 import com.kseb.smart_car.data.responseDto.ResponseRecommendMusicDto
 import com.kseb.smart_car.data.responseDto.ResponseRecommendPlaceNearbyDto
@@ -110,4 +113,27 @@ interface AuthRepository {
         token:String,
         contentId:String
     ):Result<ResponseSaveFavoritePlaceDto>
+
+    //저장된 음악
+    suspend fun getFavoriteMusic(
+        token:String
+    ):Result<ResponseFavoriteMusicDto>
+
+    suspend fun addFavoriteMusic(
+        token:String,
+        trackId: String,
+        title:String,
+        artist:String,
+        imageUrl: String
+    ):Result<ResponseFavoriteMusicStringDto>
+
+    suspend fun deleteFavoriteMusic(
+        token:String,
+        trackId:String,
+    ):Result<ResponseFavoriteMusicStringDto>
+
+    suspend fun existFavoriteMusic(
+        token:String,
+        trackId: String
+    ):Result<ResponseExistFavoriteMusicDto>
 }
