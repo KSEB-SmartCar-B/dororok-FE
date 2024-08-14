@@ -59,6 +59,7 @@ class SavedMusicFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         savedMusicAdapter = SavedMusicAdapter{ trackId ->
+            Log.d("savedMusicFragment","music click!")
             playOrPauseMusic(trackId)
         }
         binding.rvMusic.adapter = savedMusicAdapter
@@ -95,18 +96,30 @@ class SavedMusicFragment : Fragment() {
     }
 
     private fun playOrPauseMusic(trackId: String) {
+        if (spotifyAppRemote == null) {
+            Log.d("savedMusicFragment", "spotifyAppRemote is null")
+            return
+        }
+
         spotifyAppRemote?.playerApi?.let { playerApi ->
             playerApi.playerState.setResultCallback { playerState ->
-                if (playerState.track.uri == trackId && !playerState.isPaused) {
-                    // 동일한 트랙이 이미 재생 중이면 일시 정지
-                    playerApi.pause().setErrorCallback { error -> logError(error) }
+                Log.d("SavedMusicFragment", "Player State: ${playerState.track.uri}, Track ID: $trackId")
+                if (playerState.track.uri == trackId) {
+                    if (playerState.isPaused) {
+                        playerApi.resume().setErrorCallback { error -> logError(error) }
+                        Log.d("savedMusicFragment", "Resuming track: $trackId")
+                    } else {
+                        playerApi.pause().setErrorCallback { error -> logError(error) }
+                        Log.d("savedMusicFragment", "Pausing track: $trackId")
+                    }
                 } else {
-                    // 새로운 트랙을 재생
                     playerApi.play(trackId).setErrorCallback { error -> logError(error) }
+                    Log.d("savedMusicFragment", "Playing new track: $trackId")
                 }
-            }
+            }.setErrorCallback { error -> logError(error) }
         }
     }
+
 
     private fun clickEditButton() {
         binding.btnEdit.setOnClickListener {
