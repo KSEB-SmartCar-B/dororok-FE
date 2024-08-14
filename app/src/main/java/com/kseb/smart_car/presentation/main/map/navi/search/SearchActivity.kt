@@ -1,4 +1,4 @@
-package com.kseb.smart_car.presentation.main.navi.search
+package com.kseb.smart_car.presentation.main.map.navi.search
 
 import android.os.Bundle
 import android.util.Log

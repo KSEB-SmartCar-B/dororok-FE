@@ -57,13 +57,14 @@ import com.spotify.android.appremote.api.ConnectionParams
 import com.spotify.android.appremote.api.Connector
 import com.spotify.android.appremote.api.SpotifyAppRemote
 import com.spotify.android.appremote.api.error.SpotifyDisconnectedException
-import com.kseb.smart_car.presentation.main.navi.search.SearchActivity
+import com.kseb.smart_car.presentation.main.map.navi.search.SearchActivity
 import com.kseb.smart_car.presentation.main.place.PlaceFragment
 import com.kseb.smart_car.presentation.main.place.PlaceViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withTimeout
 import kotlin.coroutines.Continuation
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
@@ -78,7 +79,7 @@ class MainActivity : AppCompatActivity() {
     private val mainViewModel: MainViewModel by viewModels()
     private val situationViewModel: SituationViewModel by viewModels()
     private val placeViewModel: PlaceViewModel by viewModels()
-    private val playViewModel:PlayViewModel by viewModels()
+    private val playViewModel: PlayViewModel by viewModels()
 
     private val errorCallback = { throwable: Throwable -> logError(throwable) }
 
@@ -95,7 +96,7 @@ class MainActivity : AppCompatActivity() {
     private var isPlay = false
 
     object AuthParams {
-        const val CLIENT_ID = "d8e2d4268f28445eac8333a5292c8e9f"
+        const val CLIENT_ID = "496b4681f0784ab6a7b1433d22b12b92"
         const val REDIRECT_URI = "https://com.kseb.smart_car/callback"
     }
 
@@ -430,22 +431,26 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun connectToSpotify() {
+        Log.d("mainActivity", "connectToSpotify called")
+        SpotifyAppRemote.setDebugMode(true)
         connect(false)
     }
 
     private fun connect(showAuthView: Boolean) {
-        SpotifyAppRemote.disconnect(spotifyAppRemote)
+        //SpotifyAppRemote.disconnect(spotifyAppRemote)
+        Log.d("mainActivity", "spotify connect method")
         lifecycleScope.launch {
             try {
+                Log.d("mainActivity", "connect to app remote start")
                 spotifyAppRemote = connectToAppRemote()
                 onConnected()
             } catch (error: Throwable) {
                 logError(error)
             }
-            if(spotifyAppRemote==null){
-                Log.e("mainActivity","spotifyAppRemote is null")
-            }else{
-                Log.e("mainActivity","spotify app remote is not null")
+            if (spotifyAppRemote == null) {
+                Log.e("mainActivity", "spotifyAppRemote is null")
+            } else {
+                Log.e("mainActivity", "spotify app remote is not null")
             }
         }
 
@@ -459,15 +464,16 @@ class MainActivity : AppCompatActivity() {
 
     private suspend fun connectToAppRemote(): SpotifyAppRemote? =
         suspendCoroutine { cont: Continuation<SpotifyAppRemote> ->
+            Log.d("mainActivity", "Attempting to connect to SpotifyAppRemote")
             SpotifyAppRemote.connect(
-                this.application,
+                applicationContext,
                 ConnectionParams.Builder(CLIENT_ID)
                     .setRedirectUri(REDIRECT_URI)
                     .showAuthView(true)
                     .build(),
                 object : Connector.ConnectionListener {
                     override fun onConnected(spotifyAppRemote: SpotifyAppRemote) {
-                        Log.d("mainActivity", "onConnected 실행!")
+                        Log.e("mainActivity", "onConnected 실행!")
                         cont.resume(spotifyAppRemote)
                     }
 
@@ -597,7 +603,7 @@ class MainActivity : AppCompatActivity() {
                 }
 
                 R.id.menu_main -> {
-                    val mainFragment=MainFragment()
+                    val mainFragment = MainFragment()
                     mainFragment.setSpotifyAppRemote(spotifyAppRemote)
                     replaceFragment(mainFragment)
                     true

@@ -30,6 +30,7 @@
         android:layout_width="270dp"
         android:layout_height="170dp"
         android:background="@drawable/background_place_photo"
+        android:transitionName="imageTransition"
         app:layout_constraintStart_toStartOf="@id/iv_place"
         app:layout_constraintEnd_toEndOf="@id/iv_place"
         app:layout_constraintTop_toTopOf="@id/iv_place" />

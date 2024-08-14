@@ -4,6 +4,7 @@ import android.Manifest
 import android.content.pm.PackageManager
 import android.location.Location
 import android.os.Bundle
+import android.transition.TransitionInflater
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -88,11 +89,19 @@ class PlaceNearbyFragment: Fragment() {
             placeViewModel.placeNearbyState.collect{placeNearbyState ->
                 when(placeNearbyState){
                     is RecommendPlaceNearbyState.Success -> {
-                        val placeAdapter = PlaceAdapter(requireContext(),"nearby") { place ->
-                            isSaved(
-                                token, place
-                            )
-                        }
+                        val placeAdapter = PlaceAdapter(
+                            requireContext(),
+                            "nearby",
+                            onPlaceSave = { place ->
+                                // onPlaceSave 콜백에서 처리할 내용
+                                isSaved(token, place)
+                            },
+                            clickPlace = { place, ivPhoto ->
+                                // clickPlace 콜백에서 처리할 내용
+                                // 예를 들어, 장소를 클릭했을 때의 동작
+                                showDetail(place, ivPhoto)
+                            }
+                        )
                         binding.rvPlace.adapter = placeAdapter
                         placeAdapter.getSavedPlace(savedPlaceList)
                         placeAdapter.getNearbyPlaceList(placeNearbyState.placeNearbyDto.places)
@@ -104,6 +113,26 @@ class PlaceNearbyFragment: Fragment() {
                 }
             }
         }
+    }
+
+    private fun showDetail(place: ResponseRecommendPlaceNearbyDto.PlaceList, sharedView: View) {
+        val fragment = PlaceDetailFragment()
+
+        val bundle = Bundle()
+        bundle.putParcelable("place", place)  // putParcelable 사용
+        fragment.arguments = bundle
+
+        // 프래그먼트 전환 시 공유 요소 전환 설정
+        fragment.sharedElementEnterTransition = TransitionInflater.from(context).inflateTransition(android.R.transition.move)
+        fragment.enterTransition = TransitionInflater.from(context).inflateTransition(android.R.transition.fade)
+        fragment.exitTransition = TransitionInflater.from(context).inflateTransition(android.R.transition.fade)
+        fragment.sharedElementReturnTransition = TransitionInflater.from(context).inflateTransition(android.R.transition.move)
+
+        parentFragmentManager.beginTransaction()
+            .addSharedElement(sharedView, sharedView.transitionName)
+            .replace(R.id.fcv_main, fragment)
+            .addToBackStack(null)
+            .commit()
     }
 
     private fun isSaved(token: String, place: ResponseRecommendPlaceNearbyDto.PlaceList) {

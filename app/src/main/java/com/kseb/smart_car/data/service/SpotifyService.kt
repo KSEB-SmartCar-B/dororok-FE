@@ -11,8 +11,8 @@ import com.spotify.protocol.types.ImageUri
 import com.spotify.protocol.types.Track
 
 object SpotifyService {
-    private const val CLIENT_ID = "d8e2d4268f28445eac8333a5292c8e9f"
-    private const val REDIRECT_URI = "https://com.example.spotify/callback"
+    private const val CLIENT_ID = "496b4681f0784ab6a7b1433d22b12b92"
+    private const val REDIRECT_URI = "https://com.kseb.smart_car/callback"
 
     private var spotifyAppRemote: SpotifyAppRemote? = null
     private var connectionParams: ConnectionParams = ConnectionParams.Builder(CLIENT_ID)

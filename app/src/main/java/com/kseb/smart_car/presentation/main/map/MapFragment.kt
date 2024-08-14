@@ -31,7 +31,7 @@ import com.kakao.vectormap.label.LabelStyles
 import com.kseb.smart_car.R
 import com.kseb.smart_car.databinding.FragmentMapBinding
 import com.kseb.smart_car.presentation.main.MainViewModel
-import com.kseb.smart_car.presentation.main.navi.search.SearchActivity
+import com.kseb.smart_car.presentation.main.map.navi.search.SearchActivity
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers

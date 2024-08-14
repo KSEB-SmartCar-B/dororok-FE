@@ -35,7 +35,7 @@ class SavedMusicFragment : Fragment() {
 
     private var spotifyAppRemote: SpotifyAppRemote? = null
     object AuthParams {
-        const val CLIENT_ID = "d8e2d4268f28445eac8333a5292c8e9f"
+        const val CLIENT_ID = "496b4681f0784ab6a7b1433d22b12b92"
         const val REDIRECT_URI = "https://com.kseb.smart_car/callback"
     }
 

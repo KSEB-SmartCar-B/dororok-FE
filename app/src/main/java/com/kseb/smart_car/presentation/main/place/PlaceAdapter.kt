@@ -3,6 +3,7 @@ package com.kseb.smart_car.presentation.main.place
 import android.content.Context
 import android.util.Log
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import coil.load
@@ -14,7 +15,8 @@ import com.kseb.smart_car.databinding.ItemPlaceBinding
 class PlaceAdapter(
     context: Context,
     private val where: String,
-    private val onPlaceClick:(ResponseRecommendPlaceNearbyDto.PlaceList)->Unit
+    private val onPlaceSave:(ResponseRecommendPlaceNearbyDto.PlaceList)->Unit,
+    private val clickPlace:(ResponseRecommendPlaceNearbyDto.PlaceList, View)->Unit,
 ) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
     private val inflater by lazy { LayoutInflater.from(context) }
     private val placeList = listOf("1", "2", "3", "4", "5", "6")
@@ -34,12 +36,16 @@ class PlaceAdapter(
             binding.ivSaved.isSelected = isSaved
 
             clickSaveButton(item)
+            // 바인딩 로직
+            itemView.setOnClickListener {
+                clickPlace(item, binding.ivPhoto)  // 클릭 시 place와 view를 전달
+            }
         }
 
         private fun clickSaveButton(item: ResponseRecommendPlaceNearbyDto.PlaceList) {
             binding.ivSaved.setOnClickListener {
                 binding.ivSaved.isSelected = !binding.ivSaved.isSelected
-                onPlaceClick(item)
+                onPlaceSave(item)
             }
         }
     }
