@@ -1,5 +1,6 @@
 package com.kseb.smart_car.presentation.main.my.music
 
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
@@ -8,7 +9,8 @@ import com.kseb.smart_car.R
 import com.kseb.smart_car.data.responseDto.ResponseFavoriteMusicDto
 import com.kseb.smart_car.databinding.ItemSavedmusicBinding
 
-class SavedMusicAdapter(private val clickPlayPauseButton:(String)->Unit) : RecyclerView.Adapter<SavedMusicAdapter.SavedMusicViewHolder>() {
+class SavedMusicAdapter(private val clickPlayPauseButton: (String) -> Unit) :
+    RecyclerView.Adapter<SavedMusicAdapter.SavedMusicViewHolder>() {
 
     //private val musicList = listOf("1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15",)
     private val favoriteMusicList = mutableListOf<ResponseFavoriteMusicDto.FavoriteMusicListDto>()
@@ -17,7 +19,10 @@ class SavedMusicAdapter(private val clickPlayPauseButton:(String)->Unit) : Recyc
     inner class SavedMusicViewHolder(
         private val binding: ItemSavedmusicBinding
     ) : RecyclerView.ViewHolder(binding.root) {
-        fun onBind(item: ResponseFavoriteMusicDto.FavoriteMusicListDto, clickPlayPauseButton: (String) -> Unit) {
+        fun onBind(
+            item: ResponseFavoriteMusicDto.FavoriteMusicListDto,
+            clickPlayPauseButton: (String) -> Unit
+        ) {
             with(binding) {
                 val imageUrl = "https://i.scdn.co/image/${item.imageUrl}"
                 ivMusic.load(imageUrl)
@@ -31,24 +36,30 @@ class SavedMusicAdapter(private val clickPlayPauseButton:(String)->Unit) : Recyc
                     btnPlay.setImageResource(R.drawable.btn_play_yellow)
                 }
 
-                playPauseButton(item) { clickPlayPauseButton }
+                playPauseButton(item, clickPlayPauseButton)
             }
         }
-        private fun playPauseButton(item:ResponseFavoriteMusicDto.FavoriteMusicListDto,clickPlayPauseButton: (String) -> Unit){
+
+        private fun playPauseButton(
+            item: ResponseFavoriteMusicDto.FavoriteMusicListDto,
+            clickPlayPauseButton: (String) -> Unit
+        ) {
             binding.btnPlay.setOnClickListener {
+                Log.d("savedMusicAdapter", "btnPlay click!")
                 if (item.trackId == currentlyPlayingTrackId) {
                     // 현재 재생 중인 트랙을 일시 정지
                     currentlyPlayingTrackId = null
                     notifyItemChanged(adapterPosition)
                 } else {
                     // 새로운 트랙을 재생
-                    val previousPlayingPosition = favoriteMusicList.indexOfFirst { it.trackId == currentlyPlayingTrackId }
+                    val previousPlayingPosition =
+                        favoriteMusicList.indexOfFirst { it.trackId == currentlyPlayingTrackId }
                     currentlyPlayingTrackId = item.trackId
                     notifyItemChanged(previousPlayingPosition) // 이전 트랙 일시 정지 상태로 변경
                     notifyItemChanged(adapterPosition) // 현재 트랙 재생 상태로 변경
-
-                    clickPlayPauseButton(item.trackId)
+                    Log.d("savedMusicAdapter", "${item.title} play~")
                 }
+                clickPlayPauseButton(item.trackId)
             }
         }
     }
@@ -63,7 +74,7 @@ class SavedMusicAdapter(private val clickPlayPauseButton:(String)->Unit) : Recyc
 
     override fun onBindViewHolder(holder: SavedMusicViewHolder, position: Int) {
         val item = favoriteMusicList[position]
-        holder.onBind(item,clickPlayPauseButton)
+        holder.onBind(item, clickPlayPauseButton)
     }
 
     fun setMusicList(list: List<ResponseFavoriteMusicDto.FavoriteMusicListDto>) {

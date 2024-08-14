@@ -42,11 +42,14 @@ import com.kseb.smart_car.R
 import com.kseb.smart_car.databinding.ActivityMainBinding
 import com.kseb.smart_car.extension.AddressState
 import com.kseb.smart_car.presentation.BaseActivity
+import com.kseb.smart_car.presentation.SpotifyRemoteManager
+import com.kseb.smart_car.presentation.SpotifyRemoteManager.spotifyAppRemote
 import com.kseb.smart_car.presentation.main.map.MapFragment
 import com.kseb.smart_car.presentation.main.music.MainFragment
 import com.kseb.smart_car.presentation.main.music.PlayFragment.AuthParams.CLIENT_ID
 import com.kseb.smart_car.presentation.main.music.PlayFragment.AuthParams.REDIRECT_URI
 import com.kseb.smart_car.presentation.main.music.PlayFragment.Companion.TAG
+import com.kseb.smart_car.presentation.main.music.PlayFragment.SpotifySampleContexts
 import com.kseb.smart_car.presentation.main.music.PlayViewModel
 import com.kseb.smart_car.presentation.main.music.SituationViewModel
 import com.kseb.smart_car.presentation.main.my.MyFragment
@@ -68,7 +71,7 @@ import kotlin.coroutines.suspendCoroutine
 
 
 @AndroidEntryPoint
-class MainActivity : BaseActivity() {
+class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
 
     private val subjectViewModel: SubjectViewModel by viewModels()
@@ -115,6 +118,8 @@ class MainActivity : BaseActivity() {
 
     private fun setting() {
         setWindowTransparent()
+
+        connectToSpotify()
 
         //accessToken 받아옴
         mainViewModel.setAccessToken(intent.getStringExtra("accessToken")!!)
@@ -424,6 +429,34 @@ class MainActivity : BaseActivity() {
 
     }
 
+    private fun connectToSpotify() {
+        connect(false)
+    }
+
+    private fun connect(showAuthView: Boolean) {
+        SpotifyAppRemote.disconnect(spotifyAppRemote)
+        lifecycleScope.launch {
+            try {
+                spotifyAppRemote = connectToAppRemote()
+                onConnected()
+            } catch (error: Throwable) {
+                logError(error)
+            }
+            if(spotifyAppRemote==null){
+                Log.e("mainActivity","spotifyAppRemote is null")
+            }else{
+                Log.e("mainActivity","spotify app remote is not null")
+            }
+        }
+
+    }
+
+    private fun onConnected() {
+        //Spotify에 연결되었을 때 uri 실행
+        //playUri(com.kseb.smart_car.presentation.main.music.PlayFragment.SpotifySampleContexts.TRACK_URI)
+        playViewModel.loginSpotify()
+    }
+
     private suspend fun connectToAppRemote(): SpotifyAppRemote? =
         suspendCoroutine { cont: Continuation<SpotifyAppRemote> ->
             SpotifyAppRemote.connect(
@@ -434,7 +467,7 @@ class MainActivity : BaseActivity() {
                     .build(),
                 object : Connector.ConnectionListener {
                     override fun onConnected(spotifyAppRemote: SpotifyAppRemote) {
-                        Log.d("connec", "onConnected 실행!")
+                        Log.d("mainActivity", "onConnected 실행!")
                         cont.resume(spotifyAppRemote)
                     }
 
@@ -553,7 +586,13 @@ class MainActivity : BaseActivity() {
                 }
 
                 R.id.menu_my -> {
-                    replaceFragment(MyFragment())
+                    // MainActivity에서 SpotifyAppRemote 연결 확인 후 MyMusicActivity 시작
+                    if (spotifyAppRemote != null && spotifyAppRemote!!.isConnected) {
+                        replaceFragment(MyFragment())
+                    } else {
+                        // Spotify 연결이 안된 상태에서 Activity를 시작하지 않도록 처리
+                        Log.e("MainActivity", "SpotifyAppRemote is not connected")
+                    }
                     true
                 }
 

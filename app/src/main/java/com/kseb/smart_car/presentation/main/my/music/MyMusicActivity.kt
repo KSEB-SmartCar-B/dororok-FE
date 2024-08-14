@@ -1,16 +1,18 @@
 package com.kseb.smart_car.presentation.main.my.music
 
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import com.kseb.smart_car.R
 import com.kseb.smart_car.databinding.ActivityMymusicBinding
 import com.kseb.smart_car.presentation.BaseActivity
+import com.kseb.smart_car.presentation.SpotifyRemoteManager.spotifyAppRemote
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class MyMusicActivity: BaseActivity() {
+class MyMusicActivity: AppCompatActivity() {
 
     private lateinit var binding: ActivityMymusicBinding
     private val savedMusicViewModel:SavedMusicViewModel by viewModels()
@@ -26,6 +28,11 @@ class MyMusicActivity: BaseActivity() {
 
         val savedMusicFragment=SavedMusicFragment()
         savedMusicFragment.setSpotifyAppRemote(spotifyAppRemote)
+        if(spotifyAppRemote==null){
+            Log.e("myMusicActivity","spotifyAppRemote is null")
+        }else{
+            Log.e("myMusicActivity","spotifyAppRemote is not null")
+        }
         replaceFragment(savedMusicFragment)
     }
 
