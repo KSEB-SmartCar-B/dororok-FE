@@ -2,7 +2,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
-    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <!--<uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>-->
     <uses-permission android:name="android.permission.INTERNET" />
 
@@ -24,11 +24,13 @@
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
+
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
 
                 <!-- Redirect URI: "kakao${NATIVE_APP_KEY}://oauth" -->
-                <data android:host="oauth"
+                <data
+                    android:host="oauth"
                     android:scheme="@string/kakao_oauth_host" />
             </intent-filter>
         </activity>
@@ -50,42 +52,50 @@
 
         </activity>
 
-        <activity android:name=".presentation.main.LocationActivity"
+        <activity
+            android:name=".presentation.main.LocationActivity"
             android:exported="false">
 
         </activity>
 
-        <activity android:name=".presentation.main.MainActivity"
-           android:exported="false">
-
-        </activity>
-
-        <activity android:name=".presentation.main.my.InformationActivity"
+        <activity
+            android:name=".presentation.main.MainActivity"
             android:exported="false">
 
         </activity>
 
-        <activity android:name=".presentation.main.my.GenreActivity"
+        <activity
+            android:name=".presentation.main.my.InformationActivity"
             android:exported="false">
 
         </activity>
 
-        <activity android:name=".presentation.main.my.music.MyMusicActivity"
+        <activity
+            android:name=".presentation.main.my.GenreActivity"
             android:exported="false">
 
         </activity>
 
-        <activity android:name=".presentation.main.my.place.MyplaceActivity"
+        <activity
+            android:name=".presentation.main.my.music.MyMusicActivity"
             android:exported="false">
 
         </activity>
 
-        <activity android:name=".presentation.main.navi.search.SearchActivity"
+        <activity
+            android:name=".presentation.main.my.place.MyplaceActivity"
             android:exported="false">
 
         </activity>
 
-        <activity android:name=".presentation.main.navi.NaviActivity"
+        <activity
+            android:name=".presentation.main.navi.search.SearchActivity"
+            android:exported="false">
+
+        </activity>
+
+        <activity
+            android:name=".presentation.main.navi.NaviActivity"
             android:exported="false">
 
         </activity>
@@ -93,6 +103,15 @@
         <meta-data
             android:name="com.kakaomobility.knsdk.ApiKey"
             android:value="@string/kakao_app_key" />
+
+        <service
+            android:name="com.kseb.smart_car.MyCarAppService"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="androidx.car.app.CarAppService" />
+                <category android:name="androidx.car.app.category.NAVIGATION" />
+            </intent-filter>
+        </service>
 
     </application>
 

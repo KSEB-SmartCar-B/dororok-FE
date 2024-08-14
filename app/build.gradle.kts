@@ -15,7 +15,7 @@ android {
 
     defaultConfig {
         applicationId = "com.kseb.smart_car"
-        minSdk = 28
+        minSdk = 29 //이 부분 수민이랑 다름
         targetSdk = 34
         versionCode = 1
         versionName = "1.0"
@@ -133,7 +133,7 @@ dependencies {
     implementation("com.kakao.sdk:v2-user:2.20.1")
 
     //kakao map
-    implementation ("com.kakao.maps.open:android:2.11.9")
+    implementation ("com.kakao.maps.open:android:2.9.5")
 
     //kakaomobility
     implementation ("com.kakaomobility.knsdk:knsdk_ui:1.9.4")
@@ -152,6 +152,11 @@ dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.3") // 최신 버전으로 설정
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3") // Android에서 코루틴을 사용하기 위한 라이브러리
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.8.3") // 최신 버전으로 변경 가능
+
+    //Android Auto
+    implementation("androidx.car.app:app:1.4.0")
+    implementation("androidx.car.app:app-projected:1.4.0")
+    testImplementation("androidx.car.app:app-testing:1.4.0")
 
 }
 
