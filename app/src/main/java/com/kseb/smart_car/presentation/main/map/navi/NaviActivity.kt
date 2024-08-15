@@ -125,9 +125,13 @@ class NaviActivity:AppCompatActivity(), KNGuidance_GuideStateDelegate,
         Log.d("naviActivity","현재 좌표: ${currentLongitude}, ${currentLatitude }")
         val goalLongitude = intent.getDoubleExtra("goalLongitude", 0.0)
         val goalLatitude= intent.getDoubleExtra("goalLatitude", 0.0)
+        val truncatedLongitude = String.format("%.6f", goalLongitude).toDouble()
+        val truncatedLatitude = String.format("%.6f", goalLatitude).toDouble()
+        val adjustedLongitude = truncatedLongitude + 0.0001 // 약간의 오프셋 추가
+        val adjustedLatitude = truncatedLatitude + 0.0001 // 약간의 오프셋 추가
 
         val currentKatec = WGS84ToKATEC(currentLongitude, currentLatitude)
-        val goalKatec = WGS84ToKATEC(goalLongitude, goalLatitude)
+        val goalKatec = WGS84ToKATEC(adjustedLongitude, adjustedLatitude)
         Log.d("naviActivity", "Current: long:${currentKatec.x}, lati:${currentKatec.y}")
         Log.d("naviActivity", "Goal: long:${goalKatec.x}, lati:${goalKatec.y}")
 

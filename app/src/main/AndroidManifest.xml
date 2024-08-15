@@ -53,15 +53,27 @@
         </activity>
 
         <activity
-            android:name=".presentation.main.LocationActivity"
+            android:name=".presentation.main.MainActivity"
+            android:launchMode="singleTask"
+            android:alwaysRetainTaskState="true"
             android:exported="false">
 
         </activity>
 
         <activity
-            android:name=".presentation.main.MainActivity"
+            android:name=".presentation.main.map.navi.search.SearchActivity"
             android:exported="false">
 
+        </activity>
+
+        <activity
+            android:name=".presentation.main.map.navi.NaviActivity"
+            android:exported="false">
+
+        </activity>
+
+        <activity android:name=".presentation.main.place.placeDetail.PlaceDetailActivity"
+            android:exported="false">
         </activity>
 
         <activity
@@ -84,18 +96,6 @@
 
         <activity
             android:name=".presentation.main.my.place.MyplaceActivity"
-            android:exported="false">
-
-        </activity>
-
-        <activity
-            android:name=".presentation.main.map.navi.search.SearchActivity"
-            android:exported="false">
-
-        </activity>
-
-        <activity
-            android:name=".presentation.main.map.navi.NaviActivity"
             android:exported="false">
 
         </activity>

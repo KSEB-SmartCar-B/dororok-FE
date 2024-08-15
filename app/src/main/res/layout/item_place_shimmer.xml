@@ -7,14 +7,14 @@
     android:paddingBottom="30dp"
     android:background="@color/white" >
 
-    <ImageView
+    <!--<ImageView
         android:id="@+id/iv_place_shadow"
         android:layout_width="273dp"
         android:layout_height="232dp"
         android:background="@drawable/background_place_shadow"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent" />-->
 
     <ImageView
         android:id="@+id/iv_place"
@@ -22,8 +22,8 @@
         android:layout_height="230dp"
         android:layout_marginStart="1dp"
         android:background="@drawable/background_place"
-        app:layout_constraintStart_toStartOf="@id/iv_place_shadow"
-        app:layout_constraintTop_toTopOf="@id/iv_place_shadow" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <ImageView
         android:id="@+id/iv_photo"
@@ -50,7 +50,7 @@
         android:id="@+id/btn_saved"
         android:layout_width="25dp"
         android:layout_height="25dp"
-        android:background="@drawable/btn_saved_place"
+        android:background="?attr/selectableItemBackgroundBorderless"
         android:transitionName="savedButtonTransition"
         app:layout_constraintStart_toStartOf="@id/iv_circle"
         app:layout_constraintEnd_toEndOf="@id/iv_circle"
@@ -59,34 +59,38 @@
 
     <TextView
         android:id="@+id/tv_mainplace"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        android:layout_height="25dp"
         android:layout_marginStart="20dp"
         android:layout_marginTop="5dp"
-        android:text="대장소"
+        android:layout_marginEnd="20dp"
         android:textSize="18sp"
         android:textStyle="bold"
+        android:background="@drawable/background_place_shadow"
         app:layout_constraintTop_toBottomOf="@id/iv_photo"
         app:layout_constraintStart_toStartOf="@id/iv_place"
-        app:layout_constraintBottom_toTopOf="@id/tv_subplace" />
+        app:layout_constraintBottom_toTopOf="@id/tv_subplace"
+        app:layout_constraintEnd_toEndOf="parent"/>
 
     <TextView
         android:id="@+id/tv_subplace"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        android:layout_height="20dp"
         android:layout_marginBottom="5dp"
-        android:text="소장소"
+        android:layout_marginTop="5dp"
         android:textSize="16sp"
+        android:background="@drawable/background_place_shadow"
         app:layout_constraintBottom_toBottomOf="@+id/iv_place"
         app:layout_constraintStart_toStartOf="@id/tv_mainplace"
-        app:layout_constraintTop_toBottomOf="@id/tv_mainplace" />
+        app:layout_constraintTop_toBottomOf="@id/tv_mainplace"
+        app:layout_constraintEnd_toEndOf="@id/tv_mainplace"/>
 
     <ImageView
         android:id="@+id/iv_navigation"
         android:layout_width="20dp"
         android:layout_height="22dp"
         android:layout_marginEnd="20dp"
-        android:background="@drawable/ic_navigation"
+        android:background="?attr/selectableItemBackgroundBorderless"
         app:layout_constraintTop_toBottomOf="@id/iv_photo"
         app:layout_constraintBottom_toBottomOf="@id/iv_place"
         app:layout_constraintEnd_toEndOf="@id/iv_place"/>

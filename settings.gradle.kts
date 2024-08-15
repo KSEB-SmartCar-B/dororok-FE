@@ -53,4 +53,4 @@ dependencyResolutionManagement {
 }
 
 rootProject.name = "smart-car"
-include(":app")
+include(":app", ":fiftyshadesof")

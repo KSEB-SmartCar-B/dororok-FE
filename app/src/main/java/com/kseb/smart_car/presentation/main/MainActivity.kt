@@ -637,4 +637,19 @@ class MainActivity : AppCompatActivity() {
             fragmentManager.beginTransaction().remove(it).commitNow()
         }
     }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        // 상태를 저장할 항목 추가
+        outState.putBoolean("isLoggedIn", true) // 예시로 로그인 상태 저장
+    }
+
+    override fun onRestoreInstanceState(savedInstanceState: Bundle) {
+        super.onRestoreInstanceState(savedInstanceState)
+        // 저장된 상태를 복원
+        if (savedInstanceState.getBoolean("isLoggedIn", false)) {
+            // 이미 로그인된 상태라면 로그인 화면을 건너뜁니다.
+        }
+    }
+
 }

@@ -10,20 +10,20 @@ import androidx.recyclerview.widget.RecyclerView
 import coil.load
 import com.kseb.smart_car.data.responseDto.ResponseFavoritePlaceDto
 import com.kseb.smart_car.data.responseDto.ResponseRecommendPlaceNearbyDto
-import com.kseb.smart_car.data.responseDto.ResponseSaveFavoritePlaceDto
 import com.kseb.smart_car.databinding.ItemPlaceBinding
 
-class PlaceAdapter(
+class PlaceNearbyAdapter(
     private val onPlaceSave: (ResponseRecommendPlaceNearbyDto.PlaceList) -> Unit,
     private val clickPlace: (ResponseRecommendPlaceNearbyDto.PlaceList, View, View, AppCompatButton) -> Unit,
     private val goNavi:(ResponseRecommendPlaceNearbyDto.PlaceList)->Unit
-) : RecyclerView.Adapter<PlaceAdapter.PlaceNearbyViewHolder>() {
-    private val placeNearbyList = mutableListOf<ResponseRecommendPlaceNearbyDto.PlaceList>()
+):RecyclerView.Adapter<PlaceNearbyAdapter.PlaceViewHolder>() {
+    private val placeList = mutableListOf<ResponseRecommendPlaceNearbyDto.PlaceList>()
     private val savedPlaceList = mutableListOf<ResponseFavoritePlaceDto.FavoritesPlaceListDto>()
 
-    inner class PlaceNearbyViewHolder(
+    inner class PlaceViewHolder(
         private val binding: ItemPlaceBinding
     ) : RecyclerView.ViewHolder(binding.root) {
+
         fun onBind(item: ResponseRecommendPlaceNearbyDto.PlaceList) {
             binding.ivPhoto.load(item.imageUrl)
             binding.tvMainplace.text = item.title
@@ -52,24 +52,23 @@ class PlaceAdapter(
         }
     }
 
-
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PlaceNearbyViewHolder {
-        val binding = ItemPlaceBinding.inflate(LayoutInflater.from(parent.context), parent, false)
-        return PlaceNearbyViewHolder(binding)
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PlaceViewHolder {
+        val binding=ItemPlaceBinding.inflate(LayoutInflater.from(parent.context),parent,false)
+        return PlaceViewHolder(binding)
     }
 
-    override fun getItemCount(): Int = placeNearbyList.size
+    override fun getItemCount(): Int = placeList.size
 
-    override fun onBindViewHolder(holder: PlaceNearbyViewHolder, position: Int) {
-        val itemNearby = placeNearbyList[position]
-        holder.onBind(itemNearby)
+    override fun onBindViewHolder(holder: PlaceViewHolder, position: Int) {
+        val item=placeList[position]
+        holder.onBind(item)
     }
 
-    fun getNearbyPlaceList(list: List<ResponseRecommendPlaceNearbyDto.PlaceList>) {
-        val startPosition = placeNearbyList.size
-        placeNearbyList.addAll(list)
+    fun getNearbyPlaceList(list:List<ResponseRecommendPlaceNearbyDto.PlaceList>){
+        val startPosition = placeList.size
+        placeList.addAll(list)
         notifyItemRangeInserted(startPosition, list.size)
-        Log.d("placeAdapter", "placelist: ${placeNearbyList}")
+        Log.d("placeAdapter", "placelist: ${placeList}")
     }
 
     fun getSavedPlace(list: List<ResponseFavoritePlaceDto.FavoritesPlaceListDto>) {

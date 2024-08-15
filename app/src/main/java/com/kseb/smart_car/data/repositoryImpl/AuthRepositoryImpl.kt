@@ -18,10 +18,12 @@ import com.kseb.smart_car.data.responseDto.ResponseMyInfoDto
 import com.kseb.smart_car.data.requestDto.RequestRecommendMusicDto
 import com.kseb.smart_car.data.requestDto.RequestRecommendPlaceDto
 import com.kseb.smart_car.data.responseDto.ResponseExistFavoriteMusicDto
+import com.kseb.smart_car.data.responseDto.ResponseExistFavoritePlaceDto
 import com.kseb.smart_car.data.responseDto.ResponseFavoriteMusicDto
 import com.kseb.smart_car.data.responseDto.ResponseFavoriteMusicStringDto
 import com.kseb.smart_car.data.responseDto.ResponseFavoritePlaceDto
 import com.kseb.smart_car.data.responseDto.ResponseRecommendMusicDto
+import com.kseb.smart_car.data.responseDto.ResponseRecommendPlaceNearbyDetailDto
 import com.kseb.smart_car.data.responseDto.ResponseRecommendPlaceNearbyDto
 import com.kseb.smart_car.data.responseDto.ResponseSaveFavoritePlaceDto
 import com.kseb.smart_car.data.responseDto.ResponseSearchListDto
@@ -90,6 +92,15 @@ class AuthRepositoryImpl @Inject constructor(
     ): Result<ResponseRecommendPlaceNearbyDto> {
         return runCatching {
             authDataSource.getPlacesNearby(token, lat,lng,pageNo)
+        }
+    }
+
+    override suspend fun getRecommendPlaceNearbyDetail(
+        token: String,
+        contentId: String
+    ): Result<ResponseRecommendPlaceNearbyDetailDto> {
+        return runCatching {
+            authDataSource.getPlacesNearbyDetail(token,contentId)
         }
     }
 
@@ -167,6 +178,15 @@ class AuthRepositoryImpl @Inject constructor(
     ): Result<ResponseSaveFavoritePlaceDto> {
         return runCatching {
             authDataSource.deleteFavoritePlace(token,contentId)
+        }
+    }
+
+    override suspend fun existFavoritePlace(
+        token: String,
+        contentId: String
+    ): Result<ResponseExistFavoritePlaceDto> {
+        return runCatching {
+            authDataSource.existFavoritePlace(token,contentId)
         }
     }
 

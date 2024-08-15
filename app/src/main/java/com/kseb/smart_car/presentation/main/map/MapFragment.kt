@@ -166,7 +166,7 @@ class MapFragment : Fragment() {
 
             override fun getZoomLevel(): Int {
                 // 지도 시작 시 확대/축소 줌 레벨 설정
-                return 17
+                return 16
             }
 
             /*override fun getMapViewInfo(): MapViewInfo {

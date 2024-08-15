@@ -27,6 +27,7 @@ import com.kseb.smart_car.extension.AddSearchState
 import com.kseb.smart_car.extension.AddressState
 import com.kseb.smart_car.extension.DeleteSearchState
 import com.kseb.smart_car.extension.GetSearchState
+import com.kseb.smart_car.presentation.main.map.navi.LoadingDialogFragment
 import com.kseb.smart_car.presentation.main.map.navi.NaviActivity
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
@@ -41,6 +42,7 @@ class SearchFragment : Fragment() {
     private lateinit var searchAdapter: SearchAdapter
     private lateinit var searchListAdapter: SearchListAdapter
     private val searchViewModel: SearchViewModel by activityViewModels()
+    private var loadingDialog:LoadingDialogFragment?=null
 
     private lateinit var knNaviView: KNNaviView
     private lateinit var fusedLocationClient: FusedLocationProviderClient
@@ -68,6 +70,7 @@ class SearchFragment : Fragment() {
             searchViewModel.setGoalCoordinate(button.x.toDouble(),button.y.toDouble())
             lifecycleScope.launch {
                 searchViewModel.goalState.observe(viewLifecycleOwner){
+                    showLoadingActivity()
                     setKakaoNavi(it.x,it.y, button.placeName)
                 }
             }}
@@ -212,6 +215,17 @@ class SearchFragment : Fragment() {
         }
     }
 
+    // Api 호출이 시작되면 LoadingDialogFragment를 보여준다.
+    private fun showLoadingActivity() {
+        loadingDialog = LoadingDialogFragment()
+        loadingDialog?.show(parentFragmentManager, "LoadingDialog")
+    }
+
+    // 데이터 로딩이 완료 되면 LoadingDialogFragment를 dismiss 한다.
+    private fun closeLoadingActivity() {
+        loadingDialog?.dismiss()
+    }
+
     private fun setKakaoNavi(x: Double, y: Double, placeName: String) {
         knNaviView = KNNaviView(requireActivity())
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireActivity())
@@ -301,6 +315,12 @@ class SearchFragment : Fragment() {
         intent.putExtra("placeName",placeName)
         Log.d("searchFragment","longitude: ${x}, latitude: ${y}")
         startActivity(intent)
+    }
+
+    override fun onResume() {
+        super.onResume()
+        val safeBinding = _binding ?: return // binding이 null이면 함수 종료
+        closeLoadingActivity()
     }
 
     override fun onDestroyView() {
