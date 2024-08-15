@@ -17,10 +17,12 @@ import com.kseb.smart_car.data.responseDto.ResponseMyInfoDto
 import com.kseb.smart_car.data.requestDto.RequestRecommendMusicDto
 import com.kseb.smart_car.data.requestDto.RequestRecommendPlaceDto
 import com.kseb.smart_car.data.responseDto.ResponseExistFavoriteMusicDto
+import com.kseb.smart_car.data.responseDto.ResponseExistFavoritePlaceDto
 import com.kseb.smart_car.data.responseDto.ResponseFavoriteMusicDto
 import com.kseb.smart_car.data.responseDto.ResponseFavoriteMusicStringDto
 import com.kseb.smart_car.data.responseDto.ResponseFavoritePlaceDto
 import com.kseb.smart_car.data.responseDto.ResponseRecommendMusicDto
+import com.kseb.smart_car.data.responseDto.ResponseRecommendPlaceNearbyDetailDto
 import com.kseb.smart_car.data.responseDto.ResponseRecommendPlaceNearbyDto
 import com.kseb.smart_car.data.responseDto.ResponseSaveFavoritePlaceDto
 import com.kseb.smart_car.data.responseDto.ResponseSearchListDto
@@ -81,6 +83,11 @@ interface AuthDataSource {
         pageNo:Int
     ):ResponseRecommendPlaceNearbyDto
 
+    suspend fun getPlacesNearbyDetail(
+        token:String,
+        contentId:String
+    ):ResponseRecommendPlaceNearbyDetailDto
+
     //개인 정보 및 선호 장르 수정
     suspend fun getMyInfo(
         token:String
@@ -114,6 +121,11 @@ interface AuthDataSource {
         token:String,
         contentId:String
     ):ResponseSaveFavoritePlaceDto
+
+    suspend fun existFavoritePlace(
+        token:String,
+        contentId: String
+    ):ResponseExistFavoritePlaceDto
 
     //저장된 음악
     suspend fun getFavoriteMusic(

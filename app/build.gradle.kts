@@ -158,6 +158,9 @@ dependencies {
     implementation("androidx.car.app:app-projected:1.4.0")
     testImplementation("androidx.car.app:app-testing:1.4.0")
 
+    // animation (스켈레톤 ui 추가)
+    implementation ("com.facebook.shimmer:shimmer:0.5.0")
+
 }
 
 kapt {

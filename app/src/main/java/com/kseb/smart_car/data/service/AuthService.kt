@@ -17,10 +17,12 @@ import com.kseb.smart_car.data.responseDto.ResponseMyInfoDto
 import com.kseb.smart_car.data.requestDto.RequestRecommendMusicDto
 import com.kseb.smart_car.data.requestDto.RequestRecommendPlaceDto
 import com.kseb.smart_car.data.responseDto.ResponseExistFavoriteMusicDto
+import com.kseb.smart_car.data.responseDto.ResponseExistFavoritePlaceDto
 import com.kseb.smart_car.data.responseDto.ResponseFavoriteMusicDto
 import com.kseb.smart_car.data.responseDto.ResponseFavoriteMusicStringDto
 import com.kseb.smart_car.data.responseDto.ResponseFavoritePlaceDto
 import com.kseb.smart_car.data.responseDto.ResponseRecommendMusicDto
+import com.kseb.smart_car.data.responseDto.ResponseRecommendPlaceNearbyDetailDto
 import com.kseb.smart_car.data.responseDto.ResponseRecommendPlaceNearbyDto
 import com.kseb.smart_car.data.responseDto.ResponseSaveFavoritePlaceDto
 import com.kseb.smart_car.data.responseDto.ResponseSearchListDto
@@ -95,6 +97,13 @@ interface AuthService {
         @Query("pageNo") pageNo:Int,
     ):ResponseRecommendPlaceNearbyDto
 
+    //내 주변 여행지 상세
+    @GET("/recommendation/place/nearby/detail")
+    suspend fun getPlaceNearbyDetail(
+        @Header("Authorization") token:String,
+        @Query("contentId") contentId: String
+    ):ResponseRecommendPlaceNearbyDetailDto
+
 
     //개인 정보 및 선호 장르 수정
     @GET("members/info")
@@ -137,6 +146,12 @@ interface AuthService {
         @Header("Authorization") token: String,
         @Body contentId:String
     ):ResponseSaveFavoritePlaceDto
+
+    @GET("/favorites/place/exist")
+    suspend fun existFavoritePlace(
+        @Header("Authorization") token: String,
+        @Query("contentId") contentId:String
+    ):ResponseExistFavoritePlaceDto
 
     //저장된 음악
     @GET("/favorites/music")

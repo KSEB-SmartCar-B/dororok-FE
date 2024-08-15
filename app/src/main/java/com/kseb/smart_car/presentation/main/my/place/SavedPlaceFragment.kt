@@ -57,7 +57,10 @@ class SavedPlaceFragment : Fragment() {
         savedPlaceViewModel.accessToken.observe(viewLifecycleOwner) { token ->
             if (token != null) {
                 Log.d("SavedplaceFragment", "accessToken observed: $token")
-                placeViewModel.getSavedPlaceList(token)
+                placeViewModel.setAccessToken(token)
+                placeViewModel.accessToken.observe(viewLifecycleOwner){
+                    placeViewModel.getSavedPlaceList()
+                }
             } else {
                 Log.d("SavedplaceFragment", "accessToken is null")
             }
