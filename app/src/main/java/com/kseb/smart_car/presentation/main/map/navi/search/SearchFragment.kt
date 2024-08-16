@@ -79,6 +79,7 @@ class SearchFragment : Fragment() {
         binding.rvSearchList.adapter=searchListAdapter
 
         // 삭제될 때 기본 애니메이션 효과 들어가길래 비활성화
+        binding.svSearch.requestFocus() //검색화면으로 넘어갔을 때 키보드 보이게 함
         binding.rvSearch.itemAnimator = null
 
         setAccesstoken()

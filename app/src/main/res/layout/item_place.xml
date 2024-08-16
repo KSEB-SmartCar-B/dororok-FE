@@ -20,8 +20,8 @@
         android:id="@+id/iv_place"
         android:layout_width="270dp"
         android:layout_height="230dp"
-        android:layout_marginStart="1dp"
         android:background="@drawable/background_place"
+        app:layout_constraintEnd_toEndOf="@+id/iv_place_shadow"
         app:layout_constraintStart_toStartOf="@id/iv_place_shadow"
         app:layout_constraintTop_toTopOf="@id/iv_place_shadow" />
 
@@ -29,6 +29,7 @@
         android:id="@+id/iv_photo"
         android:layout_width="270dp"
         android:layout_height="170dp"
+        android:scaleType="fitCenter"
         android:background="@drawable/background_place_photo"
         android:transitionName="imageTransition"
         app:layout_constraintStart_toStartOf="@id/iv_place"

@@ -157,6 +157,7 @@ class PlaceViewModel @Inject constructor(
             )
                 .onSuccess { response ->
                     _placeNearbyState.value = RecommendPlaceNearbyState.Success(response)
+
                     totalPageNo = response.pageNumbers
                     pageSize = response.places.size
 
@@ -165,6 +166,7 @@ class PlaceViewModel @Inject constructor(
                         isLastPage = true
                     }
                     Log.d ("placeviewmodel", "recommend place nearby 성공!:${totalPageNo}, ${pageNo} = $page ${response.places}")
+
                 }.onFailure {
                     _placeNearbyState.value =
                         RecommendPlaceNearbyState.Error("Error response failure: ${it.message}")

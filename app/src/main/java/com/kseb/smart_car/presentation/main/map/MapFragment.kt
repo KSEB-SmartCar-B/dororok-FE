@@ -11,6 +11,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.inputmethod.InputMethodManager
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
@@ -198,6 +199,9 @@ class MapFragment : Fragment() {
                     val intent = Intent(requireContext(), SearchActivity::class.java)
                     intent.putExtra("accessToken", token)
                     startActivity(intent)
+                    binding.svSearch.clearFocus() //맵 화면에서 키패드 안보이게 함
+//                    val imm = requireContext().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+//                    imm.hideSoftInputFromWindow(binding.svSearch.windowToken, 0)
                 }
             }
         }

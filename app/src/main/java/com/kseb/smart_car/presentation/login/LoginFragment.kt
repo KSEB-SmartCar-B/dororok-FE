@@ -133,16 +133,15 @@ class LoginFragment: Fragment() {
                 when (accessState) {
                     is AccessState.Success -> {
                         Log.d("loginFragment", "accessToken:${accessState.accessToken}")
-                        val intent =
-                            Intent(requireActivity(), MainActivity::class.java).apply {
-                                putExtra("accessToken", "Bearer ${accessState.accessToken}")
-                                //addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK)
-                            }
-                        startActivity(intent)
-                        requireActivity().finish()
-                        /*connect(requireActivity()) {
+                        connect(requireActivity()) {
                             if (it) {
-
+                                val intent =
+                                    Intent(requireActivity(), MainActivity::class.java).apply {
+                                        putExtra("accessToken", "Bearer ${accessState.accessToken}")
+                                        //addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK)
+                                    }
+                                startActivity(intent)
+                                requireActivity().finish()
                             } else {
                                 Toast.makeText(
                                     requireActivity(),
@@ -150,15 +149,16 @@ class LoginFragment: Fragment() {
                                     Toast.LENGTH_SHORT
                                 ).show()
                             }
-                        }*/
+                        }
                     }
+
                     is AccessState.Error -> {
                         Log.e("loginactivity", "token doesn't exist!! ${accessState.message}")
                     }
+
                     is AccessState.Loading -> {
 
                     }
-                    else->{}
                 }
             }
         }
