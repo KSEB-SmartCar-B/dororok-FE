@@ -198,6 +198,8 @@ class MapFragment : Fragment() {
                     val intent = Intent(requireContext(), SearchActivity::class.java)
                     intent.putExtra("accessToken", token)
                     startActivity(intent)
+                    //맵 화면에서 키패드 안보이게 함
+                    binding.svSearch.clearFocus()
                 }
             }
         }

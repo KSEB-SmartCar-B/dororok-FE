@@ -296,7 +296,7 @@ class PlayFragment : Fragment() {
 
     override fun onStop() {
         super.onStop()
-        animator.cancel() // 애니메이션 중지
+//        animator.cancel() // 애니메이션 중지
         SpotifyAppRemote.disconnect(spotifyAppRemote)
         onDisconnected()
     }

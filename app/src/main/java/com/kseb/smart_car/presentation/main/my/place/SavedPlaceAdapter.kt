@@ -4,6 +4,9 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import coil.load
+import coil.size.Scale
+import coil.transform.RoundedCornersTransformation
+import com.kseb.smart_car.R
 import com.kseb.smart_car.data.responseDto.ResponseFavoritePlaceDto
 import com.kseb.smart_car.databinding.ItemSavedplaceBinding
 
@@ -15,7 +18,12 @@ class SavedPlaceAdapter(): RecyclerView.Adapter<SavedPlaceAdapter.SavedPlaceView
         private val binding: ItemSavedplaceBinding
     ) : RecyclerView.ViewHolder(binding.root) {
         fun onBind(item: ResponseFavoritePlaceDto.FavoritesPlaceListDto) {
-            binding.ivPlace.load(item.imageUrl)
+            binding.ivPlace.load(item.imageUrl) {
+                crossfade(true)
+                placeholder(R.drawable.dororok_logo) // 로딩 중 표시할 이미지
+                size(300, 300)
+                scale(Scale.FILL)
+            }
         }
     }
 

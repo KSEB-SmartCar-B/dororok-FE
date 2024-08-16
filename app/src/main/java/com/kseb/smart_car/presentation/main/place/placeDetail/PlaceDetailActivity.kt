@@ -49,7 +49,7 @@ class PlaceDetailActivity : AppCompatActivity() {
         isSaved(place)
 
         // 전환 애니메이션이 끝난 후에 버튼 활성화 및 클릭 리스너 설정
-        binding.btnSave.setOnClickListener(null) // 초기화 중에는 클릭 비활성화
+        binding.ivCircle.setOnClickListener(null) // 초기화 중에는 클릭 비활성화
         window.sharedElementEnterTransition.addListener(object : Transition.TransitionListener {
             override fun onTransitionStart(transition: Transition) {}
 
