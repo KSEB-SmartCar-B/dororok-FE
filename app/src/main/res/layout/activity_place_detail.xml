@@ -10,6 +10,7 @@
         android:id="@+id/iv_photo"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginTop="28dp"
         android:scaleType="centerCrop"
         android:adjustViewBounds="true"
         android:background="@drawable/background_place_photo"
@@ -20,8 +21,8 @@
 
     <ImageView
         android:id="@+id/iv_circle"
-        android:layout_width="50dp"
-        android:layout_height="50dp"
+        android:layout_width="35dp"
+        android:layout_height="35dp"
         android:layout_marginTop="10dp"
         android:layout_marginEnd="10dp"
         android:background="@drawable/btn_savedplace_background"
@@ -31,8 +32,8 @@
 
     <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/btn_save"
-        android:layout_width="35dp"
-        android:layout_height="35dp"
+        android:layout_width="25dp"
+        android:layout_height="25dp"
         android:background="@drawable/btn_saved_place"
         android:transitionName="savedButtonTransition"
         app:layout_constraintStart_toStartOf="@id/iv_circle"

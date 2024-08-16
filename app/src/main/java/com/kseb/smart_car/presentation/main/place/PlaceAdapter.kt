@@ -8,6 +8,9 @@ import android.view.ViewGroup
 import androidx.appcompat.widget.AppCompatButton
 import androidx.recyclerview.widget.RecyclerView
 import coil.load
+import coil.size.Scale
+import coil.transform.RoundedCornersTransformation
+import com.kseb.smart_car.R
 import com.kseb.smart_car.data.responseDto.ResponseFavoritePlaceDto
 import com.kseb.smart_car.data.responseDto.ResponseRecommendPlaceNearbyDto
 import com.kseb.smart_car.data.responseDto.ResponseSaveFavoritePlaceDto
@@ -25,7 +28,13 @@ class PlaceAdapter(
         private val binding: ItemPlaceBinding
     ) : RecyclerView.ViewHolder(binding.root) {
         fun onBind(item: ResponseRecommendPlaceNearbyDto.PlaceList) {
-            binding.ivPhoto.load(item.imageUrl)
+            binding.ivPhoto.load(item.imageUrl) {
+                crossfade(true)
+                placeholder(R.drawable.dororok_loading) // 로딩 중 표시할 이미지
+                transformations(RoundedCornersTransformation(10f, 10f, 0f, 0f)) // 필요한 경우 모서리 둥글게
+                size(270, 170)
+                scale(Scale.FILL)
+            }
             binding.tvMainplace.text = item.title
             binding.tvSubplace.text = item.address
 

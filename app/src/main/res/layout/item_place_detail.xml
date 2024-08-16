@@ -9,8 +9,8 @@
 
     <ImageView
         android:id="@+id/iv_place_shadow"
-        android:layout_width="173dp"
-        android:layout_height="132dp"
+        android:layout_width="137dp"
+        android:layout_height="107dp"
         android:background="@drawable/background_place_shadow"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -18,17 +18,17 @@
 
     <ImageView
         android:id="@+id/iv_place"
-        android:layout_width="170dp"
-        android:layout_height="130dp"
-        android:layout_marginStart="1dp"
+        android:layout_width="135dp"
+        android:layout_height="105dp"
         android:background="@drawable/background_place"
         app:layout_constraintStart_toStartOf="@id/iv_place_shadow"
         app:layout_constraintTop_toTopOf="@id/iv_place_shadow" />
 
     <ImageView
         android:id="@+id/iv_photo"
-        android:layout_width="140dp"
-        android:layout_height="wrap_content"
+        android:layout_width="135dp"
+        android:layout_height="80dp"
+        android:scaleType="fitCenter"
         android:background="@drawable/background_place_photo"
         android:transitionName="imageTransition"
         app:layout_constraintStart_toStartOf="@id/iv_place"
@@ -61,11 +61,12 @@
         android:id="@+id/tv_mainplace"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="20dp"
-        android:layout_marginTop="5dp"
+        android:layout_marginStart="10dp"
+        android:layout_marginTop="3dp"
         android:text="대장소"
-        android:textSize="18sp"
+        android:textSize="12sp"
         android:textStyle="bold"
+        android:maxWidth="110dp"
         app:layout_constraintTop_toBottomOf="@id/iv_photo"
         app:layout_constraintStart_toStartOf="@id/iv_place"
         app:layout_constraintBottom_toBottomOf="@id/iv_place" />

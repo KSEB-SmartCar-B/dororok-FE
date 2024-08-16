@@ -5,6 +5,8 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import coil.load
+import coil.size.Scale
+import coil.transform.RoundedCornersTransformation
 import com.kseb.smart_car.R
 import com.kseb.smart_car.data.responseDto.ResponseFavoriteMusicDto
 import com.kseb.smart_car.databinding.ItemSavedmusicBinding
@@ -25,7 +27,13 @@ class SavedMusicAdapter(private val clickPlayPauseButton: (String) -> Unit) :
         ) {
             with(binding) {
                 val imageUrl = "https://i.scdn.co/image/${item.imageUrl}"
-                ivMusic.load(imageUrl)
+                ivMusic.load(imageUrl) {
+                    crossfade(true)
+                    placeholder(R.drawable.dororok_logo) // 로딩 중 표시할 이미지
+                    transformations(RoundedCornersTransformation(15f, 15f, 15f, 15f)) // 필요한 경우 모서리 둥글게
+                    size(200, 200)
+                    scale(Scale.FILL)
+                }
                 tvTitle.text = item.title
                 tvSinger.text = item.artist
 
