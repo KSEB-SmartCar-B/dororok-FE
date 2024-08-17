@@ -82,11 +82,7 @@ class PlayViewModel @Inject constructor(
     fun getRecommendMusic(lat: String, lng: String, musicMode: String) {
         viewModelScope.launch {
             authRepository.getRecommendMusic(accessToken!!, lat, lng, musicMode, isFirst++).onSuccess { response ->
-                // 기존 리스트에 새로 가져온 리스트를 추가
-                val currentList = _recommendMusicList.value?.lists?.toMutableList() ?: mutableListOf()
-                currentList.addAll(response.lists)
-                // 새로운 리스트로 업데이트
-                _recommendMusicList.value = response.copy(lists = currentList)
+                _recommendMusicList.value = response
                 Log.d("playViewmodel", "get recommend music success\n${response.lists}")
             }.onFailure { throwable ->
                 //_recommendMusicState.value =

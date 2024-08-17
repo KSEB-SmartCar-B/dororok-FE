@@ -621,9 +621,11 @@ class PlayFragment : Fragment() {
     }
 
     private fun onSkipNextButtonClicked(notUsed: View) {
-        getLastKnownLocation()
-        currentTrackIndex++
-        playUri()
+        lifecycleScope.launch {
+            getLastKnownLocation()
+            currentTrackIndex++
+            playUri()
+        }
         /*assertAppRemoteConnected()
             .playerApi
             .skipNext()

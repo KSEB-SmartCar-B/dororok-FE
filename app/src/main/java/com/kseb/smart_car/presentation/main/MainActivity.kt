@@ -556,6 +556,10 @@ class MainActivity : AppCompatActivity() {
                         replaceFragment(MyFragment())
                     } else {
                         // Spotify 연결이 안된 상태에서 Activity를 시작하지 않도록 처리
+                        lifecycleScope.launch {
+                            connectToSpotify()
+                            replaceFragment(MyFragment())
+                        }
                         Log.e("MainActivity", "SpotifyAppRemote is not connected")
                     }
                     true

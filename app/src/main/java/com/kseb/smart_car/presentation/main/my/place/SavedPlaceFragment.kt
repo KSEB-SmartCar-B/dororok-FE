@@ -36,11 +36,11 @@ class SavedPlaceFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         setting()
-        clickEditButton()
+        //clickEditButton()
     }
 
     private fun setting() {
-        savedPlaceAdapter = SavedPlaceAdapter()
+        //savedPlaceAdapter = SavedPlaceAdapter()
         binding.rvPlace.adapter = savedPlaceAdapter
 
         // 데이터를 관찰하는 observer 설정
@@ -67,14 +67,14 @@ class SavedPlaceFragment : Fragment() {
         }
     }
 
-    private fun clickEditButton() {
+    /*private fun clickEditButton() {
         binding.btnEdit.setOnClickListener {
             val transaction = requireActivity().supportFragmentManager.beginTransaction()
             transaction.replace(R.id.fcv_place, DeletedPlaceFragment())
             transaction.addToBackStack(null)
             transaction.commit()
         }
-    }
+    }*/
 
     override fun onDestroyView() {
         super.onDestroyView()

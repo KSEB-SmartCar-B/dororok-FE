@@ -52,4 +52,6 @@
     <string name="place_detail_more">추천 여행지</string>
     <!-- my -->
     <string name="my_welcome">%s님 행복한 하루 되세요!</string>
+    <string name="my_edit">편집</string>
+    <string name="my_delete">삭제</string>
 </resources>

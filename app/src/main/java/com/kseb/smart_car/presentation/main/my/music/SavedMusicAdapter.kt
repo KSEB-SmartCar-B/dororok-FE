@@ -2,6 +2,7 @@ package com.kseb.smart_car.presentation.main.my.music
 
 import android.util.Log
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import coil.load
@@ -11,12 +12,13 @@ import com.kseb.smart_car.R
 import com.kseb.smart_car.data.responseDto.ResponseFavoriteMusicDto
 import com.kseb.smart_car.databinding.ItemSavedmusicBinding
 
-class SavedMusicAdapter(private val clickPlayPauseButton: (String) -> Unit) :
+class SavedMusicAdapter(private val clickPlayPauseButton: (String) -> Unit, private val clickMusic:(String)->Unit) :
     RecyclerView.Adapter<SavedMusicAdapter.SavedMusicViewHolder>() {
 
     //private val musicList = listOf("1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15",)
     private val favoriteMusicList = mutableListOf<ResponseFavoriteMusicDto.FavoriteMusicListDto>()
     private var currentlyPlayingTrackId: String? = null
+    private var isEditMode = false
 
     inner class SavedMusicViewHolder(
         private val binding: ItemSavedmusicBinding
@@ -45,6 +47,18 @@ class SavedMusicAdapter(private val clickPlayPauseButton: (String) -> Unit) :
                 }
 
                 playPauseButton(item, clickPlayPauseButton)
+
+                // editClick 상태에 따라 musicGray 뷰의 가시성을 제어합니다.
+                musicGray.visibility = if (isEditMode) View.VISIBLE else View.INVISIBLE
+                btnPlay.visibility= if (isEditMode) View.INVISIBLE else View.VISIBLE
+                ivCircle.visibility= if (isEditMode) View.VISIBLE else View.INVISIBLE
+
+                if(ivCircle.visibility==View.VISIBLE){
+                    itemView.setOnClickListener{
+                        ivCircle.isSelected=!ivCircle.isSelected
+                        clickMusic(item.trackId)
+                    }
+                }
             }
         }
 
@@ -87,6 +101,11 @@ class SavedMusicAdapter(private val clickPlayPauseButton: (String) -> Unit) :
 
     fun setMusicList(list: List<ResponseFavoriteMusicDto.FavoriteMusicListDto>) {
         favoriteMusicList.addAll(list)
+        notifyDataSetChanged()
+    }
+
+    fun toggleEditMode(isEdit: Boolean) {
+        isEditMode = isEdit
         notifyDataSetChanged()
     }
 }

@@ -67,6 +67,6 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:srcCompat="@drawable/selector_check" />
+        app:srcCompat="@drawable/btn_music_check" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
