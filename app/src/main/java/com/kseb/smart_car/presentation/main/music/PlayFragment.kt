@@ -21,6 +21,9 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
+import coil.load
+import coil.transform.CircleCropTransformation
+import coil.transform.RoundedCornersTransformation
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.CenterCrop
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
@@ -29,6 +32,7 @@ import com.kseb.smart_car.R
 import com.kseb.smart_car.databinding.FragmentPlayBinding
 import com.kseb.smart_car.extension.GetFavoriteMusicState
 import com.kseb.smart_car.presentation.main.MainViewModel
+import com.kseb.smart_car.presentation.main.map.navi.LoadingDialogFragment
 import com.kseb.smart_car.presentation.main.music.PlayFragment.AuthParams.CLIENT_ID
 import com.kseb.smart_car.presentation.main.music.PlayFragment.AuthParams.REDIRECT_URI
 import com.spotify.android.appremote.api.ConnectionParams
@@ -54,6 +58,7 @@ class PlayFragment : Fragment() {
 
     private val playViewModel:PlayViewModel by activityViewModels()
     private val mainViewModel:MainViewModel by activityViewModels()
+    private var loadingDialog:LoadingDialogFragment?=null
 
     private var spotifyAppRemote: SpotifyAppRemote? = null
     private lateinit var playAdapter: PlayAdapter
@@ -155,12 +160,99 @@ class PlayFragment : Fragment() {
             .imagesApi
             .getImage(playerState.track.imageUri, Image.Dimension.LARGE)
             .setResultCallback { bitmap ->
-                Glide.with(requireContext())
-                    .load(bitmap)
-                    .transform(RoundedCorners(requireContext().resources.getDimensionPixelSize(R.dimen.radius_music_image))) // 반지름을 dimens 파일에서 가져옴
-                    .into(binding.ivMusic)
+                binding.ivMusic.load(bitmap) {
+                    crossfade(true)
+                    transformations(RoundedCornersTransformation(requireContext().resources.getDimension(R.dimen.radius_music_image)))
+                    listener(
+                        onSuccess = { _, _ ->
+                            // 이미지 로드 성공 후의 작업
+                            binding.ivMusic.post {
+                                val width = binding.ivMusic.width
+                                val height = binding.ivMusic.height
+                                val location = IntArray(2)
+                                binding.ivMusic.getLocationOnScreen(location)
+                                val x = location[0]
+                                val y = location[1]
 
-                binding.ivMusic.viewTreeObserver.addOnGlobalLayoutListener(object : ViewTreeObserver.OnGlobalLayoutListener {
+                                Log.d("ivMusic Info", "Width: $width, Height: $height")
+                                Log.d("ivMusic Info", "Position - X: $x, Y: $y")
+
+                                // Check if ivMusic has a valid size
+                                if (binding.ivMusic.width > 0 && binding.ivMusic.height > 0) {
+                                    val constraintSet = ConstraintSet()
+                                    constraintSet.clone(binding.root as ConstraintLayout)
+
+                                    Log.d("playfragment", "radius_music_shadow 적용 시작")
+
+                                    // Get the shadow size from dimens
+                                    val shadowSize = resources.getDimensionPixelSize(R.dimen.radius_music_shadow)
+
+                                    // Set the shadow size (make it larger than ivMusic)
+                                    val shadowWidth = (binding.ivMusic.width * 1.2).toInt()
+                                    val shadowHeight = (binding.ivMusic.height * 1.2).toInt()
+
+                                    constraintSet.constrainWidth(R.id.iv_shadow, shadowWidth)
+                                    constraintSet.constrainHeight(R.id.iv_shadow, shadowHeight)
+
+                                    // Center the shadow around ivMusic
+                                    constraintSet.connect(R.id.iv_shadow, ConstraintSet.TOP, R.id.iv_music, ConstraintSet.TOP)
+                                    constraintSet.connect(R.id.iv_shadow, ConstraintSet.START, R.id.iv_music, ConstraintSet.START)
+                                    constraintSet.connect(R.id.iv_shadow, ConstraintSet.END, R.id.iv_music, ConstraintSet.END)
+                                    constraintSet.connect(R.id.iv_shadow, ConstraintSet.BOTTOM, R.id.iv_music, ConstraintSet.BOTTOM)
+
+                                    constraintSet.applyTo(binding.root as ConstraintLayout)
+
+                                    Log.d("playfragment", "위치 선정 끝")
+
+                                    // Verify layout update
+                                    binding.ivShadow.post {
+                                        val width = binding.ivShadow.width
+                                        val height = binding.ivShadow.height
+
+                                        val location = IntArray(2)
+                                        binding.ivShadow.getLocationOnScreen(location)
+                                        val x = location[0]
+                                        val y = location[1]
+
+                                        Log.d("ivShadow Info", "Width: $width, Height: $height")
+                                        Log.d("ivShadow Info", "Position - X: $x, Y: $y")
+                                    }
+
+                                    // Log ivMusic's final size and position
+                                    val musicWidth = binding.ivMusic.width
+                                    val musicHeight = binding.ivMusic.height
+
+                                    val musicLocation = IntArray(2)
+                                    binding.ivMusic.getLocationOnScreen(musicLocation)
+                                    val musicX = musicLocation[0]
+                                    val musicY = musicLocation[1]
+
+                                    Log.d("ivMusic Info", "Width: $musicWidth, Height: $musicHeight")
+                                    Log.d("ivMusic Info", "Position - X: $musicX, Y: $musicY")
+                                } else {
+                                    Log.d("playfragment", "ivMusic 크기나 위치가 아직 결정되지 않았습니다.")
+                                }
+
+                            }
+                        },
+                        onError = { _, _ ->
+                            Log.d("ivMusic Info", "이미지 로드 실패")
+                        }
+                    )
+                }
+
+                // ivMusic에 기존 이미지를 로드 (원형 아님)
+                /*binding.ivMusic.load(bitmap) {
+                    transformations(RoundedCornersTransformation(requireContext().resources.getDimensionPixelSize(
+                        R.dimen.radius_music_image
+                    ).toFloat()))
+                }*/
+
+                // ivAlbum에 원형으로 변환하여 이미지 로드
+                binding.ivAlbum.load(bitmap) {
+                    transformations(CircleCropTransformation()) // 이미지 원형 변환
+                }
+               /* binding.ivMusic.viewTreeObserver.addOnGlobalLayoutListener(object : ViewTreeObserver.OnGlobalLayoutListener {
                     override fun onGlobalLayout() {
                         binding.ivMusic.viewTreeObserver.removeOnGlobalLayoutListener(this)
 
@@ -181,7 +273,7 @@ class PlayFragment : Fragment() {
                         constraintSet.applyTo(binding.root as ConstraintLayout)
                         //Log.d("PlayFragment", "ivShadow width: ${binding.ivShadow.width}, height: ${binding.ivShadow.height}")
                     }
-                })
+                })*/
 
                 // 회전 애니메이션 초기화
                 if (!this::animator.isInitialized) {
@@ -301,6 +393,17 @@ class PlayFragment : Fragment() {
         onDisconnected()
     }
 
+    // Api 호출이 시작되면 LoadingDialogFragment를 보여준다.
+    private fun showLoadingActivity() {
+        loadingDialog = LoadingDialogFragment()
+        loadingDialog?.show(parentFragmentManager, "LoadingDialog")
+    }
+
+    // 데이터 로딩이 완료 되면 LoadingDialogFragment를 dismiss 한다.
+    private fun closeLoadingActivity() {
+        loadingDialog?.dismiss()
+    }
+
     private fun onConnected() {
         for (input in views) {
             input.isEnabled = true
@@ -415,22 +518,6 @@ class PlayFragment : Fragment() {
             .playerApi
             .skipNext()
             .setResultCallback { logMessage(getString(R.string.command_feedback, "skip next")) }
-            .setErrorCallback(errorCallback)
-    }
-
-    fun onSeekBack(notUsed: View) {
-        assertAppRemoteConnected()
-            .playerApi
-            .seekToRelativePosition(-STEP_MS)
-            .setResultCallback { logMessage(getString(R.string.command_feedback, "seek back")) }
-            .setErrorCallback(errorCallback)
-    }
-
-    fun onSeekForward(notUsed: View) {
-        assertAppRemoteConnected()
-            .playerApi
-            .seekToRelativePosition(STEP_MS)
-            .setResultCallback { logMessage(getString(R.string.command_feedback, "seek fwd")) }
             .setErrorCallback(errorCallback)
     }
 

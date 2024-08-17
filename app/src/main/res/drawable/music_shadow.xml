@@ -3,7 +3,7 @@
     <item>
         <shape android:shape="rectangle">
             <corners android:radius="300dp" />
-            <solid android:color="@color/shadow_dark" />
+            <solid android:color="@color/music_album_shadow" />
         </shape>
     </item>
 </layer-list>

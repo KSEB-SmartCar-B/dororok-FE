@@ -4,8 +4,20 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/my_background_yellow"
+    android:background="@color/white"
     android:paddingBottom="10dp">
+
+    <androidx.appcompat.widget.AppCompatImageView
+        android:id="@+id/iv_album"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_marginTop="-170dp"
+        android:background="@drawable/background_album"
+        android:elevation="10dp"
+        app:layout_constraintDimensionRatio="1:1"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"/>
 
     <androidx.appcompat.widget.AppCompatImageView
         android:id="@+id/iv_music"
@@ -25,6 +37,7 @@
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:background="@drawable/music_shadow"
+        android:elevation="15dp"
         app:layout_constraintDimensionRatio="1:1"
         app:layout_constraintTop_toTopOf="@id/iv_music"
         app:layout_constraintStart_toStartOf="@id/iv_music"
