@@ -51,8 +51,11 @@ class AuthDataSourceImpl @Inject constructor(
     override suspend fun getSituations(): ResponseSituationDto = authService.getSituations()
     override suspend fun getRecommendMusic(
         token: String,
-        recommendMusicDto: RequestRecommendMusicDto
-    ): ResponseRecommendMusicDto = authService.getRecommendMusic(token,recommendMusicDto)
+        lat:String,
+        lng:String,
+        musicMode:String,
+        isFirst:Int
+    ): ResponseRecommendMusicDto = authService.getRecommendMusic(token,lat,lng,musicMode,isFirst)
 
     override suspend fun getSearch(token: String): ResponseSearchListDto =
         authService.getSearch(token)

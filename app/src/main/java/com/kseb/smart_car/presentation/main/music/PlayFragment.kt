@@ -334,14 +334,19 @@ class PlayFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        if(spotifyAppRemote!=null){
+            Log.d("playfragment","spotify app remote is not null")
+        }else{
+            Log.d("playfragment","spotify app remote is null")
+        }
         binding.sbBar.apply {
             isEnabled = false
-            progressDrawable.setColorFilter(Color.WHITE, PorterDuff.Mode.SRC_ATOP)
-            indeterminateDrawable.setColorFilter(Color.WHITE, PorterDuff.Mode.SRC_ATOP)
+            progressDrawable.setColorFilter(resources.getColor(R.color.bnv_clicked_black), PorterDuff.Mode.SRC_ATOP)
+            indeterminateDrawable.setColorFilter(resources.getColor(R.color.bnv_clicked_black), PorterDuff.Mode.SRC_ATOP)
         }
 
         trackProgressBar =
-            TrackProgressBar(binding.sbBar) { seekToPosition: Long -> seekTo(seekToPosition) }
+            TrackProgressBar(requireContext(), binding.sbBar) { seekToPosition: Long -> seekTo(seekToPosition) }
 
         views = listOf(
             binding.btnPlayPauseButton,
@@ -349,11 +354,6 @@ class PlayFragment : Fragment() {
             binding.btnSkipNextButton,
             binding.sbBar
         )
-
-        val seekBar: SeekBar = binding.sbBar
-        seekBar.progressTintList = ColorStateList.valueOf(resources.getColor(R.color.bnv_clicked_black))
-        seekBar.thumbTintList = ColorStateList.valueOf(resources.getColor(R.color.bnv_clicked_black))
-        seekBar.progressBackgroundTintList = ColorStateList.valueOf(resources.getColor(R.color.bnv_clicked_black))
 
         //다음곡 리스트
        /* lifecycleScope.launch {

@@ -11,6 +11,7 @@ import com.kseb.smart_car.domain.repository.AuthRepository
 import com.kseb.smart_car.extension.AccessState
 import com.kseb.smart_car.extension.ChangeFavoriteMusicState
 import com.kseb.smart_car.extension.GetFavoriteMusicState
+import com.kseb.smart_car.extension.GetRecommendMusicState
 import com.spotify.protocol.types.PlayerState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -26,7 +27,12 @@ import javax.inject.Inject
 class PlayViewModel @Inject constructor(
     private val authRepository: AuthRepository
 ) : ViewModel() {
-    var nextMusicList: List<ResponseMusicDto.MusicListDto> = mutableListOf()
+    private var accessToken: String? = null
+    private var isFirst:Int=1
+
+    private val _recommendMusicState = MutableStateFlow<GetRecommendMusicState>(GetRecommendMusicState.Loading)
+    val recommendMusicState:StateFlow<GetRecommendMusicState> get() = _recommendMusicState.asStateFlow()
+
     private val _favoriteMusicList = MutableLiveData<ResponseFavoriteMusicDto>()
     val favoriteMusicList: MutableLiveData<ResponseFavoriteMusicDto> get() = _favoriteMusicList
 
@@ -45,9 +51,7 @@ class PlayViewModel @Inject constructor(
     private val _isLoginSpotify = MutableLiveData<Boolean>(false)
     val isLoginSpotify: MutableLiveData<Boolean> get() = _isLoginSpotify
 
-    private var accessToken: String? = null
-
-    init {
+   /* init {
         setList()
     }
 
@@ -60,10 +64,43 @@ class PlayViewModel @Inject constructor(
             ResponseMusicDto.MusicListDto("spotify:show:2tgPYIeGErjk6irHRhk9kj", 0, "s")
         )
         nextMusicList = list
-    }
+    }*/
 
     fun setAccessToken(token:String){
         accessToken=token
+    }
+
+    fun getRecommendMusic(lat:String,lng:String,musicMode:String){
+        viewModelScope.launch {
+            authRepository.getRecommendMusic(accessToken!!, lat, lng, musicMode, isFirst++).onSuccess { response->
+                _recommendMusicState.value=GetRecommendMusicState.Success(response)
+                Log.d("playViewmodel", "get recommend music success\n${response.lists[0]}")
+            }.onFailure {
+                _recommendMusicState.value =
+                    GetRecommendMusicState.Error("Error response failure: ${it.message}")
+                Log.e("playViewmodel", "Error:${it.message}")
+                Log.e("playViewmodel", Log.getStackTraceString(it))
+                if (it is HttpException) {
+                    try {
+                        val errorBody: ResponseBody? = it.response()?.errorBody()
+                        val errorBodyString = errorBody?.string() ?: ""
+
+                        // JSONObject를 사용하여 메시지 추출
+                        val jsonObject = JSONObject(errorBodyString)
+                        val errorMessage = jsonObject.optString("errMsg", "Unknown error")
+
+                        // 추출된 에러 메시지 로깅
+                        Log.e("allviewmodel", "Error message: $errorMessage")
+                    } catch (e: Exception) {
+                        // JSON 파싱 실패 시 로깅
+                        Log.e("allviewmodel", "Error parsing error body", e)
+                    }
+                }
+            }
+        }
+        if(isFirst==3){
+            isFirst=2
+        }
     }
 
     fun loginSpotify() {

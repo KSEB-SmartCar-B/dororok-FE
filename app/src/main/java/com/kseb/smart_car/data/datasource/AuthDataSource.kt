@@ -58,7 +58,10 @@ interface AuthDataSource {
 
     suspend fun getRecommendMusic(
         token:String,
-        requestRecommendMusicDto: RequestRecommendMusicDto
+        lat:String,
+        lng:String,
+        musicMode:String,
+        isFirst:Int
     ): ResponseRecommendMusicDto
 
     suspend fun getSearch(

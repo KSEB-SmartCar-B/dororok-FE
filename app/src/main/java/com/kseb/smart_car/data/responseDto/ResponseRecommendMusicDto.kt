@@ -10,11 +10,13 @@ data class ResponseRecommendMusicDto (
 ){
     @Serializable
     data class RecommendMusicList(
-        @SerialName("TRACK_URI")
-        val trackUri:String,
-        @SerialName("PLAY_TIME")
-        val playTime:Long,
-        @SerialName("TRACK_IMAGE")
-        val trackImage:String,
+        @SerialName("title")
+        val title:String,
+        @SerialName("artist")
+        val artist:String,
+        @SerialName("track_id")
+        val trackId:String,
+        @SerialName("album_image")
+        val albumImage:String
     )
 }
