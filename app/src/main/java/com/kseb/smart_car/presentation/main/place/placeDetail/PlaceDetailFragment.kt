@@ -10,12 +10,10 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.ViewTreeObserver
-import androidx.appcompat.widget.AppCompatButton
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
@@ -37,22 +35,16 @@ import com.kseb.smart_car.BuildConfig
 import com.kseb.smart_car.R
 import com.kseb.smart_car.data.responseDto.ResponseRecommendPlaceNearbyDto
 import com.kseb.smart_car.databinding.FragmentPlaceDetailBinding
-import com.kseb.smart_car.extension.AddFavoritePlaceState
 import com.kseb.smart_car.extension.AddressState
-import com.kseb.smart_car.extension.DeleteFavoritePlaceState
 import com.kseb.smart_car.extension.GetRecommendPlaceDetailState
-import com.kseb.smart_car.presentation.main.MainViewModel
 import com.kseb.smart_car.presentation.main.map.navi.LoadingDialogFragment
 import com.kseb.smart_car.presentation.main.map.navi.NaviActivity
-import com.kseb.smart_car.presentation.main.place.PlaceAdapter
-import com.kseb.smart_car.presentation.main.place.PlaceNearbyAdapter
 import com.kseb.smart_car.presentation.main.place.PlaceViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import kotlin.properties.Delegates
 
 @AndroidEntryPoint
 class PlaceDetailFragment : Fragment() {
@@ -380,7 +372,7 @@ class PlaceDetailFragment : Fragment() {
 
     // Api 호출이 시작되면 LoadingDialogFragment를 보여준다.
     private fun showLoadingActivity() {
-        loadingDialog = LoadingDialogFragment()
+        loadingDialog = LoadingDialogFragment("navi")
         loadingDialog?.show(parentFragmentManager, "LoadingDialog")
     }
 

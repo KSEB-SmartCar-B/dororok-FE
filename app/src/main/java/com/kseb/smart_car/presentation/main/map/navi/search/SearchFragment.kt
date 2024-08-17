@@ -219,7 +219,7 @@ class SearchFragment : Fragment() {
 
     // Api 호출이 시작되면 LoadingDialogFragment를 보여준다.
     private fun showLoadingActivity() {
-        loadingDialog = LoadingDialogFragment()
+        loadingDialog = LoadingDialogFragment("navi")
         loadingDialog?.show(parentFragmentManager, "LoadingDialog")
     }
 

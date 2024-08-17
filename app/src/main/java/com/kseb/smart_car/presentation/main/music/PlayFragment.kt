@@ -1,34 +1,33 @@
 package com.kseb.smart_car.presentation.main.music
 
+import android.Manifest
 import android.animation.ObjectAnimator
-import android.content.res.ColorStateList
-import android.graphics.Color
+import android.content.pm.PackageManager
 import android.graphics.PorterDuff
+import android.location.Location
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.view.ViewTreeObserver
 import android.view.animation.LinearInterpolator
-import android.widget.SeekBar
 import android.widget.Toast
+import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AlertDialog
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.constraintlayout.widget.ConstraintSet
-import androidx.core.content.ContextCompat
+import androidx.core.app.ActivityCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import coil.load
 import coil.transform.CircleCropTransformation
 import coil.transform.RoundedCornersTransformation
-import com.bumptech.glide.Glide
-import com.bumptech.glide.load.resource.bitmap.CenterCrop
-import com.bumptech.glide.load.resource.bitmap.RoundedCorners
+import com.google.android.gms.location.FusedLocationProviderClient
+import com.google.android.gms.location.LocationServices
 import com.google.gson.GsonBuilder
 import com.kseb.smart_car.R
+import com.kseb.smart_car.data.responseDto.ResponseRecommendMusicDto
 import com.kseb.smart_car.databinding.FragmentPlayBinding
 import com.kseb.smart_car.extension.GetFavoriteMusicState
 import com.kseb.smart_car.presentation.main.MainViewModel
@@ -50,6 +49,7 @@ import kotlin.coroutines.Continuation
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 import kotlin.coroutines.suspendCoroutine
+import kotlin.properties.Delegates
 
 class PlayFragment : Fragment() {
     private var _binding: FragmentPlayBinding? = null
@@ -60,6 +60,7 @@ class PlayFragment : Fragment() {
     private val mainViewModel:MainViewModel by activityViewModels()
     private var loadingDialog:LoadingDialogFragment?=null
 
+    private var hasCheckedSpotifyAppRemote = false
     private var spotifyAppRemote: SpotifyAppRemote? = null
     private lateinit var playAdapter: PlayAdapter
     private lateinit var animator: ObjectAnimator
@@ -76,6 +77,8 @@ class PlayFragment : Fragment() {
     companion object {
         const val TAG = "Spotify"
         const val STEP_MS = 15000L
+
+        private const val LOCATION_PERMISSION_REQUEST_CODE = 1
     }
 
     private val gson = GsonBuilder().setPrettyPrinting().create()
@@ -85,6 +88,17 @@ class PlayFragment : Fragment() {
 
     private lateinit var views: List<View>
     private lateinit var trackProgressBar: TrackProgressBar
+
+    private lateinit var situation: String
+    private lateinit var fusedLocationClient: FusedLocationProviderClient
+    private var latitude by Delegates.notNull<Double>()
+    private var longitude by Delegates.notNull<Double>()
+    private val REQUEST_CODE_LOCATION_PERMISSION = 123
+
+    // 현재 재생 중인 곡의 인덱스
+    private var currentTrackIndex = 0
+    // 추천 음악 리스트
+    private val recommendedMusicList = mutableListOf<ResponseRecommendMusicDto.RecommendMusicList>()
 
     enum class PlayingState {
         PAUSED, PLAYING, STOPPED
@@ -174,27 +188,20 @@ class PlayFragment : Fragment() {
                                 val x = location[0]
                                 val y = location[1]
 
-                                Log.d("ivMusic Info", "Width: $width, Height: $height")
-                                Log.d("ivMusic Info", "Position - X: $x, Y: $y")
-
-                                // Check if ivMusic has a valid size
+                                // ivMusic 사이즈 체크
                                 if (binding.ivMusic.width > 0 && binding.ivMusic.height > 0) {
                                     val constraintSet = ConstraintSet()
                                     constraintSet.clone(binding.root as ConstraintLayout)
 
-                                    Log.d("playfragment", "radius_music_shadow 적용 시작")
-
-                                    // Get the shadow size from dimens
+                                    // ivShadow 크기 설정
                                     val shadowSize = resources.getDimensionPixelSize(R.dimen.radius_music_shadow)
-
-                                    // Set the shadow size (make it larger than ivMusic)
                                     val shadowWidth = (binding.ivMusic.width * 1.2).toInt()
                                     val shadowHeight = (binding.ivMusic.height * 1.2).toInt()
 
                                     constraintSet.constrainWidth(R.id.iv_shadow, shadowWidth)
                                     constraintSet.constrainHeight(R.id.iv_shadow, shadowHeight)
 
-                                    // Center the shadow around ivMusic
+                                    // ivShadow 위치 설정
                                     constraintSet.connect(R.id.iv_shadow, ConstraintSet.TOP, R.id.iv_music, ConstraintSet.TOP)
                                     constraintSet.connect(R.id.iv_shadow, ConstraintSet.START, R.id.iv_music, ConstraintSet.START)
                                     constraintSet.connect(R.id.iv_shadow, ConstraintSet.END, R.id.iv_music, ConstraintSet.END)
@@ -203,32 +210,6 @@ class PlayFragment : Fragment() {
                                     constraintSet.applyTo(binding.root as ConstraintLayout)
 
                                     Log.d("playfragment", "위치 선정 끝")
-
-                                    // Verify layout update
-                                    binding.ivShadow.post {
-                                        val width = binding.ivShadow.width
-                                        val height = binding.ivShadow.height
-
-                                        val location = IntArray(2)
-                                        binding.ivShadow.getLocationOnScreen(location)
-                                        val x = location[0]
-                                        val y = location[1]
-
-                                        Log.d("ivShadow Info", "Width: $width, Height: $height")
-                                        Log.d("ivShadow Info", "Position - X: $x, Y: $y")
-                                    }
-
-                                    // Log ivMusic's final size and position
-                                    val musicWidth = binding.ivMusic.width
-                                    val musicHeight = binding.ivMusic.height
-
-                                    val musicLocation = IntArray(2)
-                                    binding.ivMusic.getLocationOnScreen(musicLocation)
-                                    val musicX = musicLocation[0]
-                                    val musicY = musicLocation[1]
-
-                                    Log.d("ivMusic Info", "Width: $musicWidth, Height: $musicHeight")
-                                    Log.d("ivMusic Info", "Position - X: $musicX, Y: $musicY")
                                 } else {
                                     Log.d("playfragment", "ivMusic 크기나 위치가 아직 결정되지 않았습니다.")
                                 }
@@ -333,12 +314,15 @@ class PlayFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
-        if(spotifyAppRemote!=null){
-            Log.d("playfragment","spotify app remote is not null")
-        }else{
-            Log.d("playfragment","spotify app remote is null")
+        Log.d("playfragment", "onViewCreated 호출됨")
+        // 전달된 데이터 받기
+        arguments?.getString("situation_key")?.let {
+            situation = it
+            // 상황에 맞게 처리
+            Log.d("PlayFragment", "Received situation: $situation")
         }
+        //initializeSpotifyConnection()
+
         binding.sbBar.apply {
             isEnabled = false
             progressDrawable.setColorFilter(resources.getColor(R.color.bnv_clicked_black), PorterDuff.Mode.SRC_ATOP)
@@ -365,18 +349,115 @@ class PlayFragment : Fragment() {
 
             }
         }*/
-
+        showLoadingActivity()
         getAccessToken()
+        getLastKnownLocation()
         SpotifyAppRemote.setDebugMode(true)
         clickButton()
 
-        connectToSpotify()
+        // 뒤로가기 버튼을 처리하는 콜백을 추가합니다.
+        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                // ViewModel의 recommendMusicList를 초기화합니다.
+                playViewModel.recommendMusicListReset()
+
+                // 기본 뒤로가기 동작을 수행하도록 합니다.
+                // 이 콜백이 활성화되어 있지 않으면 시스템의 기본 동작이 수행됩니다.
+                if (isEnabled) {
+                    isEnabled = false
+                    requireActivity().onBackPressed()
+                }
+            }
+        })
+        //connectToSpotify()
     }
 
     private fun getAccessToken(){
         mainViewModel.accessToken.observe(viewLifecycleOwner){token->
             playViewModel.setAccessToken(token)
+            observeViewModel()
         }
+    }
+
+    private fun getLastKnownLocation() {
+        if (ActivityCompat.checkSelfPermission(
+                requireContext(),
+                Manifest.permission.ACCESS_FINE_LOCATION
+            ) != PackageManager.PERMISSION_GRANTED &&
+            ActivityCompat.checkSelfPermission(
+                requireContext(),
+                Manifest.permission.ACCESS_COARSE_LOCATION
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            // 권한이 없으면 권한 요청
+            requestPermissions(
+                arrayOf(
+                    Manifest.permission.ACCESS_FINE_LOCATION,
+                    Manifest.permission.ACCESS_COARSE_LOCATION
+                ),
+                LOCATION_PERMISSION_REQUEST_CODE
+            )
+            return
+        }
+
+        fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireActivity())
+        fusedLocationClient.lastLocation
+            .addOnSuccessListener { location: Location? ->
+                if (location != null) {
+                    latitude=location.latitude
+                    longitude=location.longitude
+                    getRecommendMusic(latitude.toString(), longitude.toString())
+                    return@addOnSuccessListener
+                }
+            }
+    }
+
+    // ViewModel로부터 추천 음악 리스트를 업데이트 받는 코드
+    private fun observeViewModel() {
+        playViewModel.recommendMusicList.observe(viewLifecycleOwner) { newMusicList ->
+            if (newMusicList.lists.isNotEmpty()) {
+                recommendedMusicList.addAll(newMusicList.lists)
+                Log.d("playFragment", "observeViewModel - list: ${newMusicList.lists}\nrecommendlist: ${recommendedMusicList}")
+
+                // 초기 연결 상태만 확인하고 이후에는 별도로 관리
+                if (!hasCheckedSpotifyAppRemote) {
+                    playViewModel.spotifyAppRemote.observe(viewLifecycleOwner) { remote ->
+                        spotifyAppRemote = remote
+                        hasCheckedSpotifyAppRemote = true // 연결 상태 확인 완료
+                        Log.d("playfragment", "observeviewmodel - remote: ${spotifyAppRemote}")
+
+                        lifecycleScope.launch {
+                            if (spotifyAppRemote != null && spotifyAppRemote!!.isConnected) {
+                                Log.d("playfragment", "observeViewModel - 이미 연결됨!")
+                                onConnected()
+                                playUri() // 연결된 후에만 playUri를 호출
+                            } else {
+                                Log.d("playfragment", "observeViewModel - 연결 시도")
+                                connectToSpotify().also {
+                                    playUri() // 연결된 후에만 playUri를 호출
+                                }
+                            }
+                            closeLoadingActivity()
+                        }
+                    }
+                } else {
+                    // Spotify 연결 상태가 이미 확인된 경우, 바로 플레이 시도
+                    if (spotifyAppRemote != null && spotifyAppRemote!!.isConnected) {
+                        playUri()
+                    } else {
+                        Log.e("playFragment", "SpotifyAppRemote is not connected, cannot play URI")
+                    }
+                    closeLoadingActivity()
+                }
+            } else {
+                Log.d("playFragment", "No music lists received yet.")
+            }
+        }
+    }
+
+
+    private fun getRecommendMusic(latitude:String, longitude:String){
+        playViewModel.getRecommendMusic(latitude,longitude,situation)
     }
 
     private fun seekTo(seekToPosition: Long) {
@@ -395,7 +476,7 @@ class PlayFragment : Fragment() {
 
     // Api 호출이 시작되면 LoadingDialogFragment를 보여준다.
     private fun showLoadingActivity() {
-        loadingDialog = LoadingDialogFragment()
+        loadingDialog = LoadingDialogFragment("play")
         loadingDialog?.show(parentFragmentManager, "LoadingDialog")
     }
 
@@ -405,6 +486,7 @@ class PlayFragment : Fragment() {
     }
 
     private fun onConnected() {
+        Log.d("playfragment", "onconnected 실행!")
         for (input in views) {
             input.isEnabled = true
         }
@@ -413,7 +495,7 @@ class PlayFragment : Fragment() {
         onSubscribedToPlayerContextButtonClicked()
 
         //Spotify에 연결되었을 때 uri 실행
-        playUri(SpotifySampleContexts.TRACK_URI)
+        //playUri(SpotifySampleContexts.TRACK_URI)
         playViewModel.loginSpotify()
     }
 
@@ -424,24 +506,40 @@ class PlayFragment : Fragment() {
         binding.ivMusic.setImageResource(R.drawable.widget_placeholder)
     }
 
-    private fun connectToSpotify() {
-        connect(false)
-    }
-
-    private fun connect(showAuthView: Boolean) {
-        //SpotifyAppRemote.disconnect(spotifyAppRemote)
-        lifecycleScope.launch {
-            try {
-                spotifyAppRemote = connectToAppRemote(showAuthView)
+    private suspend fun connectToSpotify() {
+        if (spotifyAppRemote == null || !spotifyAppRemote!!.isConnected) {
+            spotifyAppRemote = connectToAppRemote()
+            if (spotifyAppRemote != null) {
+                Log.d("playfragment", "SpotifyAppRemote connected in connectToSpotify")
                 onConnected()
-            } catch (error: Throwable) {
-                onDisconnected()
-                logError(error)
+            } else {
+                Log.e("playfragment", "Failed to connect SpotifyAppRemote in connectToSpotify")
             }
+        } else {
+            Log.d("playfragment", "SpotifyAppRemote already connected")
         }
     }
 
-    private suspend fun connectToAppRemote(showAuthView: Boolean): SpotifyAppRemote? =
+   /* private fun connect(showAuthView: Boolean) {
+        //SpotifyAppRemote.disconnect(spotifyAppRemote)
+        lifecycleScope.launch {
+            try {
+                if (spotifyAppRemote == null || !spotifyAppRemote!!.isConnected) {
+                    spotifyAppRemote = connectToAppRemote()
+                    onConnected()
+                    Log.d("playfragment","connect - remote 연결 됐고 onconnected함")
+                } else {
+                    onConnected()
+                    Log.d("playfragment","connect - remote 연결 안됐고 onconnected함")
+                }
+            } catch (error: Throwable) {
+                logError(error)
+                onDisconnected()
+            }
+        }
+    }*/
+
+    private suspend fun connectToAppRemote(): SpotifyAppRemote? =
         suspendCoroutine { cont: Continuation<SpotifyAppRemote> ->
             SpotifyAppRemote.connect(
                 requireActivity().application,
@@ -451,17 +549,25 @@ class PlayFragment : Fragment() {
                     .build(),
                 object : Connector.ConnectionListener {
                     override fun onConnected(spotifyAppRemote: SpotifyAppRemote) {
-                        Log.d("connec", "onConnected 실행!")
+                        Log.d("playfragment", "SpotifyAppRemote connected")
                         cont.resume(spotifyAppRemote)
                     }
 
                     override fun onFailure(error: Throwable) {
+                        Log.e("playfragment", "Failed to connect to SpotifyAppRemote", error)
                         cont.resumeWithException(error)
                     }
                 })
         }
 
-    private fun playUri(uri: String) {
+    private fun playUri() {
+        if (spotifyAppRemote == null || !spotifyAppRemote!!.isConnected) {
+            Log.e("playFragment", "SpotifyAppRemote is not connected, cannot play URI")
+            return
+        }
+
+        Log.d("playFragment","playUri - recommendMusicList: ${recommendedMusicList}")
+        val uri="spotify:track:${recommendedMusicList[currentTrackIndex].trackId}"
         assertAppRemoteConnected()
             .playerApi
             .play(uri)
@@ -472,11 +578,12 @@ class PlayFragment : Fragment() {
     }
 
     private fun onSkipPreviousButtonClicked(notUsed: View) {
-        assertAppRemoteConnected()
-            .playerApi
-            .skipPrevious()
-            .setResultCallback { logMessage(getString(R.string.command_feedback, "skip previous")) }
-            .setErrorCallback(errorCallback)
+        if(currentTrackIndex==0){
+            playUri()
+        }else{
+            currentTrackIndex--
+            playUri()
+        }
     }
 
     private fun onPlayPauseButtonClicked(notUsed: View) {
@@ -514,11 +621,14 @@ class PlayFragment : Fragment() {
     }
 
     private fun onSkipNextButtonClicked(notUsed: View) {
-        assertAppRemoteConnected()
+        getLastKnownLocation()
+        currentTrackIndex++
+        playUri()
+        /*assertAppRemoteConnected()
             .playerApi
             .skipNext()
             .setResultCallback { logMessage(getString(R.string.command_feedback, "skip next")) }
-            .setErrorCallback(errorCallback)
+            .setErrorCallback(errorCallback)*/
     }
 
     fun onSubscribedToPlayerContextButtonClicked() {
@@ -618,6 +728,19 @@ class PlayFragment : Fragment() {
             }
         }
     }
+
+    /*private fun initializeSpotifyConnection() {
+        if (spotifyAppRemote != null && spotifyAppRemote!!.isConnected) {
+            // 이미 SpotifyAppRemote가 연결되어 있는 경우
+            Log.d("playfragment", "SpotifyAppRemote is already connected")
+            onConnected() // 연결된 상태에서 필요한 초기화 작업 수행
+        } else {
+            // SpotifyAppRemote가 null이거나 연결되어 있지 않은 경우
+            Log.d("playfragment", "SpotifyAppRemote is not connected, attempting to connect...")
+            //connectToSpotify() // 연결 시도
+        }
+    }*/
+
 
     fun setSpotifyAppRemote(remote: SpotifyAppRemote?) {
         this.spotifyAppRemote = remote

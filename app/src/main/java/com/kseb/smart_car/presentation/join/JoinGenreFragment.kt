@@ -21,6 +21,7 @@ import kotlinx.coroutines.launch
 import kotlin.math.sign
 import com.kseb.smart_car.databinding.FragmentJoinGenreBinding
 import com.kseb.smart_car.extension.AllGenreState
+import com.kseb.smart_car.presentation.main.map.navi.LoadingDialogFragment
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -30,6 +31,7 @@ class JoinGenreFragment: Fragment() {
         get() = requireNotNull(_binding) { "null" }
     private val joinviewmodel: JoinViewModel by activityViewModels<JoinViewModel>()
     private val joinGenreViewModel by viewModels<JoinGenreViewModel>()
+    private var loadingDialog: LoadingDialogFragment?=null
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -77,6 +79,7 @@ class JoinGenreFragment: Fragment() {
         binding.btnJoin.setOnClickListener {
             joinviewmodel.makeSignUp()
             lifecycleScope.launch {
+                showLoadingActivity()
                 joinviewmodel.signUpState.collect { signUpState ->
                     when (signUpState) {
                         is SignUpState.Success -> {
@@ -113,6 +116,17 @@ class JoinGenreFragment: Fragment() {
                 }
             }
         }
+    }
+
+    // Api 호출이 시작되면 LoadingDialogFragment를 보여준다.
+    private fun showLoadingActivity() {
+        loadingDialog = LoadingDialogFragment("login")
+        loadingDialog?.show(parentFragmentManager, "LoadingDialog")
+    }
+
+    // 데이터 로딩이 완료 되면 LoadingDialogFragment를 dismiss 한다.
+    private fun closeLoadingActivity() {
+        loadingDialog?.dismiss()
     }
 
     override fun onDestroyView() {

@@ -23,10 +23,6 @@ import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import com.kakao.sdk.common.KakaoSdk.appKey
 import com.kakao.vectormap.LatLng
-import com.kakao.vectormap.camera.CameraUpdateFactory
-import com.kakao.vectormap.label.LabelOptions
-import com.kakao.vectormap.label.LabelStyle
-import com.kakao.vectormap.label.LabelStyles
 import com.kakaomobility.knsdk.KNLanguageType
 import com.kakaomobility.knsdk.KNSDK
 import com.kakaomobility.knsdk.common.objects.KNError_Code_C302
@@ -45,9 +41,7 @@ import com.kseb.smart_car.presentation.main.map.navi.NaviActivity
 import com.kseb.smart_car.presentation.main.place.placeDetail.PlaceDetailActivity
 import com.kseb.smart_car.presentation.main.place.placeDetail.PlaceDetailViewModel
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import kotlin.properties.Delegates
 
 @AndroidEntryPoint
@@ -379,7 +373,7 @@ class PlaceFragment : Fragment() {
 
     // Api 호출이 시작되면 LoadingDialogFragment를 보여준다.
     private fun showLoadingActivity() {
-        loadingDialog = LoadingDialogFragment()
+        loadingDialog = LoadingDialogFragment("navi")
         loadingDialog?.show(parentFragmentManager, "LoadingDialog")
     }
 

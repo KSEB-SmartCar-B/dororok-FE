@@ -6,14 +6,10 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
-import androidx.activity.viewModels
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
-import com.kseb.smart_car.R
-import com.kseb.smart_car.data.service.SpotifyService.connect
 import com.kseb.smart_car.databinding.FragmentLoginBinding
 import com.kseb.smart_car.extension.AccessState
 import com.kseb.smart_car.extension.SignInState
@@ -83,7 +79,7 @@ class LoginFragment: Fragment() {
 
     // Api 호출이 시작되면 LoadingDialogFragment를 보여준다.
     private fun showLoadingActivity() {
-        loadingDialog = LoadingDialogFragment()
+        loadingDialog = LoadingDialogFragment("login")
         loadingDialog?.show(parentFragmentManager, "LoadingDialog")
     }
 
