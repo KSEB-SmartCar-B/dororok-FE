@@ -10,9 +10,10 @@ import android.view.ViewGroup
 import android.view.animation.AccelerateDecelerateInterpolator
 import android.widget.ImageView
 import androidx.fragment.app.DialogFragment
+import com.kseb.smart_car.R
 import com.kseb.smart_car.databinding.FragmentLoadingBinding
 
-class LoadingDialogFragment : DialogFragment() {
+class LoadingDialogFragment(private val type:String) : DialogFragment() {
 
     private var _binding: FragmentLoadingBinding? = null
     private val binding get() = _binding!!
@@ -43,6 +44,12 @@ class LoadingDialogFragment : DialogFragment() {
         params?.height = ViewGroup.LayoutParams.MATCH_PARENT
         dialog?.window?.attributes = params
         dialog?.window?.setBackgroundDrawableResource(android.R.color.white)
+
+        when(type){
+            "play" -> {binding.tvLoading.text=getString(R.string.music_recommend_loading)}
+            "login" -> {binding.tvLoading.text=getString(R.string.login_loading)}
+            else -> {binding.tvLoading.text=getString(R.string.navi_loading)}
+        }
     }
 
     // 점 이미지뷰의 반복 애니메이션을 시작

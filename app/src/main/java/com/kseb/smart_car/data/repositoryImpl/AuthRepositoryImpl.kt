@@ -75,12 +75,13 @@ class AuthRepositoryImpl @Inject constructor(
 
     override suspend fun getRecommendMusic(
         token: String,
-        lat: String,
-        lng: String,
-        musicMode: String
+        lat:String,
+        lng:String,
+        musicMode:String,
+        isFirst:Int
     ): Result<ResponseRecommendMusicDto> {
         return runCatching {
-            authDataSource.getRecommendMusic(token, RequestRecommendMusicDto(lat,lng,musicMode))
+            authDataSource.getRecommendMusic(token, lat,lng,musicMode,isFirst)
         }
     }
 

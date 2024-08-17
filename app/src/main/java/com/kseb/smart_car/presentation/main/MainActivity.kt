@@ -367,56 +367,6 @@ class MainActivity : AppCompatActivity() {
         return KNMapCameraUpdate.targetTo(coordinate)
     }
 
-
-//    private fun updateButtonColors(selectedItemId: Int) {
-//        val menu = binding.bnvMain.menu
-//        for (i in 0 until menu.size()) {
-//            val item = menu.getItem(i)
-//            val color = if (item.itemId == selectedItemId) {
-//                ContextCompat.getColor(this, R.color.bnv_clicked_pink)
-//            } else {
-//                ContextCompat.getColor(this, R.color.bnv_unclicked_grey)
-//            }
-//            item.icon?.setTint(color)
-//        }
-//    }
-
-    /*private fun clickMusicButton() {
-        binding.btnMusic.setOnClickListener {
-            if (binding.rvSituation.visibility == View.GONE) {
-                binding.rvSituation.visibility = View.VISIBLE
-            } else {
-                binding.rvSituation.visibility = View.GONE
-            }
-
-            if (isPlay) {
-                isPlay = false
-                Log.d("mainActivity", "isPlay true")
-                onPlayPauseButtonClicked()
-            } else {
-                val situationAdapter =
-                    SituationAdapter(this, { situation -> onItemClicked(situation) }, "main")
-                binding.rvSituation.adapter = situationAdapter
-                situationAdapter.getList(situationViewModel.makeList())
-                Log.d("mainActivity", "isPlay false")
-            }
-        }
-    }
-
-    private fun onItemClicked(situation: String) {
-        SpotifyAppRemote.disconnect(spotifyAppRemote)
-        binding.rvSituation.visibility = View.INVISIBLE
-        Log.d("mainactivity", "음악 클릭!")
-        lifecycleScope.launch {
-            try {
-                spotifyAppRemote = connectToAppRemote()
-                playUri(TRACK_URI) // onItemClicked에서 연결 후 재생 시도
-            } catch (error: Throwable) {
-                logError(error)
-            }
-        }
-    }*/
-
     private fun clickButtonSearch() {
         mainViewModel.accessToken.observe(this) { token ->
             binding.svSearch.setOnQueryTextFocusChangeListener { _, hasFocus ->
@@ -460,6 +410,15 @@ class MainActivity : AppCompatActivity() {
         //Spotify에 연결되었을 때 uri 실행
         //playUri(com.kseb.smart_car.presentation.main.music.PlayFragment.SpotifySampleContexts.TRACK_URI)
         playViewModel.loginSpotify()
+        val mainFragment = MainFragment()
+        supportFragmentManager.beginTransaction()
+            .replace(R.id.fcv_main, mainFragment)
+            .commit()
+
+        // 프래그먼트가 완전히 교체된 후의 작업을 보장하기 위해
+        supportFragmentManager.executePendingTransactions()
+        // SpotifyAppRemote 설정
+        mainFragment.setSpotifyAppRemote(spotifyAppRemote)
     }
 
     private suspend fun connectToAppRemote(): SpotifyAppRemote? =
@@ -597,6 +556,10 @@ class MainActivity : AppCompatActivity() {
                         replaceFragment(MyFragment())
                     } else {
                         // Spotify 연결이 안된 상태에서 Activity를 시작하지 않도록 처리
+                        lifecycleScope.launch {
+                            connectToSpotify()
+                            replaceFragment(MyFragment())
+                        }
                         Log.e("MainActivity", "SpotifyAppRemote is not connected")
                     }
                     true
@@ -604,8 +567,11 @@ class MainActivity : AppCompatActivity() {
 
                 R.id.menu_main -> {
                     val mainFragment = MainFragment()
-                    mainFragment.setSpotifyAppRemote(spotifyAppRemote)
                     replaceFragment(mainFragment)
+                    // `commit()` 또는 `commitNow()` 호출 후 프래그먼트가 완전히 `attach`된 상태일 때 `setSpotifyAppRemote` 호출
+                    supportFragmentManager.executePendingTransactions() // Fragment가 완전히 교체된 후의 작업을 보장하기 위해
+
+                    mainFragment.setSpotifyAppRemote(spotifyAppRemote)
                     true
                 }
 
@@ -624,18 +590,6 @@ class MainActivity : AppCompatActivity() {
             .replace(R.id.fcv_main, fragment)
 //            .addToBackStack(null)
             .commit()
-    }
-
-    private fun removeAllFragments() {
-        val fragmentManager = supportFragmentManager
-        fragmentManager.popBackStackImmediate(
-            null,
-            FragmentManager.POP_BACK_STACK_INCLUSIVE
-        )
-        val currentFragment = fragmentManager.findFragmentById(R.id.fcv_main)
-        currentFragment?.let {
-            fragmentManager.beginTransaction().remove(it).commitNow()
-        }
     }
 
     override fun onSaveInstanceState(outState: Bundle) {

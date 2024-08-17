@@ -1,9 +1,16 @@
 package com.spotify.sdk.demo
 
+import android.content.Context
 import android.os.Handler
 import android.widget.SeekBar
+import androidx.core.content.ContextCompat
+import com.kseb.smart_car.R
 
-class TrackProgressBar(private val seekBar: SeekBar, private val seekStopListener: (Long) -> Unit) {
+class TrackProgressBar(
+    private val context: Context,
+    private val seekBar: SeekBar,
+    private val seekStopListener: (Long) -> Unit
+) {
     private val handler: Handler
 
     private val seekBarChangeListener = object : SeekBar.OnSeekBarChangeListener {

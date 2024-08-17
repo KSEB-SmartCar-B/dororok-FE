@@ -1,8 +1,9 @@
 package com.kseb.smart_car.data.responseDto
 
+import android.os.Parcelable
+import kotlinx.android.parcel.Parcelize
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
-
 @Serializable
 data class ResponseFavoritePlaceDto (
     @SerialName("favoritesPlaceList")

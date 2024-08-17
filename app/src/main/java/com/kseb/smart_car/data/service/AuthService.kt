@@ -67,7 +67,10 @@ interface AuthService {
     @GET("/recommendation/music")
     suspend fun getRecommendMusic(
         @Header("Authorization") token:String,
-        @Query("query") requestRecommendMusicDto: RequestRecommendMusicDto
+        @Query("lat") lat:String,
+        @Query("lng") lng:String,
+        @Query("musicMode") musicMode:String,
+        @Query("isFirst") isFirst:Int
     ): ResponseRecommendMusicDto
 
     //검색창

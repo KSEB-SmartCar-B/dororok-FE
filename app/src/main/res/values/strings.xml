@@ -4,12 +4,14 @@
     <string name="login_logo_name">도로록</string>
     <string name="login_title">도로록과 함께 \n여행을 떠나 볼까요?</string>
     <string name="login_subtitle">3초만에 시작하기</string>
+    <string name="login_loading">사용자 정보를 찾고 있어요!</string>
 
     <string name="spotify_error">스포티파이 로그인 실패</string>
 
     <string name="main_title">어떤 음악을 들을까요?</string>
     <string name="main_btn_search">검색</string>
     <string name="music_next">다음에 재생될 음악</string>
+    <string name="music_recommend_loading">추천 음악을 찾고 있어요!\n잠시만 기다려 주세요</string>
 
     <!-- Music -->
     <!-- Errors -->
@@ -46,8 +48,10 @@
     <string name="title_image_size">Image size</string>
     <string name="title_image_scale_type">Scale type</string>
 
-    <string name="navi_loading">길을 찾는 중...</string>
+    <string name="navi_loading">길을 찾고 있어요!</string>
     <string name="place_detail_more">추천 여행지</string>
     <!-- my -->
     <string name="my_welcome">%s님 행복한 하루 되세요!</string>
+    <string name="my_edit">편집</string>
+    <string name="my_delete">삭제</string>
 </resources>

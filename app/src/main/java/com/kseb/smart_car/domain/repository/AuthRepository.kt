@@ -54,7 +54,8 @@ interface AuthRepository {
         token:String,
         lat:String,
         lng:String,
-        musicMode:String
+        musicMode:String,
+        isFirst:Int
     ):Result<ResponseRecommendMusicDto>
 
     suspend fun getRecommendPlaceNearby(

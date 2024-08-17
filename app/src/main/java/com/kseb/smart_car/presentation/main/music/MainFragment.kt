@@ -7,6 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import com.kseb.smart_car.NoScrollRecyclerView
@@ -26,7 +27,7 @@ class MainFragment:Fragment() {
 
     private val situationViewModel:SituationViewModel by viewModels()
     private lateinit var situationAdapter: SituationAdapter
-    private var spotifyAppRemote: SpotifyAppRemote? = null
+    private val playViewModel:PlayViewModel by activityViewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -68,11 +69,17 @@ class MainFragment:Fragment() {
     }
 
     private fun onItemClicked(situation: String) {
+        //playViewModel.recommendMusicListReset()
         connect(requireContext()) { isConnected ->
             if (isConnected) {
                 val transaction = requireActivity().supportFragmentManager.beginTransaction()
-                val playFragment=PlayFragment()
-                playFragment.setSpotifyAppRemote(spotifyAppRemote)
+                val playFragment = PlayFragment()
+
+                // 전달할 데이터를 Bundle에 담기
+                val bundle = Bundle()
+                bundle.putString("situation_key", situation)
+                playFragment.arguments = bundle
+
                 transaction.replace(R.id.fcv_main, playFragment)
                 transaction.addToBackStack(null)
                 transaction.commit()
@@ -86,8 +93,10 @@ class MainFragment:Fragment() {
         }
     }
 
+
     fun setSpotifyAppRemote(remote: SpotifyAppRemote?) {
-        this.spotifyAppRemote = remote
+        playViewModel.spotifyAppRemote.value=remote
+        Log.d("mainFragment","setSpotifyAppRemote - remote: ${remote}")
     }
 
     override fun onDestroyView() {

@@ -6,14 +6,10 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
-import androidx.activity.viewModels
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
-import com.kseb.smart_car.R
-import com.kseb.smart_car.data.service.SpotifyService.connect
 import com.kseb.smart_car.databinding.FragmentLoginBinding
 import com.kseb.smart_car.extension.AccessState
 import com.kseb.smart_car.extension.SignInState
@@ -22,6 +18,7 @@ import com.kseb.smart_car.presentation.KakaoAuthViewModel
 import com.kseb.smart_car.presentation.KakaoAuthViewModelFactory
 import com.kseb.smart_car.presentation.join.JoinActivity
 import com.kseb.smart_car.presentation.main.MainActivity
+import com.kseb.smart_car.presentation.main.map.navi.LoadingDialogFragment
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 
@@ -34,6 +31,7 @@ class LoginFragment: Fragment() {
     private lateinit var kakaoAuthViewModel: KakaoAuthViewModel
     private val allViewModel: AllViewModel by viewModels()
     private val loginViewModel: LoginViewModel by viewModels()
+    private var loadingDialog: LoadingDialogFragment?=null
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -60,6 +58,7 @@ class LoginFragment: Fragment() {
     private fun clickButton() {
         binding.btnLogin.setOnClickListener {
             kakaoAuthViewModel.kakaoLogin(requireActivity())
+            showLoadingActivity()
         }
 
         /* lifecycleScope.launch {
@@ -76,6 +75,17 @@ class LoginFragment: Fragment() {
                  }
              }
          }*/
+    }
+
+    // Api 호출이 시작되면 LoadingDialogFragment를 보여준다.
+    private fun showLoadingActivity() {
+        loadingDialog = LoadingDialogFragment("login")
+        loadingDialog?.show(parentFragmentManager, "LoadingDialog")
+    }
+
+    // 데이터 로딩이 완료 되면 LoadingDialogFragment를 dismiss 한다.
+    private fun closeLoadingActivity() {
+        loadingDialog?.dismiss()
     }
 
     private fun isLogin() {
@@ -111,6 +121,7 @@ class LoginFragment: Fragment() {
                             startActivity(intent)
 //                            requireActivity().finish() 회원가입에서 뒤로가기하면 로그인 안나와서 주석처리 했음
                             allViewModel.setSignInStateLoading()
+                            closeLoadingActivity()
                             Log.e("loginFragment", "회원가입 하시오!")
                         }
                     }
@@ -139,6 +150,7 @@ class LoginFragment: Fragment() {
                                 //addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK)
                             }
                         startActivity(intent)
+                        //closeLoadingActivity()
                         requireActivity().finish()
                         /*connect(requireActivity()) {
                             if (it) {
