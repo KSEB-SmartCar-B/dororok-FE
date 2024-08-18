@@ -35,6 +35,7 @@ import com.kseb.smart_car.extension.AddFavoritePlaceState
 import com.kseb.smart_car.extension.AddressState
 import com.kseb.smart_car.extension.DeleteFavoritePlaceState
 import com.kseb.smart_car.extension.RecommendPlaceNearbyState
+import com.kseb.smart_car.extension.RecommendPlaceState
 import com.kseb.smart_car.presentation.main.MainViewModel
 import com.kseb.smart_car.presentation.main.map.navi.LoadingDialogFragment
 import com.kseb.smart_car.presentation.main.map.navi.NaviActivity
@@ -150,14 +151,14 @@ class PlaceFragment : Fragment() {
                             val totalItemCount = layoutManager.itemCount
                             val firstVisibleItemPosition = layoutManager.findFirstVisibleItemPosition()
 
-                            if (!placeViewModel.isLoading && !placeViewModel.isLastPage) {
+                            if (!placeViewModel.isLoadingNear && !placeViewModel.isLastPageNear) {
                                 if ((visibleItemCount + firstVisibleItemPosition) >= totalItemCount
                                     && firstVisibleItemPosition >= 0
-                                    && totalItemCount >= placeViewModel.pageSize!!
+                                    && totalItemCount >= placeViewModel.pageSizeNear!!
                                 ) {
                                     // 다음 페이지를 로드합니다.
-                                    placeViewModel.isLoading = true
-                                    placeViewModel.getPlaceNearby(latitude, longitude, placeViewModel.pageNo)
+                                    placeViewModel.isLoadingNear = true
+                                    placeViewModel.getPlaceNearby(latitude, longitude, placeViewModel.pageNoNear)
                                 }
                             }
                         }
@@ -185,7 +186,7 @@ class PlaceFragment : Fragment() {
                         placeNearbyAdapter.getNearbyPlaceList(placeNearbyState.placeNearbyDto.places)
                         showShimmer(isLoading=false)
 
-                        if (placeViewModel.pageNo == 1) {
+                        if (placeViewModel.pageNoNear == 1) {
                             placeNearbyAdapter.getSavedPlace(savedPlaceList)
                             placeNearbyAdapter.getNearbyPlaceList(placeNearbyState.placeNearbyDto.places)
                         } else {
@@ -197,7 +198,7 @@ class PlaceFragment : Fragment() {
 
                     is RecommendPlaceNearbyState.Loading -> {}
                     is RecommendPlaceNearbyState.Error -> {
-                        Log.e("placeNearbyFragment", "근처 장소 가져오기 에러!")
+                        Log.e("PlaceFragment", "근처 장소 가져오기 에러!")
                     }
                 }
             }
@@ -211,36 +212,36 @@ class PlaceFragment : Fragment() {
             showShimmer(isLoading=true)
 
             placeViewModel.getSavedPlaceList()
-            placeViewModel.getPlace(latitude, longitude)
+            placeViewModel.getPlace()
             placeViewModel.placeState.collect { placeState ->
                 when (placeState) {
-                    is RecommendPlaceNearbyState.Success -> {
+                    is RecommendPlaceState.Success -> {
                         binding.rvPlace.adapter = placeAdapter
                         placeAdapter.getSavedPlace(savedPlaceList)
-                        placeAdapter.getNearbyPlaceList(placeState.placeNearbyDto.places)
+                        placeAdapter.getPlaceList(placeState.placeDto.places)
                         showShimmer(isLoading=false)
 
-                        if (placeViewModel.pageNo == 1) {
+                        if (placeViewModel.pageNoPlace == 1) {
                             placeAdapter.getSavedPlace(savedPlaceList)
-                            placeAdapter.getNearbyPlaceList(placeState.placeNearbyDto.places)
+                            placeAdapter.getPlaceList(placeState.placeDto.places)
                         } else {
                             val currentPosition = (binding.rvPlace.layoutManager as LinearLayoutManager).findFirstVisibleItemPosition()
-                            placeAdapter.getNearbyPlaceList(placeState.placeNearbyDto.places)
+                            placeAdapter.getPlaceList(placeState.placeDto.places)
                             binding.rvPlace.scrollToPosition(currentPosition)
                         }
 
                         showShimmer(isLoading=false)
-                        placeViewModel.isLoading = false
+                        placeViewModel.isLoadingPlace = false
 
                         // 다음 페이지를 위해 페이지 번호를 증가시킵니다.
-                        placeViewModel.pageNo += 1
+                        placeViewModel.pageNoPlace += 1
                     }
 
-                    is RecommendPlaceNearbyState.Loading -> {placeViewModel.isLoading = true}
-                    is RecommendPlaceNearbyState.Error -> {
-                        Log.e("placeNearbyFragment", "근처 장소 가져오기 에러!")
+                    is RecommendPlaceState.Loading -> {placeViewModel.isLoadingPlace = true}
+                    is RecommendPlaceState.Error -> {
+                        Log.e("PlaceFragment", "추천 장소 가져오기 에러!")
                         showShimmer(isLoading=false)
-                        placeViewModel.isLoading = false
+                        placeViewModel.isLoadingPlace = false
                     }
                 }
             }
@@ -260,7 +261,7 @@ class PlaceFragment : Fragment() {
     }
 
     private fun isSaved(place: ResponseRecommendPlaceNearbyDto.PlaceList) {
-        Log.d("placeNearbyFragment", "place clicked!:${place.title}")
+        Log.d("PlaceFragment", "place clicked!:${place.title}")
 
         // 현재 저장된 장소 리스트를 가져옴
         val savedPlaceList = placeViewModel.savedPlaceList.value ?: emptyList()
@@ -273,14 +274,14 @@ class PlaceFragment : Fragment() {
                     placeViewModel.deleteNearbyState.collect { deleteState ->
                         when (deleteState) {
                             is DeleteFavoritePlaceState.Success -> {
-                                Log.d("placeNearbyFragment", "저장된 장소 삭제 성공!")
+                                Log.d("PlaceFragment", "저장된 장소 삭제 성공!")
                                 placeViewModel.getSavedPlaceList()
                                 placeViewModel.setDeleteLoading()
                             }
 
                             is DeleteFavoritePlaceState.Loading -> {}
                             is DeleteFavoritePlaceState.Error -> {
-                                Log.e("placeNearbyFragment", "저장된 장소 삭제 에러: ${deleteState.message}")
+                                Log.e("PlaceFragment", "저장된 장소 삭제 에러: ${deleteState.message}")
                             }
                         }
                     }
@@ -300,14 +301,14 @@ class PlaceFragment : Fragment() {
                 placeViewModel.addNearbyState.collect { saveState ->
                     when (saveState) {
                         is AddFavoritePlaceState.Success -> {
-                            Log.d("placeNearbyFragment", "장소 저장 성공!")
+                            Log.d("PlaceFragment", "장소 저장 성공!")
                             placeViewModel.getSavedPlaceList()
                             placeViewModel.setSaveLoading()
                         }
 
                         is AddFavoritePlaceState.Loading -> {}
                         is AddFavoritePlaceState.Error -> {
-                            Log.e("placeNearbyFragment", "저장된 장소 저장 에러: ${saveState.message}")
+                            Log.e("PlaceFragment", "저장된 장소 저장 에러: ${saveState.message}")
                         }
                     }
                 }

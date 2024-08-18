@@ -9,6 +9,7 @@ import com.kseb.smart_car.domain.repository.AuthRepository
 import com.kseb.smart_car.extension.DeleteFavoritePlaceState
 import com.kseb.smart_car.extension.RecommendPlaceNearbyState
 import com.kseb.smart_car.extension.AddFavoritePlaceState
+import com.kseb.smart_car.extension.RecommendPlaceState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -30,8 +31,8 @@ class PlaceViewModel @Inject constructor(
         MutableStateFlow<RecommendPlaceNearbyState>(RecommendPlaceNearbyState.Loading)
     val placeNearbyState: StateFlow<RecommendPlaceNearbyState> = _placeNearbyState.asStateFlow()
     private val _placeState =
-        MutableStateFlow<RecommendPlaceNearbyState>(RecommendPlaceNearbyState.Loading)
-    val placeState: StateFlow<RecommendPlaceNearbyState> = _placeState.asStateFlow()
+        MutableStateFlow<RecommendPlaceState>(RecommendPlaceState.Loading)
+    val placeState: StateFlow<RecommendPlaceState> = _placeState.asStateFlow()
 
     private val _savedPlaceList =
         MutableLiveData<List<ResponseFavoritePlaceDto.FavoritesPlaceListDto>>()
@@ -44,11 +45,17 @@ class PlaceViewModel @Inject constructor(
         MutableStateFlow<DeleteFavoritePlaceState>(DeleteFavoritePlaceState.Loading)
     val deleteNearbyState: StateFlow<DeleteFavoritePlaceState> = _deleteNearbyState.asStateFlow()
 
-    var isLoading = false
-    var isLastPage = false
-    var pageNo = 1
-    var pageSize: Int? = null  // 한 페이지당 아이템 개수
-    var totalPageNo: Int? = null
+    var isLoadingNear = false
+    var isLastPageNear = false
+    var pageNoNear = 1
+    var pageSizeNear: Int? = null  // 한 페이지당 아이템 개수
+    var totalPageNoNear: Int? = null
+
+    var isLoadingPlace = false
+    var isLastPagePlace = false
+    var pageNoPlace = 1
+    var pageSizePlace: Int? = null  // 한 페이지당 아이템 개수
+    var totalPageNoPlace: Int? = null
 
     fun setAccessToken(token: String) {
         accessToken.value = token
@@ -157,14 +164,14 @@ class PlaceViewModel @Inject constructor(
             )
                 .onSuccess { response ->
                     _placeNearbyState.value = RecommendPlaceNearbyState.Success(response)
-                    totalPageNo = response.pageNumbers
-                    pageSize = response.places.size
+                    totalPageNoNear = response.pageNumbers
+                    pageSizeNear = response.places.size
 
                     // 마지막 페이지 체크
-                    if (pageNo >= totalPageNo!!) {
-                        isLastPage = true
+                    if (pageNoNear >= totalPageNoNear!!) {
+                        isLastPageNear = true
                     }
-                    Log.d ("placeviewmodel", "recommend place nearby 성공!:${totalPageNo}, ${pageNo} = $page ${response.places}")
+                    Log.d ("placeviewmodel", "recommend place nearby 성공!:${totalPageNoNear}, ${pageNoNear} = $page ${response.places}")
                 }.onFailure {
                     _placeNearbyState.value =
                         RecommendPlaceNearbyState.Error("Error response failure: ${it.message}")
@@ -189,27 +196,21 @@ class PlaceViewModel @Inject constructor(
         }
     }
 
-    fun getPlace(lat: Double, lng: Double,page: Int = 1) {
+    fun getPlace() {
         viewModelScope.launch {
-            authRepository.getRecommendPlaceNearby(
-                _accessToken.value!!,
-                lat.toString(),
-                lng.toString(),
-                page
-            )
-                .onSuccess { response ->
-                    _placeState.value = RecommendPlaceNearbyState.Success(response)
-                    totalPageNo = response.pageNumbers
-                    pageSize = response.places.size
+            authRepository.getRecommendPlace(_accessToken.value!!,).onSuccess { response ->
+                    _placeState.value = RecommendPlaceState.Success(response)
+                    totalPageNoPlace = response.pageNumbers
+                    pageSizePlace = response.places.size
 
                     // 마지막 페이지 체크
-                    if (pageNo >= totalPageNo!!) {
-                        isLastPage = true
+                    if (pageNoPlace >= totalPageNoPlace!!) {
+                        isLastPagePlace = true
                     }
                     Log.d("placeviewmodel", "recommend place 성공!${response.places}")
                 }.onFailure {
-                    _placeNearbyState.value =
-                        RecommendPlaceNearbyState.Error("Error response failure: ${it.message}")
+                _placeState.value =
+                        RecommendPlaceState.Error("Error response failure: ${it.message}")
                     if (it is HttpException) {
                         try {
                             val errorBody: ResponseBody? = it.response()?.errorBody()

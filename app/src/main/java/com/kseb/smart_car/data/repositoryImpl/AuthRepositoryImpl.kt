@@ -3,6 +3,8 @@ package com.kseb.smart_car.data.repositoryImpl
 import com.kseb.smart_car.data.datasource.AuthDataSource
 import com.kseb.smart_car.data.requestDto.RequestAccessDto
 import com.kseb.smart_car.data.requestDto.RequestAddSearchDto
+import com.kseb.smart_car.data.requestDto.RequestDeleteMusicListDto
+import com.kseb.smart_car.data.requestDto.RequestDeletePlaceListDto
 import com.kseb.smart_car.data.requestDto.RequestDeleteSearchDto
 import com.kseb.smart_car.data.requestDto.RequestSignUpDto
 import com.kseb.smart_car.data.requestDto.RequestUpdateGenreDto
@@ -23,6 +25,8 @@ import com.kseb.smart_car.data.responseDto.ResponseFavoriteMusicDto
 import com.kseb.smart_car.data.responseDto.ResponseFavoriteMusicStringDto
 import com.kseb.smart_car.data.responseDto.ResponseFavoritePlaceDto
 import com.kseb.smart_car.data.responseDto.ResponseRecommendMusicDto
+import com.kseb.smart_car.data.responseDto.ResponseRecommendPlaceDetailDto
+import com.kseb.smart_car.data.responseDto.ResponseRecommendPlaceDto
 import com.kseb.smart_car.data.responseDto.ResponseRecommendPlaceNearbyDetailDto
 import com.kseb.smart_car.data.responseDto.ResponseRecommendPlaceNearbyDto
 import com.kseb.smart_car.data.responseDto.ResponseSaveFavoritePlaceDto
@@ -37,9 +41,9 @@ import javax.inject.Inject
 
 class AuthRepositoryImpl @Inject constructor(
     private val authDataSource: AuthDataSource
-):AuthRepository {
+) : AuthRepository {
     override suspend fun getAccessToken(token: String): Result<ResponseAccessDto> {
-        return runCatching{
+        return runCatching {
             authDataSource.getAccessToken(RequestAccessDto(token))
         }
     }
@@ -49,6 +53,7 @@ class AuthRepositoryImpl @Inject constructor(
             authDataSource.isSigned(token)
         }
     }
+
     override suspend fun getSignIn(token: String): Result<ResponseSignInDto> {
         return runCatching {
             authDataSource.getSignIn(token)
@@ -75,13 +80,13 @@ class AuthRepositoryImpl @Inject constructor(
 
     override suspend fun getRecommendMusic(
         token: String,
-        lat:String,
-        lng:String,
-        musicMode:String,
-        isFirst:Int
+        lat: String,
+        lng: String,
+        musicMode: String,
+        isFirst: Int
     ): Result<ResponseRecommendMusicDto> {
         return runCatching {
-            authDataSource.getRecommendMusic(token, lat,lng,musicMode,isFirst)
+            authDataSource.getRecommendMusic(token, lat, lng, musicMode, isFirst)
         }
     }
 
@@ -89,10 +94,10 @@ class AuthRepositoryImpl @Inject constructor(
         token: String,
         lat: String,
         lng: String,
-        pageNo:Int
+        pageNo: Int
     ): Result<ResponseRecommendPlaceNearbyDto> {
         return runCatching {
-            authDataSource.getPlacesNearby(token, lat,lng,pageNo)
+            authDataSource.getPlacesNearby(token, lat, lng, pageNo)
         }
     }
 
@@ -101,7 +106,22 @@ class AuthRepositoryImpl @Inject constructor(
         contentId: String
     ): Result<ResponseRecommendPlaceNearbyDetailDto> {
         return runCatching {
-            authDataSource.getPlacesNearbyDetail(token,contentId)
+            authDataSource.getPlacesNearbyDetail(token, contentId)
+        }
+    }
+
+    override suspend fun getRecommendPlace(token: String): Result<ResponseRecommendPlaceDto> {
+        return runCatching {
+            authDataSource.getPlaces(token)
+        }
+    }
+
+    override suspend fun getRecommendPlaceDetail(
+        token: String,
+        contentId: String
+    ): Result<ResponseRecommendPlaceDetailDto> {
+        return runCatching {
+            authDataSource.getPlacesDetail(token, contentId)
         }
     }
 
@@ -111,13 +131,19 @@ class AuthRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun addSearch(token: String, addSearchDto: RequestAddSearchDto): Result<ResponseAddSearchDto> {
+    override suspend fun addSearch(
+        token: String,
+        addSearchDto: RequestAddSearchDto
+    ): Result<ResponseAddSearchDto> {
         return runCatching {
-            authDataSource.addSearch(token,addSearchDto)
+            authDataSource.addSearch(token, addSearchDto)
         }
     }
 
-    override suspend fun deleteSearch(token: String, deleteSearchDto: RequestDeleteSearchDto): Result<ResponseDeleteSearchDto> {
+    override suspend fun deleteSearch(
+        token: String,
+        deleteSearchDto: RequestDeleteSearchDto
+    ): Result<ResponseDeleteSearchDto> {
         return runCatching {
             authDataSource.deleteSearch(token, deleteSearchDto)
         }
@@ -141,7 +167,7 @@ class AuthRepositoryImpl @Inject constructor(
         info: RequestUpdateInfoDto
     ): Result<ResponseUpdateInfoDto> {
         return runCatching {
-            authDataSource.updateInfo(token,info)
+            authDataSource.updateInfo(token, info)
         }
     }
 
@@ -162,14 +188,16 @@ class AuthRepositoryImpl @Inject constructor(
 
     override suspend fun saveFavoritePlace(
         token: String,
-        title:String,
-        address:String,
-        imageUrl:String,
-        contentId:String
+        title: String,
+        address: String,
+        imageUrl: String,
+        contentId: String
     ): Result<ResponseSaveFavoritePlaceDto> {
         return runCatching {
-            authDataSource.saveFavoritePlace(token,
-                ResponseFavoritePlaceDto.FavoritesPlaceListDto(title,address,imageUrl,contentId))
+            authDataSource.saveFavoritePlace(
+                token,
+                ResponseFavoritePlaceDto.FavoritesPlaceListDto(title, address, imageUrl, contentId)
+            )
         }
     }
 
@@ -178,7 +206,16 @@ class AuthRepositoryImpl @Inject constructor(
         contentId: String
     ): Result<ResponseSaveFavoritePlaceDto> {
         return runCatching {
-            authDataSource.deleteFavoritePlace(token,contentId)
+            authDataSource.deleteFavoritePlace(token, contentId)
+        }
+    }
+
+    override suspend fun deleteFavoritePlaceList(
+        token: String,
+        contentIds: List<String>
+    ): Result<ResponseSaveFavoritePlaceDto> {
+        return runCatching {
+            authDataSource.deleteFavoritePlaceList(token, RequestDeletePlaceListDto(contentIds))
         }
     }
 
@@ -187,7 +224,7 @@ class AuthRepositoryImpl @Inject constructor(
         contentId: String
     ): Result<ResponseExistFavoritePlaceDto> {
         return runCatching {
-            authDataSource.existFavoritePlace(token,contentId)
+            authDataSource.existFavoritePlace(token, contentId)
         }
     }
 
@@ -204,9 +241,10 @@ class AuthRepositoryImpl @Inject constructor(
         artist: String,
         imageUrl: String
     ): Result<ResponseFavoriteMusicStringDto> {
-        val responseFavoriteMusicDto=ResponseFavoriteMusicDto.FavoriteMusicListDto(trackId,title,artist,imageUrl)
+        val responseFavoriteMusicDto =
+            ResponseFavoriteMusicDto.FavoriteMusicListDto(trackId, title, artist, imageUrl)
         return runCatching {
-            authDataSource.addFavoriteMusic(token,responseFavoriteMusicDto)
+            authDataSource.addFavoriteMusic(token, responseFavoriteMusicDto)
         }
     }
 
@@ -215,7 +253,16 @@ class AuthRepositoryImpl @Inject constructor(
         trackId: String
     ): Result<ResponseFavoriteMusicStringDto> {
         return runCatching {
-            authDataSource.deleteFavoriteMusic(token,trackId)
+            authDataSource.deleteFavoriteMusic(token, trackId)
+        }
+    }
+
+    override suspend fun deleteFavoriteMusicList(
+        token: String,
+        trackIds: List<String>
+    ): Result<ResponseFavoriteMusicStringDto> {
+        return runCatching {
+            authDataSource.deleteFavoriteMusicList(token, RequestDeleteMusicListDto(trackIds))
         }
     }
 
@@ -224,7 +271,7 @@ class AuthRepositoryImpl @Inject constructor(
         trackId: String
     ): Result<ResponseExistFavoriteMusicDto> {
         return runCatching {
-            authDataSource.existFavoriteMusic(token,trackId)
+            authDataSource.existFavoriteMusic(token, trackId)
         }
     }
 }

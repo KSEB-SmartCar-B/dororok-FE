@@ -6,8 +6,10 @@ import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
+import androidx.recyclerview.widget.DefaultItemAnimator
 import com.kseb.smart_car.R
 import com.kseb.smart_car.databinding.ActivityMymusicBinding
+import com.kseb.smart_car.extension.DeleteMusicListState
 import com.kseb.smart_car.extension.GetFavoriteMusicState
 import com.kseb.smart_car.presentation.BaseActivity
 import com.kseb.smart_car.presentation.SpotifyRemoteManager.spotifyAppRemote
@@ -54,8 +56,12 @@ class MyMusicActivity : AppCompatActivity() {
         savedMusicAdapter = SavedMusicAdapter({
             trackId -> playOrPauseMusic(trackId)
             Log.d("savedMusicFragment", "music click!")
-        }, { trackId -> deleteMusic(trackId) })
+        }, { deleteMusicList -> handleDeleteMusicList(deleteMusicList) })
+
         binding.rvMusic.adapter = savedMusicAdapter
+        // DefaultItemAnimator 설정
+        binding.rvMusic.itemAnimator = DefaultItemAnimator()
+        savedMusicAdapter.attachToRecyclerView(binding.rvMusic) // ItemTouchHelper 연결
         setAccesstoken()
         clickButton()
     }
@@ -88,8 +94,25 @@ class MyMusicActivity : AppCompatActivity() {
         }
     }
 
-    private fun deleteMusic(trackId: String) {
-
+    private fun handleDeleteMusicList(deleteMusicList: List<String>) {
+        Log.d("MyMusicActivity", "Delete Music List: $deleteMusicList")
+        if(deleteMusicList.isNotEmpty()){
+            savedMusicViewModel.deleteMusicList(deleteMusicList)
+            lifecycleScope.launch {
+                savedMusicViewModel.deleteMusicListState.collect{deleteMusicListState ->
+                    when(deleteMusicListState){
+                        is DeleteMusicListState.Success -> {
+                            Log.d("myMusicActivity","delete music list state success")
+                            savedMusicViewModel.setDeleteMusicStateLoading()
+                        }
+                        is DeleteMusicListState.Loading->{}
+                        is DeleteMusicListState.Error->{
+                            Log.e("myMusicActivity","delete music list state error")
+                        }
+                    }
+                }
+            }
+        }
     }
 
     private fun setAccesstoken() {

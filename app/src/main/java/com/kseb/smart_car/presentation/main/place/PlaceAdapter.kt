@@ -12,6 +12,7 @@ import coil.size.Scale
 import coil.transform.RoundedCornersTransformation
 import com.kseb.smart_car.R
 import com.kseb.smart_car.data.responseDto.ResponseFavoritePlaceDto
+import com.kseb.smart_car.data.responseDto.ResponseRecommendPlaceDto
 import com.kseb.smart_car.data.responseDto.ResponseRecommendPlaceNearbyDto
 import com.kseb.smart_car.data.responseDto.ResponseSaveFavoritePlaceDto
 import com.kseb.smart_car.databinding.ItemPlaceBinding
@@ -21,7 +22,7 @@ class PlaceAdapter(
     private val clickPlace: (ResponseRecommendPlaceNearbyDto.PlaceList, View, View, AppCompatButton) -> Unit,
     private val goNavi:(ResponseRecommendPlaceNearbyDto.PlaceList)->Unit
 ) : RecyclerView.Adapter<PlaceAdapter.PlaceNearbyViewHolder>() {
-    private val placeNearbyList = mutableListOf<ResponseRecommendPlaceNearbyDto.PlaceList>()
+    private val placeList = mutableListOf<ResponseRecommendPlaceNearbyDto.PlaceList>()
     private val savedPlaceList = mutableListOf<ResponseFavoritePlaceDto.FavoritesPlaceListDto>()
 
     inner class PlaceNearbyViewHolder(
@@ -67,18 +68,18 @@ class PlaceAdapter(
         return PlaceNearbyViewHolder(binding)
     }
 
-    override fun getItemCount(): Int = placeNearbyList.size
+    override fun getItemCount(): Int = placeList.size
 
     override fun onBindViewHolder(holder: PlaceNearbyViewHolder, position: Int) {
-        val itemNearby = placeNearbyList[position]
+        val itemNearby = placeList[position]
         holder.onBind(itemNearby)
     }
 
-    fun getNearbyPlaceList(list: List<ResponseRecommendPlaceNearbyDto.PlaceList>) {
-        val startPosition = placeNearbyList.size
-        placeNearbyList.addAll(list)
+    fun getPlaceList(list: List<ResponseRecommendPlaceNearbyDto.PlaceList>) {
+        val startPosition = placeList.size
+        placeList.addAll(list)
         notifyItemRangeInserted(startPosition, list.size)
-        Log.d("placeAdapter", "placelist: ${placeNearbyList}")
+        Log.d("placeAdapter", "placelist: ${placeList}")
     }
 
     fun getSavedPlace(list: List<ResponseFavoritePlaceDto.FavoritesPlaceListDto>) {

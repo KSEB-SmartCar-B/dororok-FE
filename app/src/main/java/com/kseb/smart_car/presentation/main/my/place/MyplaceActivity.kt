@@ -7,13 +7,17 @@ import android.util.Log
 import android.view.View
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.lifecycleScope
 import com.kseb.smart_car.R
 import com.kseb.smart_car.data.responseDto.ResponseFavoritePlaceDto
 import com.kseb.smart_car.data.responseDto.ResponseRecommendPlaceNearbyDto
 import com.kseb.smart_car.databinding.ActivityMyplaceBinding
+import com.kseb.smart_car.extension.DeletePlaceListState
 import com.kseb.smart_car.presentation.main.place.PlaceViewModel
 import com.kseb.smart_car.presentation.main.place.placeDetail.PlaceDetailActivity
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
 class MyplaceActivity : AppCompatActivity() {
@@ -40,7 +44,7 @@ class MyplaceActivity : AppCompatActivity() {
     private fun setting() {
         savedPlaceAdapter = SavedPlaceAdapter(
             { place, ivPhoto -> showDetail(place,ivPhoto) },
-            { deletePlace -> deletePlace(deletePlace) }
+            { deletePlaceList -> deletePlaceList(deletePlaceList) }
         )
         binding.rvPlace.adapter = savedPlaceAdapter
 
@@ -86,8 +90,24 @@ class MyplaceActivity : AppCompatActivity() {
         startActivity(intent, options.toBundle())
     }
 
-    private fun deletePlace(contentId: String) {
-
+    private fun deletePlaceList(deletePlaceList:List<String>) {
+        if(deletePlaceList.isNotEmpty()){
+            savedPlaceViewModel.deletePlaceList(deletePlaceList)
+            lifecycleScope.launch {
+                savedPlaceViewModel.deletePlaceListState.collect{deletePlaceListState->
+                    when(deletePlaceListState){
+                        is DeletePlaceListState.Success->{
+                            Log.d("myPlaceActivity","delete place list state success")
+                            savedPlaceViewModel.setDeletePlaceListStateLoading()
+                        }
+                        is DeletePlaceListState.Loading->{}
+                        is DeletePlaceListState.Error->{
+                            Log.e("myPlaceActivity","delete place list state error")
+                        }
+                    }
+                }
+            }
+        }
     }
 
     private fun clickButton(){

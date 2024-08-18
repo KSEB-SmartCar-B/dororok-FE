@@ -13,10 +13,11 @@ import com.kseb.smart_car.databinding.ItemSavedplaceBinding
 
 class SavedPlaceAdapter(
     private val clickPlace: (ResponseFavoritePlaceDto.FavoritesPlaceListDto, View) -> Unit,
-    private val deletePlace: (String) -> Unit
+    private val deletePlaceListChanged: (List<String>) -> Unit
 ) : RecyclerView.Adapter<SavedPlaceAdapter.SavedPlaceViewHolder>() {
 
-    private val placeList = mutableListOf<ResponseFavoritePlaceDto.FavoritesPlaceListDto>()
+    private val favoritePlaceList = mutableListOf<ResponseFavoritePlaceDto.FavoritesPlaceListDto>()
+    private val deletePlaceList = mutableListOf<String>()
     private var isEditMode = false
 
     inner class SavedPlaceViewHolder(
@@ -36,7 +37,9 @@ class SavedPlaceAdapter(
                 itemView.setOnClickListener {
                     if (ivCircle.visibility == View.VISIBLE) {
                         ivCircle.isSelected = !ivCircle.isSelected
-                        deletePlace(item.contentId)
+                        deletePlaceList.apply {
+                            if (item.contentId in this) remove(item.contentId) else add(item.contentId)
+                        }
                     } else {
                         clickPlace(item, ivPlace)
                     }
@@ -51,20 +54,29 @@ class SavedPlaceAdapter(
         return SavedPlaceViewHolder(binding)
     }
 
-    override fun getItemCount(): Int = placeList.size
+    override fun getItemCount(): Int = favoritePlaceList.size
 
     override fun onBindViewHolder(holder: SavedPlaceViewHolder, position: Int) {
-        val item = placeList[position]
+        val item = favoritePlaceList[position]
         holder.onBind(item)
     }
 
     fun setList(list: List<ResponseFavoritePlaceDto.FavoritesPlaceListDto>) {
-        placeList.addAll(list)
+        favoritePlaceList.addAll(list)
         notifyDataSetChanged()
     }
 
     fun toggleEditMode(isEdit: Boolean) {
         isEditMode = isEdit
+
+        // Edit 모드가 종료될 때 deleteMusicList를 콜백으로 전달
+        if (!isEditMode) {
+            // favoriteMusicList에서 deleteMusicList에 있는 항목들 제거
+            favoritePlaceList.removeAll { it.contentId.removePrefix("spotify:track:") in deletePlaceList }
+
+            deletePlaceListChanged(deletePlaceList.toList())
+            deletePlaceList.clear() // 콜백 호출 후 리스트 초기화
+        }
         notifyDataSetChanged()
     }
 }

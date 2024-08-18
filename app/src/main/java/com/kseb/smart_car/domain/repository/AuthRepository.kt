@@ -20,6 +20,8 @@ import com.kseb.smart_car.data.responseDto.ResponseFavoriteMusicDto
 import com.kseb.smart_car.data.responseDto.ResponseFavoriteMusicStringDto
 import com.kseb.smart_car.data.responseDto.ResponseFavoritePlaceDto
 import com.kseb.smart_car.data.responseDto.ResponseRecommendMusicDto
+import com.kseb.smart_car.data.responseDto.ResponseRecommendPlaceDetailDto
+import com.kseb.smart_car.data.responseDto.ResponseRecommendPlaceDto
 import com.kseb.smart_car.data.responseDto.ResponseRecommendPlaceNearbyDetailDto
 import com.kseb.smart_car.data.responseDto.ResponseRecommendPlaceNearbyDto
 import com.kseb.smart_car.data.responseDto.ResponseSaveFavoritePlaceDto
@@ -69,6 +71,15 @@ interface AuthRepository {
         token:String,
         contentId: String
     ):Result<ResponseRecommendPlaceNearbyDetailDto>
+
+    suspend fun getRecommendPlace(
+        token:String,
+    ):Result<ResponseRecommendPlaceDto>
+
+    suspend fun getRecommendPlaceDetail(
+        token:String,
+        contentId: String
+    ):Result<ResponseRecommendPlaceDetailDto>
 
     suspend fun getSearch(
         token:String
@@ -122,6 +133,11 @@ interface AuthRepository {
         contentId:String
     ):Result<ResponseSaveFavoritePlaceDto>
 
+    suspend fun deleteFavoritePlaceList(
+        token:String,
+        contentIds:List<String>
+    ):Result<ResponseSaveFavoritePlaceDto>
+
     suspend fun existFavoritePlace(
         token:String,
         contentId: String
@@ -143,6 +159,11 @@ interface AuthRepository {
     suspend fun deleteFavoriteMusic(
         token:String,
         trackId:String,
+    ):Result<ResponseFavoriteMusicStringDto>
+
+    suspend fun deleteFavoriteMusicList(
+        token:String,
+        trackIds:List<String>,
     ):Result<ResponseFavoriteMusicStringDto>
 
     suspend fun existFavoriteMusic(
