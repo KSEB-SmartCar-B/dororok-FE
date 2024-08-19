@@ -37,6 +37,7 @@ class SavedPlaceAdapter(
                 itemView.setOnClickListener {
                     if (ivCircle.visibility == View.VISIBLE) {
                         ivCircle.isSelected = !ivCircle.isSelected
+                        placeGray.isSelected = !placeGray.isSelected
                         if (ivCircle.isSelected) {
                             deletePlaceList.add(item.contentId)
                         } else {
