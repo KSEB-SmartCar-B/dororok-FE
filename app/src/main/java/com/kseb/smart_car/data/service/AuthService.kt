@@ -2,6 +2,8 @@ package com.kseb.smart_car.data.service
 
 import com.kseb.smart_car.data.requestDto.RequestAccessDto
 import com.kseb.smart_car.data.requestDto.RequestAddSearchDto
+import com.kseb.smart_car.data.requestDto.RequestDeleteMusicListDto
+import com.kseb.smart_car.data.requestDto.RequestDeletePlaceListDto
 import com.kseb.smart_car.data.requestDto.RequestDeleteSearchDto
 import com.kseb.smart_car.data.requestDto.RequestSignUpDto
 import com.kseb.smart_car.data.requestDto.RequestUpdateGenreDto
@@ -163,6 +165,12 @@ interface AuthService {
         @Body contentId:String
     ):ResponseSaveFavoritePlaceDto
 
+    @POST("/favorites/place/delete/list")
+    suspend fun deletePlaceList(
+        @Header("Authorization") token: String,
+        @Body requestDeletePlaceListDto: RequestDeletePlaceListDto
+    ):ResponseSaveFavoritePlaceDto
+
     @GET("/favorites/place/exist")
     suspend fun existFavoritePlace(
         @Header("Authorization") token: String,
@@ -185,6 +193,12 @@ interface AuthService {
     suspend fun deleteFavoritesMusic(
         @Header("Authorization") token: String,
         @Body trackId:String
+    ):ResponseFavoriteMusicStringDto
+
+    @POST("/favorites/music/delete/list")
+    suspend fun deleteMusicList(
+        @Header("Authorization") token: String,
+        @Body requestDeleteMusicListDto: RequestDeleteMusicListDto
     ):ResponseFavoriteMusicStringDto
 
     @GET("/favorites/music/exist")

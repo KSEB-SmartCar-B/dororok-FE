@@ -8,6 +8,7 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import com.kseb.smart_car.R
 import com.kseb.smart_car.databinding.ActivityMymusicBinding
+import com.kseb.smart_car.extension.DeleteMusicListState
 import com.kseb.smart_car.extension.GetFavoriteMusicState
 import com.kseb.smart_car.presentation.BaseActivity
 import com.kseb.smart_car.presentation.SpotifyRemoteManager.spotifyAppRemote
@@ -54,8 +55,10 @@ class MyMusicActivity : AppCompatActivity() {
         savedMusicAdapter = SavedMusicAdapter({
             trackId -> playOrPauseMusic(trackId)
             Log.d("savedMusicFragment", "music click!")
-        }, { trackId -> deleteMusic(trackId) })
+        }, { deleteMusicList -> deleteMusic(deleteMusicList) })
         binding.rvMusic.adapter = savedMusicAdapter
+        savedMusicAdapter.attachToRecyclerView(binding.rvMusic)
+
         setAccesstoken()
         clickButton()
     }
@@ -88,8 +91,22 @@ class MyMusicActivity : AppCompatActivity() {
         }
     }
 
-    private fun deleteMusic(trackId: String) {
-
+    private fun deleteMusic(trackId: List<String>) {
+        savedMusicViewModel.deleteMusicList(trackId)
+        lifecycleScope.launch {
+            savedMusicViewModel.deleteMusicListState.collect{state->
+                when(state){
+                    is DeleteMusicListState.Success->{
+                        Log.d("myMusicActivity","delete music list state success")
+                        savedMusicViewModel.setDeleteMusicListStateLoading()
+                    }
+                    is DeleteMusicListState.Loading->{}
+                    is DeleteMusicListState.Error->{
+                        Log.d("myMusicActivity","delete music list state error: ${state.message}")
+                    }
+                }
+            }
+        }
     }
 
     private fun setAccesstoken() {

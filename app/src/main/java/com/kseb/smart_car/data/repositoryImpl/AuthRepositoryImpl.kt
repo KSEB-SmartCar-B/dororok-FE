@@ -3,6 +3,8 @@ package com.kseb.smart_car.data.repositoryImpl
 import com.kseb.smart_car.data.datasource.AuthDataSource
 import com.kseb.smart_car.data.requestDto.RequestAccessDto
 import com.kseb.smart_car.data.requestDto.RequestAddSearchDto
+import com.kseb.smart_car.data.requestDto.RequestDeleteMusicListDto
+import com.kseb.smart_car.data.requestDto.RequestDeletePlaceListDto
 import com.kseb.smart_car.data.requestDto.RequestDeleteSearchDto
 import com.kseb.smart_car.data.requestDto.RequestSignUpDto
 import com.kseb.smart_car.data.requestDto.RequestUpdateGenreDto
@@ -198,6 +200,15 @@ class AuthRepositoryImpl @Inject constructor(
         }
     }
 
+    override suspend fun deleteFavoritePlaceList(
+        token: String,
+        contentIds:List<String>
+    ): Result<ResponseSaveFavoritePlaceDto> {
+        return runCatching {
+            authDataSource.deleteFavoritePlaceList(token, RequestDeletePlaceListDto(contentIds))
+        }
+    }
+
     override suspend fun existFavoritePlace(
         token: String,
         contentId: String
@@ -232,6 +243,15 @@ class AuthRepositoryImpl @Inject constructor(
     ): Result<ResponseFavoriteMusicStringDto> {
         return runCatching {
             authDataSource.deleteFavoriteMusic(token,trackId)
+        }
+    }
+
+    override suspend fun deleteFavoriteMusicList(
+        token: String,
+        trackIds:List<String>
+    ): Result<ResponseFavoriteMusicStringDto> {
+        return runCatching {
+            authDataSource.deleteFavoriteMusicList(token,RequestDeleteMusicListDto(trackIds))
         }
     }
 

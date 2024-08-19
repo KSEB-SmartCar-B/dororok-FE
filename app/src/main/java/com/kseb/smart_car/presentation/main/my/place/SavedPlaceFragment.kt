@@ -1,3 +1,4 @@
+/*
 package com.kseb.smart_car.presentation.main.my.place
 
 import android.os.Bundle
@@ -67,17 +68,19 @@ class SavedPlaceFragment : Fragment() {
         }
     }
 
-    /*private fun clickEditButton() {
+    */
+/*private fun clickEditButton() {
         binding.btnEdit.setOnClickListener {
             val transaction = requireActivity().supportFragmentManager.beginTransaction()
             transaction.replace(R.id.fcv_place, DeletedPlaceFragment())
             transaction.addToBackStack(null)
             transaction.commit()
         }
-    }*/
+    }*//*
+
 
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
     }
-}
+}*/

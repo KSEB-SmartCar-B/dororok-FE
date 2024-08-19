@@ -1,3 +1,4 @@
+/*
 package com.kseb.smart_car.presentation.main.my.music
 
 import android.os.Bundle
@@ -58,10 +59,12 @@ class SavedMusicFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-       /* savedMusicAdapter = SavedMusicAdapter{ trackId ->
+       */
+/* savedMusicAdapter = SavedMusicAdapter{ trackId ->
             Log.d("savedMusicFragment","music click!")
             playOrPauseMusic(trackId)
-        }*/
+        }*//*
+
         binding.rvMusic.adapter = savedMusicAdapter
         setAccesstoken()
       //  clickEditButton()
@@ -121,14 +124,16 @@ class SavedMusicFragment : Fragment() {
     }
 
 
-  /*  private fun clickEditButton() {
+  */
+/*  private fun clickEditButton() {
         binding.btnEdit.setOnClickListener {
             val transaction = requireActivity().supportFragmentManager.beginTransaction()
             transaction.replace(R.id.fcv_music, DeletedMusicFragment())
             transaction.addToBackStack(null)
             transaction.commit()
         }
-    }*/
+    }*//*
+
 
     private fun logError(throwable: Throwable) {
         //Toast.makeText(requireContext(), R.string.err_generic_toast, Toast.LENGTH_SHORT).show()
@@ -143,4 +148,4 @@ class SavedMusicFragment : Fragment() {
         super.onDestroyView()
         _binding = null
     }
-}
+}*/

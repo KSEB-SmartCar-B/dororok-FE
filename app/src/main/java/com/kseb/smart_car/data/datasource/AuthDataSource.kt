@@ -2,6 +2,8 @@ package com.kseb.smart_car.data.datasource
 
 import com.kseb.smart_car.data.requestDto.RequestAccessDto
 import com.kseb.smart_car.data.requestDto.RequestAddSearchDto
+import com.kseb.smart_car.data.requestDto.RequestDeleteMusicListDto
+import com.kseb.smart_car.data.requestDto.RequestDeletePlaceListDto
 import com.kseb.smart_car.data.requestDto.RequestDeleteSearchDto
 import com.kseb.smart_car.data.requestDto.RequestSignUpDto
 import com.kseb.smart_car.data.requestDto.RequestUpdateGenreDto
@@ -135,6 +137,11 @@ interface AuthDataSource {
         contentId:String
     ):ResponseSaveFavoritePlaceDto
 
+    suspend fun deleteFavoritePlaceList(
+        token:String,
+        requestDeletePlaceListDto: RequestDeletePlaceListDto
+    ):ResponseSaveFavoritePlaceDto
+
     suspend fun existFavoritePlace(
         token:String,
         contentId: String
@@ -153,6 +160,11 @@ interface AuthDataSource {
     suspend fun deleteFavoriteMusic(
         token:String,
         trackId:String,
+    ):ResponseFavoriteMusicStringDto
+
+    suspend fun deleteFavoriteMusicList(
+        token:String,
+        requestDeleteMusicListDto: RequestDeleteMusicListDto
     ):ResponseFavoriteMusicStringDto
 
     suspend fun existFavoriteMusic(

@@ -3,6 +3,8 @@ package com.kseb.smart_car.data.datasourceImpl
 import com.kseb.smart_car.data.datasource.AuthDataSource
 import com.kseb.smart_car.data.requestDto.RequestAccessDto
 import com.kseb.smart_car.data.requestDto.RequestAddSearchDto
+import com.kseb.smart_car.data.requestDto.RequestDeleteMusicListDto
+import com.kseb.smart_car.data.requestDto.RequestDeletePlaceListDto
 import com.kseb.smart_car.data.requestDto.RequestDeleteSearchDto
 import com.kseb.smart_car.data.requestDto.RequestSignUpDto
 import com.kseb.smart_car.data.requestDto.RequestUpdateGenreDto
@@ -118,6 +120,11 @@ class AuthDataSourceImpl @Inject constructor(
         contentId: String
     ): ResponseSaveFavoritePlaceDto =authService.deleteFavoritePlace(token,contentId)
 
+    override suspend fun deleteFavoritePlaceList(
+        token: String,
+        requestDeletePlaceListDto: RequestDeletePlaceListDto
+    ): ResponseSaveFavoritePlaceDto = authService.deletePlaceList(token,requestDeletePlaceListDto)
+
     override suspend fun existFavoritePlace(
         token: String,
         contentId: String
@@ -134,6 +141,11 @@ class AuthDataSourceImpl @Inject constructor(
         token: String,
         trackId: String
     ): ResponseFavoriteMusicStringDto =authService.deleteFavoritesMusic(token,trackId)
+
+    override suspend fun deleteFavoriteMusicList(
+        token: String,
+        requestDeleteMusicListDto: RequestDeleteMusicListDto
+    ): ResponseFavoriteMusicStringDto = authService.deleteMusicList(token,requestDeleteMusicListDto)
 
     override suspend fun existFavoriteMusic(
         token: String,

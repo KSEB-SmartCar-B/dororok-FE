@@ -1,6 +1,8 @@
 package com.kseb.smart_car.domain.repository
 
 import com.kseb.smart_car.data.requestDto.RequestAddSearchDto
+import com.kseb.smart_car.data.requestDto.RequestDeleteMusicListDto
+import com.kseb.smart_car.data.requestDto.RequestDeletePlaceListDto
 import com.kseb.smart_car.data.requestDto.RequestDeleteSearchDto
 import com.kseb.smart_car.data.requestDto.RequestSignUpDto
 import com.kseb.smart_car.data.requestDto.RequestUpdateGenreDto
@@ -132,6 +134,11 @@ interface AuthRepository {
         contentId:String
     ):Result<ResponseSaveFavoritePlaceDto>
 
+    suspend fun deleteFavoritePlaceList(
+        token:String,
+       contentIds:List<String>
+    ):Result<ResponseSaveFavoritePlaceDto>
+
     suspend fun existFavoritePlace(
         token:String,
         contentId: String
@@ -153,6 +160,11 @@ interface AuthRepository {
     suspend fun deleteFavoriteMusic(
         token:String,
         trackId:String,
+    ):Result<ResponseFavoriteMusicStringDto>
+
+    suspend fun deleteFavoriteMusicList(
+        token: String,
+        trackIds:List<String>
     ):Result<ResponseFavoriteMusicStringDto>
 
     suspend fun existFavoriteMusic(
