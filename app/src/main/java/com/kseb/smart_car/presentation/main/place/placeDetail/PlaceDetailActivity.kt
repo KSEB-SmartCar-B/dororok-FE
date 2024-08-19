@@ -43,10 +43,22 @@ class PlaceDetailActivity : AppCompatActivity() {
 
     private fun setting() {
         val place = intent.getParcelableExtra<ResponseRecommendPlaceNearbyDto.PlaceList>("place")
-        val iv = binding.ivPhoto
+        val imageTransitionName = intent.getStringExtra("image_transition_name")
+        // 트랜지션 네임 설정
+        binding.ivPhoto.transitionName = imageTransitionName
+
+        if(intent.getStringExtra("circle_transition_name")!=null){
+            val circleTransitionName=intent.getStringExtra("circle_transition_name")
+            val savedTransitionName=intent.getStringExtra("saved_transition_name")
+            binding.ivCircle.transitionName = circleTransitionName
+            binding.btnSave.transitionName = savedTransitionName
+        }
+
+        // 트랜지션 애니메이션 적용
         postponeEnterTransition()
-        loadImageWithCoil(iv, place)
+        loadImageWithCoil(binding.ivPhoto, place)
         isSaved(place)
+        startPostponedEnterTransition()
 
         // 전환 애니메이션이 끝난 후에 버튼 활성화 및 클릭 리스너 설정
         binding.ivCircle.setOnClickListener(null) // 초기화 중에는 클릭 비활성화
@@ -149,6 +161,10 @@ class PlaceDetailActivity : AppCompatActivity() {
                 savePlace(place)
             }
         }
+
+        binding.btnBack.setOnClickListener {
+            supportFinishAfterTransition()
+        }
     }
 
     private fun savePlace(place: ResponseRecommendPlaceNearbyDto.PlaceList) {
@@ -225,4 +241,10 @@ class PlaceDetailActivity : AppCompatActivity() {
             .replace(R.id.fcv_place_detail, fragment)
             .commit()
     }
+
+    override fun onBackPressed() {
+        super.onBackPressed()
+        supportFinishAfterTransition()  // 트랜지션 애니메이션과 함께 종료
+    }
+
 }

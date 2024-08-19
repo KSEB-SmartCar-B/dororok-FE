@@ -41,6 +41,16 @@
         app:layout_constraintTop_toTopOf="@id/iv_circle"
         app:layout_constraintBottom_toBottomOf="@id/iv_circle"/>
 
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/btn_back"
+        android:layout_width="25dp"
+        android:layout_height="25dp"
+        android:layout_marginStart="15dp"
+        android:background="@drawable/ic_back_white_24"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@id/iv_circle"
+        app:layout_constraintBottom_toBottomOf="@id/iv_circle"/>
+
     <androidx.fragment.app.FragmentContainerView
         android:id="@+id/fcv_place_detail"
         android:layout_width="match_parent"
