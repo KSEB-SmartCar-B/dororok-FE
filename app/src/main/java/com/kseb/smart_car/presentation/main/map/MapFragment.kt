@@ -130,7 +130,7 @@ class MapFragment : Fragment() {
                         val uLogitude = userCurLocation!!.longitude
                         val uLatitude = userCurLocation.latitude
                         Log.d("mainactivity", "latitude: ${uLatitude}, logitude: ${uLogitude}")
-                        currentPosition = LatLng.from(uLogitude, uLatitude)
+                        currentPosition = LatLng.from(uLatitude, uLogitude)
 
                         //label 생성
                         val styles = kakaoMap.labelManager!!
