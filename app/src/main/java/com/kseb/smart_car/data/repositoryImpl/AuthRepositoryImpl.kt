@@ -23,6 +23,7 @@ import com.kseb.smart_car.data.responseDto.ResponseFavoriteMusicDto
 import com.kseb.smart_car.data.responseDto.ResponseFavoriteMusicStringDto
 import com.kseb.smart_car.data.responseDto.ResponseFavoritePlaceDto
 import com.kseb.smart_car.data.responseDto.ResponseRecommendMusicDto
+import com.kseb.smart_car.data.responseDto.ResponseRecommendPlaceDto
 import com.kseb.smart_car.data.responseDto.ResponseRecommendPlaceNearbyDetailDto
 import com.kseb.smart_car.data.responseDto.ResponseRecommendPlaceNearbyDto
 import com.kseb.smart_car.data.responseDto.ResponseSaveFavoritePlaceDto
@@ -102,6 +103,21 @@ class AuthRepositoryImpl @Inject constructor(
     ): Result<ResponseRecommendPlaceNearbyDetailDto> {
         return runCatching {
             authDataSource.getPlacesNearbyDetail(token,contentId)
+        }
+    }
+
+    override suspend fun getRecommendPlace(token: String): Result<ResponseRecommendPlaceDto> {
+        return runCatching {
+            authDataSource.getPlaces(token)
+        }
+    }
+
+    override suspend fun getRecommendPlaceDetail(
+        token: String,
+        contentId: String
+    ): Result<ResponseRecommendPlaceNearbyDetailDto> {
+        return runCatching {
+            authDataSource.getPlacesDetail(token,contentId)
         }
     }
 

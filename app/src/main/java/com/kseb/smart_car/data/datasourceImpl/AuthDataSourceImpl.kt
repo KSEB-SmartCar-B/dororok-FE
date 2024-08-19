@@ -23,6 +23,7 @@ import com.kseb.smart_car.data.responseDto.ResponseFavoriteMusicDto
 import com.kseb.smart_car.data.responseDto.ResponseFavoriteMusicStringDto
 import com.kseb.smart_car.data.responseDto.ResponseFavoritePlaceDto
 import com.kseb.smart_car.data.responseDto.ResponseRecommendMusicDto
+import com.kseb.smart_car.data.responseDto.ResponseRecommendPlaceDto
 import com.kseb.smart_car.data.responseDto.ResponseRecommendPlaceNearbyDetailDto
 import com.kseb.smart_car.data.responseDto.ResponseRecommendPlaceNearbyDto
 import com.kseb.smart_car.data.responseDto.ResponseSaveFavoritePlaceDto
@@ -81,6 +82,13 @@ class AuthDataSourceImpl @Inject constructor(
         token: String,
         contentId: String
     ): ResponseRecommendPlaceNearbyDetailDto =authService.getPlaceNearbyDetail(token,contentId)
+
+    override suspend fun getPlaces(token: String): ResponseRecommendPlaceDto = authService.getPlace(token)
+
+    override suspend fun getPlacesDetail(
+        token: String,
+        contentId: String
+    ): ResponseRecommendPlaceNearbyDetailDto = authService.getPlaceDetail(token,contentId)
 
     //개인 정보 및 선호 장르 수정
     override suspend fun getMyInfo(token: String): ResponseMyInfoDto = authService.getMyInfo(token)

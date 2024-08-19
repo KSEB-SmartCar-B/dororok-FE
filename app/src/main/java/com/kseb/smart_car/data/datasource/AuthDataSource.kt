@@ -22,6 +22,7 @@ import com.kseb.smart_car.data.responseDto.ResponseFavoriteMusicDto
 import com.kseb.smart_car.data.responseDto.ResponseFavoriteMusicStringDto
 import com.kseb.smart_car.data.responseDto.ResponseFavoritePlaceDto
 import com.kseb.smart_car.data.responseDto.ResponseRecommendMusicDto
+import com.kseb.smart_car.data.responseDto.ResponseRecommendPlaceDto
 import com.kseb.smart_car.data.responseDto.ResponseRecommendPlaceNearbyDetailDto
 import com.kseb.smart_car.data.responseDto.ResponseRecommendPlaceNearbyDto
 import com.kseb.smart_car.data.responseDto.ResponseSaveFavoritePlaceDto
@@ -89,6 +90,15 @@ interface AuthDataSource {
     suspend fun getPlacesNearbyDetail(
         token:String,
         contentId:String
+    ):ResponseRecommendPlaceNearbyDetailDto
+
+    suspend fun getPlaces(
+        token:String,
+    ):ResponseRecommendPlaceDto
+
+    suspend fun getPlacesDetail(
+        token:String,
+        contentId: String
     ):ResponseRecommendPlaceNearbyDetailDto
 
     //개인 정보 및 선호 장르 수정

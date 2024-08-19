@@ -20,6 +20,7 @@ import com.kseb.smart_car.data.responseDto.ResponseFavoriteMusicDto
 import com.kseb.smart_car.data.responseDto.ResponseFavoriteMusicStringDto
 import com.kseb.smart_car.data.responseDto.ResponseFavoritePlaceDto
 import com.kseb.smart_car.data.responseDto.ResponseRecommendMusicDto
+import com.kseb.smart_car.data.responseDto.ResponseRecommendPlaceDto
 import com.kseb.smart_car.data.responseDto.ResponseRecommendPlaceNearbyDetailDto
 import com.kseb.smart_car.data.responseDto.ResponseRecommendPlaceNearbyDto
 import com.kseb.smart_car.data.responseDto.ResponseSaveFavoritePlaceDto
@@ -66,6 +67,15 @@ interface AuthRepository {
     ):Result<ResponseRecommendPlaceNearbyDto>
 
     suspend fun getRecommendPlaceNearbyDetail(
+        token:String,
+        contentId: String
+    ):Result<ResponseRecommendPlaceNearbyDetailDto>
+
+    suspend fun getRecommendPlace(
+        token:String,
+    ):Result<ResponseRecommendPlaceDto>
+
+    suspend fun getRecommendPlaceDetail(
         token:String,
         contentId: String
     ):Result<ResponseRecommendPlaceNearbyDetailDto>

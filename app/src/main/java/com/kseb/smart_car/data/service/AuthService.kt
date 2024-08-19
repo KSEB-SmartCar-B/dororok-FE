@@ -22,6 +22,7 @@ import com.kseb.smart_car.data.responseDto.ResponseFavoriteMusicDto
 import com.kseb.smart_car.data.responseDto.ResponseFavoriteMusicStringDto
 import com.kseb.smart_car.data.responseDto.ResponseFavoritePlaceDto
 import com.kseb.smart_car.data.responseDto.ResponseRecommendMusicDto
+import com.kseb.smart_car.data.responseDto.ResponseRecommendPlaceDto
 import com.kseb.smart_car.data.responseDto.ResponseRecommendPlaceNearbyDetailDto
 import com.kseb.smart_car.data.responseDto.ResponseRecommendPlaceNearbyDto
 import com.kseb.smart_car.data.responseDto.ResponseSaveFavoritePlaceDto
@@ -103,6 +104,18 @@ interface AuthService {
     //내 주변 여행지 상세
     @GET("/recommendation/place/nearby/detail")
     suspend fun getPlaceNearbyDetail(
+        @Header("Authorization") token:String,
+        @Query("contentId") contentId: String
+    ):ResponseRecommendPlaceNearbyDetailDto
+
+    //추천 여행지
+    @GET("/recommendation/places")
+    suspend fun getPlace(
+        @Header("Authorization") token:String,
+    ):ResponseRecommendPlaceDto
+
+    @GET("/recommendation/place/detail")
+    suspend fun getPlaceDetail(
         @Header("Authorization") token:String,
         @Query("contentId") contentId: String
     ):ResponseRecommendPlaceNearbyDetailDto
