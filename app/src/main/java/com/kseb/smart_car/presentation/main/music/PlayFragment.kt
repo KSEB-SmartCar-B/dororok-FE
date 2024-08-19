@@ -6,6 +6,7 @@ import android.content.pm.PackageManager
 import android.graphics.PorterDuff
 import android.location.Location
 import android.os.Bundle
+import android.text.TextUtils
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -144,12 +145,20 @@ class PlayFragment : Fragment() {
             text = String.format(Locale.US, "%s", playerState.track.name)
             Log.d("playfragment", "label: ${text}")
             tag = playerState
+            isSelected = true // 이 속성이 설정되어야 마키 효과가 작동함
+            ellipsize = TextUtils.TruncateAt.MARQUEE
+            marqueeRepeatLimit = -1 // 무한 반복
+            isSingleLine = true // 한 줄로 제한
         }
 
         binding.btnCurrentTrackSinger.apply {
             text = String.format(Locale.US, "%s", playerState.track.artist.name)
             Log.d("playfragment", "label: ${text}")
             tag = playerState
+            isSelected = true // 이 속성이 설정되어야 마키 효과가 작동함
+            ellipsize = TextUtils.TruncateAt.MARQUEE
+            marqueeRepeatLimit = -1 // 무한 반복
+            isSingleLine = true // 한 줄로 제한
         }
     }
 
@@ -443,13 +452,15 @@ class PlayFragment : Fragment() {
                         }
                     }
                 } else {
-                    // Spotify 연결 상태가 이미 확인된 경우, 바로 플레이 시도
-                    if (spotifyAppRemote != null && spotifyAppRemote!!.isConnected) {
-                        playUri()
-                    } else {
-                        Log.e("playFragment", "SpotifyAppRemote is not connected, cannot play URI")
+                    lifecycleScope.launch {
+                        // Spotify 연결 상태가 이미 확인된 경우, 바로 플레이 시도
+                        if (spotifyAppRemote != null && spotifyAppRemote!!.isConnected) {
+                            playUri()
+                        } else {
+                            Log.e("playFragment", "SpotifyAppRemote is not connected, cannot play URI")
+                        }
+                        closeLoadingActivity()
                     }
-                    closeLoadingActivity()
                 }
             } else {
                 Log.d("playFragment", "No music lists received yet.")
