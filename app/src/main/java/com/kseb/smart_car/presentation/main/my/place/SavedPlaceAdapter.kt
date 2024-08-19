@@ -13,10 +13,11 @@ import com.kseb.smart_car.databinding.ItemSavedplaceBinding
 
 class SavedPlaceAdapter(
     private val clickPlace: (ResponseFavoritePlaceDto.FavoritesPlaceListDto, View) -> Unit,
-    private val deletePlace: (String) -> Unit
+    private val deletePlaceListChanged: (List<String>) -> Unit
 ) : RecyclerView.Adapter<SavedPlaceAdapter.SavedPlaceViewHolder>() {
 
     private val placeList = mutableListOf<ResponseFavoritePlaceDto.FavoritesPlaceListDto>()
+    private val deletePlaceList = mutableListOf<String>()
     private var isEditMode = false
 
     inner class SavedPlaceViewHolder(
@@ -36,7 +37,11 @@ class SavedPlaceAdapter(
                 itemView.setOnClickListener {
                     if (ivCircle.visibility == View.VISIBLE) {
                         ivCircle.isSelected = !ivCircle.isSelected
-                        deletePlace(item.contentId)
+                        if (ivCircle.isSelected) {
+                            deletePlaceList.add(item.contentId)
+                        } else {
+                            deletePlaceList.remove(item.contentId)
+                        }
                     } else {
                         clickPlace(item, ivPlace)
                     }
@@ -65,6 +70,26 @@ class SavedPlaceAdapter(
 
     fun toggleEditMode(isEdit: Boolean) {
         isEditMode = isEdit
-        notifyDataSetChanged()
+        if (!isEditMode) {
+            // deletePlaceList에 있는 항목들을 placeList에서 제거하면서 애니메이션을 적용
+            val positionsToRemove = placeList.mapIndexedNotNull { index, item ->
+                if (item.contentId in deletePlaceList) index else null
+            }
+
+            positionsToRemove.sortedDescending().forEach { position ->
+                placeList.removeAt(position)
+                notifyItemRemoved(position) // 각 항목을 삭제하면서 애니메이션 적용
+            }
+
+            deletePlaceListChanged(deletePlaceList.toList())
+            deletePlaceList.clear() // 콜백 호출 후 리스트 초기화
+
+            // 남아 있는 항목들에 대해 UI 상태를 업데이트
+            placeList.forEachIndexed { index, _ ->
+                notifyItemChanged(index)
+            }
+        } else {
+            notifyDataSetChanged() // Edit 모드가 활성화될 때는 전체 데이터 갱신
+        }
     }
 }

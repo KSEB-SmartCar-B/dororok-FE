@@ -404,8 +404,10 @@ class PlayFragment : Fragment() {
         fusedLocationClient.lastLocation
             .addOnSuccessListener { location: Location? ->
                 if (location != null) {
-                    latitude=location.latitude
-                    longitude=location.longitude
+                    /*latitude=location.latitude
+                    longitude=location.longitude*/
+                    latitude=37.290184417162514
+                    longitude=126.57855020444013
                     getRecommendMusic(latitude.toString(), longitude.toString())
                     return@addOnSuccessListener
                 }

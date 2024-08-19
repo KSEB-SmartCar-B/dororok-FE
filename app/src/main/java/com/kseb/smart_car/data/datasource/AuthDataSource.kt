@@ -2,6 +2,8 @@ package com.kseb.smart_car.data.datasource
 
 import com.kseb.smart_car.data.requestDto.RequestAccessDto
 import com.kseb.smart_car.data.requestDto.RequestAddSearchDto
+import com.kseb.smart_car.data.requestDto.RequestDeleteMusicListDto
+import com.kseb.smart_car.data.requestDto.RequestDeletePlaceListDto
 import com.kseb.smart_car.data.requestDto.RequestDeleteSearchDto
 import com.kseb.smart_car.data.requestDto.RequestSignUpDto
 import com.kseb.smart_car.data.requestDto.RequestUpdateGenreDto
@@ -22,6 +24,7 @@ import com.kseb.smart_car.data.responseDto.ResponseFavoriteMusicDto
 import com.kseb.smart_car.data.responseDto.ResponseFavoriteMusicStringDto
 import com.kseb.smart_car.data.responseDto.ResponseFavoritePlaceDto
 import com.kseb.smart_car.data.responseDto.ResponseRecommendMusicDto
+import com.kseb.smart_car.data.responseDto.ResponseRecommendPlaceDto
 import com.kseb.smart_car.data.responseDto.ResponseRecommendPlaceNearbyDetailDto
 import com.kseb.smart_car.data.responseDto.ResponseRecommendPlaceNearbyDto
 import com.kseb.smart_car.data.responseDto.ResponseSaveFavoritePlaceDto
@@ -91,6 +94,15 @@ interface AuthDataSource {
         contentId:String
     ):ResponseRecommendPlaceNearbyDetailDto
 
+    suspend fun getPlaces(
+        token:String,
+    ):ResponseRecommendPlaceDto
+
+    suspend fun getPlacesDetail(
+        token:String,
+        contentId: String
+    ):ResponseRecommendPlaceNearbyDetailDto
+
     //개인 정보 및 선호 장르 수정
     suspend fun getMyInfo(
         token:String
@@ -125,6 +137,11 @@ interface AuthDataSource {
         contentId:String
     ):ResponseSaveFavoritePlaceDto
 
+    suspend fun deleteFavoritePlaceList(
+        token:String,
+        requestDeletePlaceListDto: RequestDeletePlaceListDto
+    ):ResponseSaveFavoritePlaceDto
+
     suspend fun existFavoritePlace(
         token:String,
         contentId: String
@@ -143,6 +160,11 @@ interface AuthDataSource {
     suspend fun deleteFavoriteMusic(
         token:String,
         trackId:String,
+    ):ResponseFavoriteMusicStringDto
+
+    suspend fun deleteFavoriteMusicList(
+        token:String,
+        requestDeleteMusicListDto: RequestDeleteMusicListDto
     ):ResponseFavoriteMusicStringDto
 
     suspend fun existFavoriteMusic(

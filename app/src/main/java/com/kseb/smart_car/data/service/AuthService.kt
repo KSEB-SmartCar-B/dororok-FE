@@ -2,6 +2,8 @@ package com.kseb.smart_car.data.service
 
 import com.kseb.smart_car.data.requestDto.RequestAccessDto
 import com.kseb.smart_car.data.requestDto.RequestAddSearchDto
+import com.kseb.smart_car.data.requestDto.RequestDeleteMusicListDto
+import com.kseb.smart_car.data.requestDto.RequestDeletePlaceListDto
 import com.kseb.smart_car.data.requestDto.RequestDeleteSearchDto
 import com.kseb.smart_car.data.requestDto.RequestSignUpDto
 import com.kseb.smart_car.data.requestDto.RequestUpdateGenreDto
@@ -22,6 +24,7 @@ import com.kseb.smart_car.data.responseDto.ResponseFavoriteMusicDto
 import com.kseb.smart_car.data.responseDto.ResponseFavoriteMusicStringDto
 import com.kseb.smart_car.data.responseDto.ResponseFavoritePlaceDto
 import com.kseb.smart_car.data.responseDto.ResponseRecommendMusicDto
+import com.kseb.smart_car.data.responseDto.ResponseRecommendPlaceDto
 import com.kseb.smart_car.data.responseDto.ResponseRecommendPlaceNearbyDetailDto
 import com.kseb.smart_car.data.responseDto.ResponseRecommendPlaceNearbyDto
 import com.kseb.smart_car.data.responseDto.ResponseSaveFavoritePlaceDto
@@ -107,6 +110,18 @@ interface AuthService {
         @Query("contentId") contentId: String
     ):ResponseRecommendPlaceNearbyDetailDto
 
+    //추천 여행지
+    @GET("/recommendation/places")
+    suspend fun getPlace(
+        @Header("Authorization") token:String,
+    ):ResponseRecommendPlaceDto
+
+    @GET("/recommendation/place/detail")
+    suspend fun getPlaceDetail(
+        @Header("Authorization") token:String,
+        @Query("contentId") contentId: String
+    ):ResponseRecommendPlaceNearbyDetailDto
+
 
     //개인 정보 및 선호 장르 수정
     @GET("members/info")
@@ -150,6 +165,12 @@ interface AuthService {
         @Body contentId:String
     ):ResponseSaveFavoritePlaceDto
 
+    @POST("/favorites/place/delete/list")
+    suspend fun deletePlaceList(
+        @Header("Authorization") token: String,
+        @Body requestDeletePlaceListDto: RequestDeletePlaceListDto
+    ):ResponseSaveFavoritePlaceDto
+
     @GET("/favorites/place/exist")
     suspend fun existFavoritePlace(
         @Header("Authorization") token: String,
@@ -172,6 +193,12 @@ interface AuthService {
     suspend fun deleteFavoritesMusic(
         @Header("Authorization") token: String,
         @Body trackId:String
+    ):ResponseFavoriteMusicStringDto
+
+    @POST("/favorites/music/delete/list")
+    suspend fun deleteMusicList(
+        @Header("Authorization") token: String,
+        @Body requestDeleteMusicListDto: RequestDeleteMusicListDto
     ):ResponseFavoriteMusicStringDto
 
     @GET("/favorites/music/exist")

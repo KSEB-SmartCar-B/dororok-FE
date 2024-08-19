@@ -3,6 +3,8 @@ package com.kseb.smart_car.data.repositoryImpl
 import com.kseb.smart_car.data.datasource.AuthDataSource
 import com.kseb.smart_car.data.requestDto.RequestAccessDto
 import com.kseb.smart_car.data.requestDto.RequestAddSearchDto
+import com.kseb.smart_car.data.requestDto.RequestDeleteMusicListDto
+import com.kseb.smart_car.data.requestDto.RequestDeletePlaceListDto
 import com.kseb.smart_car.data.requestDto.RequestDeleteSearchDto
 import com.kseb.smart_car.data.requestDto.RequestSignUpDto
 import com.kseb.smart_car.data.requestDto.RequestUpdateGenreDto
@@ -23,6 +25,7 @@ import com.kseb.smart_car.data.responseDto.ResponseFavoriteMusicDto
 import com.kseb.smart_car.data.responseDto.ResponseFavoriteMusicStringDto
 import com.kseb.smart_car.data.responseDto.ResponseFavoritePlaceDto
 import com.kseb.smart_car.data.responseDto.ResponseRecommendMusicDto
+import com.kseb.smart_car.data.responseDto.ResponseRecommendPlaceDto
 import com.kseb.smart_car.data.responseDto.ResponseRecommendPlaceNearbyDetailDto
 import com.kseb.smart_car.data.responseDto.ResponseRecommendPlaceNearbyDto
 import com.kseb.smart_car.data.responseDto.ResponseSaveFavoritePlaceDto
@@ -105,6 +108,21 @@ class AuthRepositoryImpl @Inject constructor(
         }
     }
 
+    override suspend fun getRecommendPlace(token: String): Result<ResponseRecommendPlaceDto> {
+        return runCatching {
+            authDataSource.getPlaces(token)
+        }
+    }
+
+    override suspend fun getRecommendPlaceDetail(
+        token: String,
+        contentId: String
+    ): Result<ResponseRecommendPlaceNearbyDetailDto> {
+        return runCatching {
+            authDataSource.getPlacesDetail(token,contentId)
+        }
+    }
+
     override suspend fun getSearch(token: String): Result<ResponseSearchListDto> {
         return runCatching {
             authDataSource.getSearch(token)
@@ -182,6 +200,15 @@ class AuthRepositoryImpl @Inject constructor(
         }
     }
 
+    override suspend fun deleteFavoritePlaceList(
+        token: String,
+        contentIds:List<String>
+    ): Result<ResponseSaveFavoritePlaceDto> {
+        return runCatching {
+            authDataSource.deleteFavoritePlaceList(token, RequestDeletePlaceListDto(contentIds))
+        }
+    }
+
     override suspend fun existFavoritePlace(
         token: String,
         contentId: String
@@ -216,6 +243,15 @@ class AuthRepositoryImpl @Inject constructor(
     ): Result<ResponseFavoriteMusicStringDto> {
         return runCatching {
             authDataSource.deleteFavoriteMusic(token,trackId)
+        }
+    }
+
+    override suspend fun deleteFavoriteMusicList(
+        token: String,
+        trackIds:List<String>
+    ): Result<ResponseFavoriteMusicStringDto> {
+        return runCatching {
+            authDataSource.deleteFavoriteMusicList(token,RequestDeleteMusicListDto(trackIds))
         }
     }
 

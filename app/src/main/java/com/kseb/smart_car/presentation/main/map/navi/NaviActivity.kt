@@ -359,6 +359,10 @@ class NaviActivity:AppCompatActivity(), KNGuidance_GuideStateDelegate,
             it.safetyGuideDelegate = null
             it.voiceGuideDelegate = null
             it.citsGuideDelegate = null
+
+            // 경로 초기화
+            it.cancelRoute()
+            KNSDK.KNSDKRelease()
         }
     }
 }

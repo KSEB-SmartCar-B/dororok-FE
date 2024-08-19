@@ -7,13 +7,17 @@ import android.util.Log
 import android.view.View
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.lifecycleScope
 import com.kseb.smart_car.R
 import com.kseb.smart_car.data.responseDto.ResponseFavoritePlaceDto
 import com.kseb.smart_car.data.responseDto.ResponseRecommendPlaceNearbyDto
 import com.kseb.smart_car.databinding.ActivityMyplaceBinding
+import com.kseb.smart_car.extension.DeletePlaceListState
 import com.kseb.smart_car.presentation.main.place.PlaceViewModel
 import com.kseb.smart_car.presentation.main.place.placeDetail.PlaceDetailActivity
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
 class MyplaceActivity : AppCompatActivity() {
@@ -86,8 +90,22 @@ class MyplaceActivity : AppCompatActivity() {
         startActivity(intent, options.toBundle())
     }
 
-    private fun deletePlace(contentId: String) {
-
+    private fun deletePlace(contentIds: List<String>) {
+        savedPlaceViewModel.deletePlaceList(contentIds)
+        lifecycleScope.launch {
+            savedPlaceViewModel.deletePlaceListState.collect{state->
+                when(state){
+                    is DeletePlaceListState.Success->{
+                        Log.d("myPlaceActivity","delete place list success")
+                        savedPlaceViewModel.setDeletePlaceListStateLoading()
+                    }
+                    is DeletePlaceListState.Loading->{}
+                    is DeletePlaceListState.Error->{
+                        Log.d("myPlaceActivity","delete place list state error: ${state.message}")
+                    }
+                }
+            }
+        }
     }
 
     private fun clickButton(){

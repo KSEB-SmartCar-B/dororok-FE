@@ -35,6 +35,7 @@ import com.kseb.smart_car.extension.AddFavoritePlaceState
 import com.kseb.smart_car.extension.AddressState
 import com.kseb.smart_car.extension.DeleteFavoritePlaceState
 import com.kseb.smart_car.extension.RecommendPlaceNearbyState
+import com.kseb.smart_car.extension.RecommendPlaceState
 import com.kseb.smart_car.presentation.main.MainViewModel
 import com.kseb.smart_car.presentation.main.map.navi.LoadingDialogFragment
 import com.kseb.smart_car.presentation.main.map.navi.NaviActivity
@@ -109,8 +110,10 @@ class PlaceFragment : Fragment() {
         fusedLocationClient.lastLocation
             .addOnSuccessListener { location: Location? ->
                 if (location != null) {
-                    latitude=location.latitude
-                    longitude=location.longitude
+                    /*latitude=location.latitude
+                    longitude=location.longitude*/
+                    latitude=37.290184417162514
+                    longitude=126.57855020444013
                     setting()
                 }
             }
@@ -211,33 +214,32 @@ class PlaceFragment : Fragment() {
             showShimmer(isLoading=true)
 
             placeViewModel.getSavedPlaceList()
-            placeViewModel.getPlace(latitude, longitude)
+            placeViewModel.getPlace()
             placeViewModel.placeState.collect { placeState ->
                 when (placeState) {
-                    is RecommendPlaceNearbyState.Success -> {
+                    is RecommendPlaceState.Success -> {
                         binding.rvPlace.adapter = placeAdapter
                         placeAdapter.getSavedPlace(savedPlaceList)
-                        placeAdapter.getNearbyPlaceList(placeState.placeNearbyDto.places)
-                        showShimmer(isLoading=false)
+                        placeAdapter.getNearbyPlaceList(placeState.placeDto.places)
 
-                        if (placeViewModel.pageNo == 1) {
+                        /*if (placeViewModel.pageNo == 1) {
                             placeAdapter.getSavedPlace(savedPlaceList)
-                            placeAdapter.getNearbyPlaceList(placeState.placeNearbyDto.places)
+                            placeAdapter.getNearbyPlaceList(placeState.placeDto.places)
                         } else {
                             val currentPosition = (binding.rvPlace.layoutManager as LinearLayoutManager).findFirstVisibleItemPosition()
-                            placeAdapter.getNearbyPlaceList(placeState.placeNearbyDto.places)
+                            placeAdapter.getNearbyPlaceList(placeState.placeDto.places)
                             binding.rvPlace.scrollToPosition(currentPosition)
-                        }
+                        }*/
 
                         showShimmer(isLoading=false)
                         placeViewModel.isLoading = false
 
                         // 다음 페이지를 위해 페이지 번호를 증가시킵니다.
-                        placeViewModel.pageNo += 1
+                       // placeViewModel.pageNo += 1
                     }
 
-                    is RecommendPlaceNearbyState.Loading -> {placeViewModel.isLoading = true}
-                    is RecommendPlaceNearbyState.Error -> {
+                    is RecommendPlaceState.Loading -> {placeViewModel.isLoading = true}
+                    is RecommendPlaceState.Error -> {
                         Log.e("placeNearbyFragment", "근처 장소 가져오기 에러!")
                         showShimmer(isLoading=false)
                         placeViewModel.isLoading = false
