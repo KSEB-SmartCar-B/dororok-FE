@@ -63,6 +63,7 @@ class SavedMusicAdapter(
 
                 itemView.takeIf { ivCircle.visibility == View.VISIBLE }?.setOnClickListener {
                     ivCircle.isSelected = !ivCircle.isSelected
+                    musicGray.isSelected=!musicGray.isSelected
                     deleteMusicList.apply {
                         val trackId = item.trackId
                         if (trackId in this) remove(trackId) else add(trackId)
