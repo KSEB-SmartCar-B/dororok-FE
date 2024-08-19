@@ -324,6 +324,9 @@ class PlaceFragment : Fragment() {
         val intent = Intent(context, PlaceDetailActivity::class.java).apply {
             putExtra("place", place)
             putExtra("accessToken",accessToken)
+            putExtra("image_transition_name", sharedView.transitionName)
+            putExtra("circle_transition_name", circle.transitionName)
+            putExtra("saved_transition_name", saved.transitionName)
         }
 
         val options = ActivityOptions.makeSceneTransitionAnimation(

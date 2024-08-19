@@ -358,6 +358,7 @@ class PlaceDetailFragment : Fragment() {
             putExtra("place", place)
             Log.d("placedetailfragment","accessToken:${accessToken}")
             putExtra("accessToken",accessToken)
+            putExtra("image_transition_name", sharedView.transitionName)
         }
 
         val options = ActivityOptions.makeSceneTransitionAnimation(
