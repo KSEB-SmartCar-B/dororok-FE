@@ -96,6 +96,7 @@ dependencies {
     implementation(libs.androidx.constraintlayout)
     implementation(libs.play.services.location)
     implementation(libs.androidx.ui.test.android)
+    implementation(libs.androidx.preference.ktx)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -127,7 +128,8 @@ dependencies {
 
     // timber
     implementation("com.jakewharton.timber:timber:4.7.1")
-    annotationProcessor("com.github.bumptech.glide:compiler:4.11.0")
+    kapt("com.github.bumptech.glide:compiler:4.11.0")
+    //kapt("com.github.bumptech.glide:compiler:4.12.0")
 
     //kakao
     implementation("com.kakao.sdk:v2-user:2.20.1")
@@ -143,7 +145,7 @@ dependencies {
 
     //glide
     implementation ("com.github.bumptech.glide:glide:4.12.0")
-    annotationProcessor ("com.github.bumptech.glide:compiler:4.12.0")
+    kapt("com.github.bumptech.glide:compiler:4.12.0")
 
     //spotify
     implementation(files("../app-remote-lib/spotify-app-remote-release-0.8.0.aar"))
@@ -154,9 +156,23 @@ dependencies {
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.8.3") // 최신 버전으로 변경 가능
 
     //Android Auto
+    implementation ("androidx.media:media:1.7.0")
     implementation("androidx.car.app:app:1.4.0")
     implementation("androidx.car.app:app-projected:1.4.0")
     testImplementation("androidx.car.app:app-testing:1.4.0")
+    implementation ("com.google.android.gms:play-services-auth:18.1.0")
+   /* if (findProject(":exoplayer-library-core") != null) {
+        api (project(":exoplayer-library-core"))
+        api (project(":exoplayer-library-ui"))
+        api (project(":exoplayer-extension-mediasession"))
+        api (project(":exoplayer-extension-cast"))
+    } else {
+        api ("com.google.android.exoplayer:exoplayer-core:2.16.0")
+        api ("com.google.android.exoplayer:exoplayer-ui:2.16.0")
+        api ("com.google.android.exoplayer:extension-mediasession:2.16.0")
+        api ("com.google.android.exoplayer:extension-cast:2.16.0")
+    }*/
+
 
     // animation (스켈레톤 ui 추가)
     implementation ("com.facebook.shimmer:shimmer:0.5.0")

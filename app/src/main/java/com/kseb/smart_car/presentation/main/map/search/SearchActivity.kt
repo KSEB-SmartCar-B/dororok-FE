@@ -1,12 +1,12 @@
 package com.kseb.smart_car.presentation.main.map.navi.search
 
 import android.os.Bundle
-import android.util.Log
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import com.kseb.smart_car.R
 import com.kseb.smart_car.databinding.ActivitySearchBinding
+import com.kseb.smart_car.presentation.main.map.search.SearchFragment
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
