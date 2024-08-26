@@ -73,7 +73,7 @@ class PlayFragment : Fragment() {
     }
 
     object SpotifySampleContexts {
-        const val TRACK_URI = "spotify:track:5sdQOyqq2IDhvmx2lHOpwd"
+        const val TRACK_URI = "spotify:track:6FZAc2XaVYc8G8jaDnBshv"
     }
 
     companion object {

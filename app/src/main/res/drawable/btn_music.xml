@@ -1,12 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- 첫 번째 레이어: 실선과 배경 -->
     <item>
         <shape android:shape="rectangle">
+            <!-- 모서리 둥글기 설정 -->
             <corners android:radius="5dp" />
+            <!-- 배경 색상 설정 -->
             <solid android:color="@color/white" />
+            <!-- 실선 설정 -->
+            <stroke
+                android:width="1dp"
+                android:color="@color/gray_400" />
         </shape>
     </item>
+
+    <!-- 두 번째 레이어: 아이콘 이미지 -->
     <item
-        android:drawable="@drawable/spotify"
-        android:gravity="center" />
+        android:state_selected="true"
+        android:drawable="@drawable/ic_music_gray" />
+
+    <item
+        android:drawable="@drawable/ic_music_black" />
 </layer-list>

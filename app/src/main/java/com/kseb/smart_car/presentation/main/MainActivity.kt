@@ -334,39 +334,6 @@ class MainActivity : AppCompatActivity() {
         })
     }
 
-
-    // 카메라를 현재 위치로 이동
-    /*private fun showCurrentLocation() {
-        mapView = binding.naviView.mapComponent.mapView
-        if (currentLongitude == null || currentLatitude == null) {
-            Log.e("mainactivity", "현재 위치가 유효하지 않습니다.")
-            return
-        }
-
-        Log.d(
-            "mainactivity",
-            "WGS84 - Longitude: $currentLongitude, Latitude: $currentLatitude"
-        )
-
-        try {
-            val coordinate = WGS84ToKATEC(currentLongitude, currentLatitude)
-            mapView.moveCamera(positionWithKNMapCameraUpdate(coordinate.toFloatPoint()), true)
-            Log.d(
-                "mainactivity",
-                "Converted - Longitude: ${coordinate.x}, Latitude: ${coordinate.y}"
-            )
-        } catch (e: ClassNotFoundException) {
-            Log.e("mainactivity", "ClassNotFoundException: ${e.message}")
-        } catch (e: NoClassDefFoundError) {
-            Log.e("mainactivity", "NoClassDefFoundError: ${e.message}")
-        }
-    }*/
-
-
-    private fun positionWithKNMapCameraUpdate(coordinate: FloatPoint): KNMapCameraUpdate {
-        return KNMapCameraUpdate.targetTo(coordinate)
-    }
-
     private fun clickButtonSearch() {
         mainViewModel.accessToken.observe(this) { token ->
             binding.svSearch.setOnQueryTextFocusChangeListener { _, hasFocus ->

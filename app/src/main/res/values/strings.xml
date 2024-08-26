@@ -12,6 +12,7 @@
     <string name="main_btn_search">검색</string>
     <string name="music_next">다음에 재생될 음악</string>
     <string name="music_recommend_loading">추천 음악을 찾고 있어요!\n잠시만 기다려 주세요</string>
+    <string name="music_recommend_success">추천 음악이 완성됐어요!</string>
 
     <!-- Music -->
     <!-- Errors -->
@@ -50,6 +51,16 @@
 
     <string name="navi_loading">길을 찾고 있어요!</string>
     <string name="place_detail_more">추천 여행지</string>
+    <string name="play_music">상황을 말해주세요!</string>
+    <string name="daily">일상</string>
+    <string name="work">출근</string>
+    <string name="nowork">퇴근</string>
+    <string name="travel">여행</string>
+    <string name="drive">드라이브</string>
+    <string name="dororok">도로록 픽</string>
+    <string name="date">데이트</string>
+    <string name="friend">친구들과</string>
+
     <!-- my -->
     <string name="my_welcome">%s님 행복한 하루 되세요!</string>
     <string name="my_edit">편집</string>

@@ -13,4 +13,14 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
 
+    <androidx.appcompat.widget.AppCompatImageButton
+        android:id="@+id/btn_music"
+        android:layout_width="43dp"
+        android:layout_height="43dp"
+        android:layout_marginBottom="137dp"
+        android:layout_marginStart="12dp"
+        android:background="@drawable/btn_music"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"/>
+
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -441,7 +441,12 @@ class PlaceDetailFragment : Fragment() {
                     // 인증 완료
                     Log.d("searchFragment", "인증완료")
                     Log.d("searchFragment", "initialize -> 현재좌표: ${currentLongitude}, ${currentLatitude}")
-                    startNavi(x,y, placeName, currentLatitude, currentLongitude)
+                    lifecycleScope.launch (Dispatchers.Main){
+                        placeDetailViewModel.accessToken.observe(viewLifecycleOwner){accessToken->
+                            startNavi(x,y, placeName, currentLatitude, currentLongitude, accessToken)
+                        }
+                    }
+
                 }
             })
     }
@@ -497,7 +502,14 @@ class PlaceDetailFragment : Fragment() {
         checkLocation(x, y, placeName)
     }
 
-    private fun startNavi(x: Double, y: Double, placeName: String, currentLatitude: Double, currentLongitude: Double){
+    private fun startNavi(
+        x: Double,
+        y: Double,
+        placeName: String,
+        currentLatitude: Double,
+        currentLongitude: Double,
+        accessToken: String
+    ){
         Log.d("placefragment","current:${currentLatitude}, ${currentLongitude} / goal:${x}, ${y}")
 
         val intent=Intent(requireActivity(), NaviActivity::class.java)
@@ -506,6 +518,7 @@ class PlaceDetailFragment : Fragment() {
         intent.putExtra("goalLongitude",y)
         intent.putExtra("goalLatitude",x)
         intent.putExtra("placeName",placeName)
+        intent.putExtra("accessToken",accessToken)
         Log.d("searchFragment","longitude: ${x}, latitude: ${y}")
         startActivity(intent)
     }
