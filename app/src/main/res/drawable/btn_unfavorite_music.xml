@@ -3,9 +3,9 @@
 
     <item
         android:state_selected="true"
-        android:drawable="@drawable/ic_liked_24" />
+        android:drawable="@drawable/ic_hated_24" />
 
     <item
-        android:drawable="@drawable/ic_like_24" />
+        android:drawable="@drawable/ic_hate_24" />
 
 </selector>
