@@ -35,6 +35,7 @@ import com.kseb.smart_car.presentation.main.MainViewModel
 import com.kseb.smart_car.presentation.main.map.navi.LoadingDialogFragment
 import com.kseb.smart_car.presentation.main.music.PlayFragment.AuthParams.CLIENT_ID
 import com.kseb.smart_car.presentation.main.music.PlayFragment.AuthParams.REDIRECT_URI
+import com.kseb.smart_car.presentation.main.music.PlayFragment.SpotifySampleContexts.TRACK_URI
 import com.spotify.android.appremote.api.ConnectionParams
 import com.spotify.android.appremote.api.Connector
 import com.spotify.android.appremote.api.SpotifyAppRemote
@@ -129,6 +130,8 @@ class PlayFragment : Fragment() {
         updateSeekbar(playerState)
 
         updateFavoriteButton(playerState)
+
+        updateUnfavoriteButton(playerState)
     }
 
     private fun updatePlayPauseButton(playerState: PlayerState) {
@@ -311,6 +314,13 @@ class PlayFragment : Fragment() {
 
         clickFavorite(playerState)
     }
+
+    private fun updateUnfavoriteButton(playerState: PlayerState){
+        binding.btnUnfavorite.setOnClickListener {
+            binding.btnUnfavorite.isSelected = !binding.btnUnfavorite.isSelected
+        }
+    }
+
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -578,7 +588,8 @@ class PlayFragment : Fragment() {
         }
 
         Log.d("playFragment","playUri - recommendMusicList: ${recommendedMusicList}")
-        val uri="spotify:track:${recommendedMusicList[currentTrackIndex].trackId}"
+        //val uri="spotify:track:${recommendedMusicList[currentTrackIndex].trackId}"
+        val uri=TRACK_URI
         assertAppRemoteConnected()
             .playerApi
             .play(uri)
