@@ -134,7 +134,7 @@ class MapFragment : Fragment() {
 
                         //label 생성
                         val styles = kakaoMap.labelManager!!
-                            .addLabelStyles(LabelStyles.from(LabelStyle.from(R.drawable.pin)))
+                            .addLabelStyles(LabelStyles.from(LabelStyle.from(R.drawable.current_arrow)))
                         val options =
                             LabelOptions.from(LatLng.from(currentPosition)).setStyles(styles)
                         val layer = kakaoMap.labelManager!!.layer

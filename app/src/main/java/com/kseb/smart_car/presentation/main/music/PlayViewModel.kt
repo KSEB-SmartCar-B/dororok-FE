@@ -30,7 +30,8 @@ import javax.inject.Inject
 class PlayViewModel @Inject constructor(
     private val authRepository: AuthRepository
 ) : ViewModel() {
-    private var accessToken: String? = null
+    private val _accessToken = MutableLiveData<String>()
+    val accessToken:MutableLiveData<String> get() = _accessToken
     private var isFirst:Int=1
 
     private val _spotifyAppRemote = MutableLiveData<SpotifyAppRemote>()
@@ -76,12 +77,13 @@ class PlayViewModel @Inject constructor(
     }*/
 
     fun setAccessToken(token:String){
-        accessToken=token
+        _accessToken.value=token
     }
 
     fun getRecommendMusic(lat: String, lng: String, musicMode: String) {
+        Log.d("playviewmodel", "getRecommendMusic - ${accessToken.value!!}, ${lat}, ${lng}, ${musicMode}, ${isFirst}")
         viewModelScope.launch {
-            authRepository.getRecommendMusic(accessToken!!, lat, lng, musicMode, isFirst++).onSuccess { response ->
+            authRepository.getRecommendMusic(accessToken.value!!, lat, lng, musicMode, isFirst++).onSuccess { response ->
                 _recommendMusicList.value = response
                 Log.d("playViewmodel", "get recommend music success\n${response.lists}")
             }.onFailure { throwable ->
@@ -132,7 +134,7 @@ class PlayViewModel @Inject constructor(
 
     fun getFavoriteMusicList() {
         viewModelScope.launch {
-            authRepository.getFavoriteMusic(accessToken!!).onSuccess { response ->
+            authRepository.getFavoriteMusic(accessToken.value!!).onSuccess { response ->
                 _favoriteMusicListState.value = GetFavoriteMusicState.Success(response)
                 Log.d("playViewmodel", "getfavoritemusic success\n${response.favoritesMusicList}")
             }.onFailure {
@@ -167,7 +169,7 @@ class PlayViewModel @Inject constructor(
             .substringBeforeLast("'")
 
         viewModelScope.launch {
-            authRepository.addFavoriteMusic(accessToken!!, playerState.track.uri, playerState.track.name,
+            authRepository.addFavoriteMusic(accessToken.value!!, playerState.track.uri, playerState.track.name,
                 playerState.track.artist.name, imageId
             ).onSuccess { response->
                 _addFavoriteState.value=ChangeFavoriteMusicState.Success(response.response)
@@ -200,7 +202,7 @@ class PlayViewModel @Inject constructor(
 
     fun deleteFavoriteMusicList(trackId:String) {
         viewModelScope.launch {
-            authRepository.deleteFavoriteMusic(accessToken!!,trackId).onSuccess { response->
+            authRepository.deleteFavoriteMusic(accessToken.value!!,trackId).onSuccess { response->
                 _deleteFavoriteState.value=ChangeFavoriteMusicState.Success(response.response)
                 Log.d("playViewModel","delete favorite music success")
             }.onFailure {

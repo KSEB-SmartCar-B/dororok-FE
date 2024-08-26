@@ -295,7 +295,17 @@ class SearchFragment : Fragment() {
                     // 인증 완료
                     Log.d("searchFragment", "인증완료")
                     Log.d("searchFragment", "initialize -> 현재좌표: ${currentLongitude}, ${currentLatitude}")
-                    startNavi(x,y, placeName)
+                    // 메인 스레드에서 observe 호출
+                    lifecycleScope.launch(Dispatchers.Main) {
+                        searchViewModel.accessToken.observe(viewLifecycleOwner) { accessToken ->
+                            if (accessToken != null) {
+                                startNavi(x, y, placeName, accessToken)
+                                Log.d("searchFragment", "startNavi before token:${accessToken}")
+                            } else {
+                                Log.e("searchFragment", "accessToken is null")
+                            }
+                        }
+                    }
                 }
             })
     }
@@ -351,13 +361,14 @@ class SearchFragment : Fragment() {
         checkLocation(x, y, placeName)
     }
 
-    private fun startNavi(x: Double, y: Double, placeName: String){
+    private fun startNavi(x: Double, y: Double, placeName: String, accessToken: String){
         val intent=Intent(requireActivity(), NaviActivity::class.java)
         intent.putExtra("currentLongitude",currentLongitude)
         intent.putExtra("currentLatitude",currentLatitude)
         intent.putExtra("goalLongitude",x)
         intent.putExtra("goalLatitude",y)
         intent.putExtra("placeName",placeName)
+        intent.putExtra("accessToken",accessToken)
         Log.d("searchFragment","longitude: ${x}, latitude: ${y}")
         startActivity(intent)
     }

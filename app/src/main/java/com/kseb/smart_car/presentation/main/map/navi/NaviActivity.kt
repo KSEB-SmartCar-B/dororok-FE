@@ -1,13 +1,24 @@
 package com.kseb.smart_car.presentation.main.map.navi
 
+import android.Manifest
+import android.content.Intent
+import android.content.pm.PackageManager
+import android.graphics.drawable.BitmapDrawable
 import android.os.Bundle
+import android.speech.RecognitionListener
+import android.speech.RecognizerIntent
+import android.speech.SpeechRecognizer
+import android.speech.tts.TextToSpeech
 import android.util.Log
 import android.view.WindowManager
+import android.widget.Toast
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.constraintlayout.widget.ConstraintSet
+import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import androidx.localbroadcastmanager.content.LocalBroadcastManager
+import androidx.lifecycle.lifecycleScope
 import com.kakaomobility.knsdk.KNCarFuel
 import com.kakaomobility.knsdk.KNCarType
 import com.kakaomobility.knsdk.KNCarUsage
@@ -39,10 +50,35 @@ import com.kakaomobility.knsdk.trip.kntrip.knroute.KNRoute
 import com.kakaomobility.knsdk.ui.view.KNNaviView
 import com.kakaomobility.knsdk.ui.view.KNNaviView_GuideStateDelegate
 import com.kseb.smart_car.R
+import com.kseb.smart_car.data.responseDto.ResponseRecommendMusicDto
 import com.kseb.smart_car.databinding.ActivityNaviBinding
+import com.kseb.smart_car.presentation.SpotifyRemoteManager
+import com.kseb.smart_car.presentation.main.music.PlayFragment
+import com.kseb.smart_car.presentation.main.music.PlayFragment.AuthParams.CLIENT_ID
+import com.kseb.smart_car.presentation.main.music.PlayFragment.AuthParams.REDIRECT_URI
+import com.kseb.smart_car.presentation.main.music.PlayFragment.SpotifySampleContexts.TRACK_URI
+import com.kseb.smart_car.presentation.main.music.PlayViewModel
+import com.spotify.android.appremote.api.ConnectionParams
+import com.spotify.android.appremote.api.Connector
+import com.spotify.android.appremote.api.SpotifyAppRemote
+import com.spotify.android.appremote.api.error.SpotifyDisconnectedException
+import com.spotify.protocol.client.Subscription
+import com.spotify.protocol.types.Image
+import com.spotify.protocol.types.PlayerContext
+import com.spotify.protocol.types.PlayerState
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
+import java.util.Locale
+import kotlin.coroutines.Continuation
+import kotlin.coroutines.resume
+import kotlin.coroutines.resumeWithException
+import kotlin.coroutines.suspendCoroutine
 import kotlin.properties.Delegates
 
+@AndroidEntryPoint
 class NaviActivity:AppCompatActivity(), KNGuidance_GuideStateDelegate,
     KNGuidance_LocationGuideDelegate, KNGuidance_RouteGuideDelegate,
     KNGuidance_SafetyGuideDelegate, KNGuidance_VoiceGuideDelegate,
@@ -55,6 +91,30 @@ class NaviActivity:AppCompatActivity(), KNGuidance_GuideStateDelegate,
     private var currentLongitude by Delegates.notNull<Double>()
     private var currentLatitude by Delegates.notNull<Double>()
     private var placeName:String?=null
+
+    private lateinit var speechRecognizer: SpeechRecognizer
+    private var textToSpeech: TextToSpeech?=null
+    var isTTSReady = false // TTS 준비 상태 플래그
+
+    private val playViewModel: PlayViewModel by viewModels()
+
+    private var hasCheckedSpotifyAppRemote = false
+    private var spotifyAppRemote: SpotifyAppRemote? = null
+
+    companion object {
+        const val TAG = "Spotify"
+        const val STEP_MS = 15000L
+
+        private const val LOCATION_PERMISSION_REQUEST_CODE = 1
+    }
+
+    private var playerStateSubscription: Subscription<PlayerState>? = null
+    private var playerContextSubscription: Subscription<PlayerContext>? = null
+
+    // 현재 재생 중인 곡의 인덱스
+    private var currentTrackIndex = 0
+    // 추천 음악 리스트
+    private val recommendedMusicList = mutableListOf<ResponseRecommendMusicDto.RecommendMusicList>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -70,6 +130,7 @@ class NaviActivity:AppCompatActivity(), KNGuidance_GuideStateDelegate,
 
     private fun setting(){
         setWindowTransparent()
+
         mapView=binding.naviView.mapComponent.mapView
         knNaviView=binding.naviView
         knNaviView.guideStateDelegate = this
@@ -77,6 +138,11 @@ class NaviActivity:AppCompatActivity(), KNGuidance_GuideStateDelegate,
         currentLongitude = intent.getDoubleExtra("currentLongitude", 0.0)
         currentLatitude = intent.getDoubleExtra("currentLatitude", 0.0)
         placeName=intent.getStringExtra("placeName")
+        val accessToken=intent.getStringExtra("accessToken")
+        playViewModel.setAccessToken(accessToken!!)
+        playViewModel.accessToken.observe(this){
+            observeViewModel()
+        }
 
         val constraintLayout = binding.root as ConstraintLayout
         val constraintSet = ConstraintSet()
@@ -100,6 +166,10 @@ class NaviActivity:AppCompatActivity(), KNGuidance_GuideStateDelegate,
         constraintSet.applyTo(constraintLayout)
 
         getDirections()
+
+
+
+        clickButton()
     }
 
     private fun setWindowTransparent(){
@@ -118,7 +188,6 @@ class NaviActivity:AppCompatActivity(), KNGuidance_GuideStateDelegate,
         return if (resourceId > 0) resources.getDimensionPixelSize(resourceId)
         else 0
     }
-
     private fun getDirections() {
         //위도 : 37.28682370552076
         //경도 : 126.57606547684927
@@ -208,6 +277,358 @@ class NaviActivity:AppCompatActivity(), KNGuidance_GuideStateDelegate,
                 println("예상치 못한 오류 발생")
             }
         }
+    }
+
+    //tts
+    private fun clickButton(){
+        binding.btnMusic.setOnClickListener{
+            binding.btnMusic.isSelected=true
+            //getRecommendMusic("일상")
+            requestPermission() // 권한 요청 추가
+            //tts 객체 초기화
+            resetTTS()
+            speechRecognizer = SpeechRecognizer.createSpeechRecognizer(this@NaviActivity).apply {
+                setRecognitionListener(recognitionListener)
+                // RecognizerIntent 생성
+                val intent = Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH).apply {
+                    putExtra(
+                        RecognizerIntent.EXTRA_CALLING_PACKAGE,
+                        this@NaviActivity.packageName
+                    ) //여분의 키
+                    putExtra(RecognizerIntent.EXTRA_LANGUAGE, "ko-KR")
+                }
+                // 여기에 startListening 호출 추가
+                startListening(intent)
+            }
+        }
+    }
+
+    private fun requestPermission() {
+        // 버전 체크, 권한 허용했는지 체크
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO)
+            != PackageManager.PERMISSION_GRANTED
+        ) {
+            ActivityCompat.requestPermissions(
+                this,
+                arrayOf(Manifest.permission.RECORD_AUDIO), 0
+            )
+        }
+    }
+
+    private fun resetTTS(){
+        // TTS 객체 초기화
+        textToSpeech = TextToSpeech(this@NaviActivity) { status ->
+            if (status == TextToSpeech.SUCCESS) {
+                val result = textToSpeech?.setLanguage(Locale.KOREAN)
+                if (result == TextToSpeech.LANG_MISSING_DATA || result == TextToSpeech.LANG_NOT_SUPPORTED) {
+                    // 언어 데이터가 없거나 지원하지 않는 언어일 때 처리
+                } else {
+                    isTTSReady = true // TTS가 준비되었음을 표시
+                    textToSpeech?.setSpeechRate(2.0f) // TTS 속도 설정
+                    speakInitialMessage() // 초기 메시지 음성 출력
+                }
+            } else {
+                // TTS 초기화 실패 처리
+            }
+        }
+    }
+
+    private fun speakInitialMessage() {
+        if(isTTSReady) {
+            // 예제 메시지를 TTS로 말하기
+            textToSpeech?.speak(this.getString(R.string.play_music), TextToSpeech.QUEUE_FLUSH, null, "")
+        }
+    }
+
+    private val recognitionListener: RecognitionListener = object : RecognitionListener {
+        override fun onReadyForSpeech(params: Bundle) {
+            Toast.makeText(this@NaviActivity, "이제 말씀하세요!", Toast.LENGTH_SHORT).show()
+            //binding.tvState.text = "이제 말씀하세요!"
+        }
+
+        override fun onBeginningOfSpeech() {
+            //binding.tvState.text = "잘 듣고 있어요."
+            Log.d("searchfragment","onBeginningOfSpeech - 잘 듣고 있어요.")
+        }
+
+        // 입력받는 소리의 크기를 알려줌
+        override fun onRmsChanged(rmsdB: Float) {}
+
+        // 말을 시작하고 인식이 된 단어를 buffer에 담음
+        override fun onBufferReceived(buffer: ByteArray) {}
+
+        // 말하기를 중지하면 호출
+        override fun onEndOfSpeech() {
+            //binding.tvState.text = "끝!"
+            Log.d("searchFragment","onendOfSpeech - 끝!")
+            CoroutineScope(Dispatchers.Main).launch {
+                delay(500)
+                //binding.tvState.text="상태체크"
+            }
+        }
+
+        // 오류 발생했을 때 호출
+        override fun onError(error: Int) {
+            val message = when (error) {
+                SpeechRecognizer.ERROR_AUDIO -> "오디오 에러"
+                SpeechRecognizer.ERROR_CLIENT -> "클라이언트 에러"
+                SpeechRecognizer.ERROR_INSUFFICIENT_PERMISSIONS -> "퍼미션 없음"
+                SpeechRecognizer.ERROR_NETWORK -> "네트워크 에러"
+                SpeechRecognizer.ERROR_NETWORK_TIMEOUT -> "네트워크 타임아웃"
+                SpeechRecognizer.ERROR_NO_MATCH -> "찾을 수 없음"
+                SpeechRecognizer.ERROR_RECOGNIZER_BUSY -> "RECOGNIZER 가 바쁨"
+                SpeechRecognizer.ERROR_SERVER -> "서버가 이상함"
+                SpeechRecognizer.ERROR_SPEECH_TIMEOUT -> "말하는 시간초과"
+                else -> "알 수 없는 오류임"
+            }
+            // binding.tvState.text = "에러 발생: $message"
+            Log.e("searchFragment","onError - error: ${message}")
+        }
+
+        override fun onResults(results: Bundle) {
+            val matches = results.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION)
+            binding.btnMusic.isSelected=false
+            if (!matches.isNullOrEmpty()) {
+                val text = matches[0] // 첫 번째 인식 결과를 사용
+               when(text){
+                   getString(R.string.daily),
+                   getString(R.string.work),
+                   getString(R.string.nowork),
+                   getString(R.string.travel),
+                   getString(R.string.drive),
+                   getString(R.string.dororok),
+                   getString(R.string.date),
+                   getString(R.string.friend) -> {
+                       getRecommendMusic(text)
+                       Log.d("naviActivity", "${text}")
+                   }
+               }
+                //messages.add(Message(text,MessageType.USER_INPUT)) // 인식된 텍스트를 messages 리스트에 추가
+                //addChatItem(text, MessageType.USER_INPUT)
+                // 추가: messages 리스트의 내용을 로그나 UI에 표시하려면 여기에 코드를 추가하세요.
+                // 예를 들어, 로그를 사용하여 추가된 메시지를 확인할 수 있습니다.
+                Log.d("searchFragment", "인식된 메시지: $text")
+                // 혹은 인식된 메시지를 UI에 표시하는 등의 작업을 수행할 수도 있습니다.
+            }
+        }
+
+        // 부분 인식 결과를 사용할 수 있을 때 호출
+        override fun onPartialResults(partialResults: Bundle) {}
+
+        // 향후 이벤트를 추가하기 위해 예약
+        override fun onEvent(eventType: Int, params: Bundle) {}
+    }
+
+    enum class PlayingState {
+        PAUSED, PLAYING, STOPPED
+    }
+
+    private val errorCallback = { throwable: Throwable -> logError(throwable) }
+
+    private val playerStateEventCallback = Subscription.EventCallback<PlayerState> { playerState ->/*
+        Log.v(TAG, String.format("Player State: %s", gson.toJson(playerState)))
+        Log.d("playfragment", "update success")*/
+
+        updateTrackCoverArt(playerState)
+    }
+
+    private fun updateTrackCoverArt(playerState: PlayerState) {
+        assertAppRemoteConnected()
+            .imagesApi
+            .getImage(playerState.track.imageUri, Image.Dimension.LARGE)
+            .setResultCallback { bitmap ->
+                binding.btnMusic.background = BitmapDrawable(resources, bitmap)
+            }
+    }
+
+    // ViewModel로부터 추천 음악 리스트를 업데이트 받는 코드
+    private fun observeViewModel() {
+        playViewModel.recommendMusicList.observe(this) { newMusicList ->
+            if (newMusicList.lists.isNotEmpty()) {
+                recommendedMusicList.addAll(newMusicList.lists)
+                connectToSpotify()
+            } else {
+                Log.d("naviActivity", "No music lists received yet.")
+                closeLoading()
+            }
+        }
+    }
+
+    private fun getRecommendMusic(situation:String){
+        showLoading()
+        playViewModel.getRecommendMusic(currentLatitude.toString(), currentLongitude.toString(), situation)
+    }
+
+    override fun onStop() {
+        super.onStop()
+//        animator.cancel() // 애니메이션 중지
+        SpotifyAppRemote.disconnect(spotifyAppRemote)
+        onDisconnected()
+    }
+
+    // Api 호출이 시작되면 LoadingDialogFragment를 보여준다.
+    private fun showLoading() {
+      Toast.makeText(
+          this,
+          R.string.music_recommend_loading,
+          Toast.LENGTH_LONG
+      ).show()
+    }
+
+    private fun closeLoading() {
+        Toast.makeText(
+            this,
+            R.string.music_recommend_success,
+            Toast.LENGTH_SHORT
+        ).show()
+    }
+
+    private fun onConnected() {
+        Log.d("naviActivity", "onconnected 실행!")
+
+        onSubscribedToPlayerStateButtonClicked()
+        onSubscribedToPlayerContextButtonClicked()
+
+        //Spotify에 연결되었을 때 uri 실행
+        playUri()
+        playViewModel.loginSpotify()
+    }
+
+    private fun onDisconnected() {
+    }
+
+    private fun connectToSpotify() {
+        Log.d("naviActivity", "Attempting to connect to Spotify...")
+        SpotifyAppRemote.setDebugMode(true)
+        connect(false)
+    }
+
+    private fun connect(showAuthView: Boolean) {
+        //SpotifyAppRemote.disconnect(spotifyAppRemote)
+        Log.d("mainActivity", "spotify connect method")
+        lifecycleScope.launch {
+            try {
+                Log.d("mainActivity", "connect to app remote start")
+                spotifyAppRemote = connectToAppRemote()
+                onConnected()
+            } catch (error: Throwable) {
+                logError(error)
+            }
+            if (SpotifyRemoteManager.spotifyAppRemote == null) {
+                Log.e("mainActivity", "spotifyAppRemote is null")
+            } else {
+                Log.e("mainActivity", "spotify app remote is not null")
+            }
+        }
+
+    }
+
+
+    private suspend fun connectToAppRemote(): SpotifyAppRemote? =
+        suspendCoroutine { cont: Continuation<SpotifyAppRemote> ->
+            SpotifyAppRemote.connect(
+                this.application,
+                ConnectionParams.Builder(CLIENT_ID)
+                    .setRedirectUri(REDIRECT_URI)
+                    .showAuthView(true)
+                    .build(),
+                object : Connector.ConnectionListener {
+                    override fun onConnected(spotifyAppRemote: SpotifyAppRemote) {
+                        Log.d("naviActivity", "SpotifyAppRemote connected")
+                        cont.resume(spotifyAppRemote)
+                    }
+
+                    override fun onFailure(error: Throwable) {
+                        Log.e("naviActivity", "Failed to connect to SpotifyAppRemote", error)
+                        cont.resumeWithException(error)
+                    }
+                })
+        }
+
+    private fun playUri() {
+        if (spotifyAppRemote == null || !spotifyAppRemote!!.isConnected) {
+            Log.e("naviActivity", "SpotifyAppRemote is not connected, cannot play URI")
+            return
+        }
+
+        Log.d("naviActivity","playUri - recommendMusicList: ${recommendedMusicList}")
+        val uri="spotify:track:${recommendedMusicList[currentTrackIndex].trackId}"
+        assertAppRemoteConnected()
+            .playerApi
+            .play(uri)
+            .setResultCallback { logMessage(getString(R.string.command_feedback, "play")) }
+            .setErrorCallback(errorCallback)
+        //playViewModel.getFavoriteMusicList()
+        Log.d("naviActivity","음악 재생 시작")
+    }
+
+    fun onSubscribedToPlayerContextButtonClicked() {
+        playerContextSubscription = cancelAndResetSubscription(playerContextSubscription)
+
+        //binding.currentContextLabel.visibility = View.VISIBLE
+        playerContextSubscription = assertAppRemoteConnected()
+            .playerApi
+            .subscribeToPlayerContext()
+            //.setEventCallback(playerContextEventCallback)
+            .setErrorCallback { throwable ->
+                //binding.currentContextLabel.visibility = View.INVISIBLE
+                logError(throwable)
+            } as Subscription<PlayerContext>
+    }
+
+
+    private fun onSubscribedToPlayerStateButtonClicked() {
+        playerStateSubscription = cancelAndResetSubscription(playerStateSubscription)
+
+
+        playerStateSubscription = assertAppRemoteConnected()
+            .playerApi
+            .subscribeToPlayerState()
+            .setEventCallback(playerStateEventCallback)
+            .setLifecycleCallback(
+                object : Subscription.LifecycleCallback {
+                    override fun onStart() {
+                        logMessage("Event: start")
+                        Log.d("naviActivity", "노래 시작!")
+                    }
+
+                    override fun onStop() {
+                        logMessage("Event: end")
+                    }
+                })
+            .setErrorCallback {
+            } as Subscription<PlayerState>
+
+        //playViewModel.getFavoriteMusicList()
+    }
+
+    private fun <T : Any?> cancelAndResetSubscription(subscription: Subscription<T>?): Subscription<T>? {
+        return subscription?.let {
+            if (!it.isCanceled) {
+                it.cancel()
+            }
+            null
+        }
+    }
+
+    private fun assertAppRemoteConnected(): SpotifyAppRemote {
+        spotifyAppRemote?.let {
+            if (it.isConnected) {
+                return it
+            }
+        }
+        Log.e(NaviActivity.TAG, getString(R.string.err_spotify_disconnected))
+        throw SpotifyDisconnectedException()
+    }
+
+    private fun logError(throwable: Throwable) {
+        //Toast.makeText(requireContext(), R.string.err_generic_toast, Toast.LENGTH_SHORT).show()
+        Log.e(NaviActivity.TAG, "", throwable)
+    }
+
+    private fun logMessage(msg: String, duration: Int = Toast.LENGTH_SHORT) {
+        //Toast.makeText(requireContext(), msg, duration).show()
+        //Log.d(TAG, msg)
     }
 
     // 길 안내 시작 시 호출
